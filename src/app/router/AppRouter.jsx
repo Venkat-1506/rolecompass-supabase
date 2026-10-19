@@ -21,10 +21,6 @@ import { HowItWorksPage } from '../../pages/public/HowItWorksPage.jsx';
 // Auth Pages
 import { LoginPage } from '../../pages/auth/LoginPage.jsx';
 
-// Dev Pages
-import { FoundationDemoPage } from '../../pages/FoundationDemoPage.jsx';
-import { AssetPreviewPage } from '../../pages/AssetPreviewPage.jsx';
-
 // Onboarding Pages
 import { ChoosePath } from '../../pages/onboarding/ChoosePath.jsx';
 import { AccountDetails } from '../../pages/onboarding/AccountDetails.jsx';
@@ -94,10 +90,6 @@ export function AppRouter() {
             <Route path="/onboarding/manual-profile" element={<ManualProfile />} />
             <Route path="/onboarding/complete" element={<ProfileComplete />} />
           </Route>
-
-          {/* DEV PREVIEW BENCH */}
-          <Route path="/foundation-test" element={<FoundationDemoPage />} />
-          <Route path="/assets-preview" element={<AssetPreviewPage />} />
         </Route>
 
         {/* CANDIDATE PROTECTED ROUTE GROUP */}
