@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 520" width="100%" height="100%" fill="none">
+  <defs>
+    <!-- Soft Drop Shadow for Natural Depth -->
+    <filter id="person-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+    
+    <linearGradient id="jacket-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E2E8F0"/>
+      <stop offset="100%" stop-color="#CBD5E1"/>
+    </linearGradient>
+
+    <linearGradient id="hair-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+
+    <linearGradient id="skin-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FDDFD0"/>
+      <stop offset="100%" stop-color="#F5CBB7"/>
+    </linearGradient>
+
+    <linearGradient id="laptop-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#94A3B8"/>
+      <stop offset="100%" stop-color="#64748B"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Main Person Group with Subtle Depth Filter -->
+  <g filter="url(#person-shadow)">
+    <!-- Hair Background Flow -->
+    <path d="M140 110 C130 160 120 220 125 320 C140 340 165 340 180 320 C180 240 185 170 175 110 Z" fill="url(#hair-grad)" />
+    <path d="M220 110 C215 170 220 240 220 320 C235 340 260 340 275 320 C280 220 270 160 260 110 Z" fill="url(#hair-grad)" />
+
+    <!-- Torso / Body Layer -->
+    <!-- Striped Inner Top -->
+    <path d="M160 210 Q200 230 240 210 L250 360 Q200 380 150 360 Z" fill="#FFFFFF"/>
+    <!-- Navy Stripes -->
+    <path d="M162 230 Q200 248 238 230 M158 250 Q200 268 242 250 M154 270 Q200 288 246 270 M152 290 Q200 308 248 290 M150 310 Q200 328 250 310 M150 330 Q200 348 250 330" stroke="#0F172A" stroke-width="4" stroke-linecap="round"/>
+
+    <!-- Professional Blazer / Jacket -->
+    <!-- Left Sleeve & Shoulder -->
+    <path d="M110 230 C100 280 110 380 140 480 L180 480 C150 380 145 300 155 240 Z" fill="url(#jacket-grad)"/>
+    <!-- Right Sleeve & Shoulder -->
+    <path d="M290 230 C300 280 290 380 260 480 L220 480 C250 380 255 300 245 240 Z" fill="url(#jacket-grad)"/>
+    <!-- Left Jacket Lapel -->
+    <path d="M150 210 L125 360 L180 480 L195 380 Z" fill="#F1F5F9"/>
+    <!-- Right Jacket Lapel -->
+    <path d="M250 210 L275 360 L220 480 L205 380 Z" fill="#E2E8F0"/>
+    <!-- Jacket Lapel Collar Crease Lines -->
+    <path d="M150 210 L185 310 L200 380 M250 210 L215 310 L200 380" stroke="#94A3B8" stroke-width="2"/>
+
+    <!-- Neck -->
+    <path d="M180 160 L180 215 Q200 225 220 215 L220 160 Z" fill="url(#skin-grad)"/>
+    <!-- Neck Shadow -->
+    <path d="M180 160 Q200 175 220 160 Q200 190 180 160" fill="rgba(15,23,42,0.08)"/>
+
+    <!-- Face Oval -->
+    <path d="M155 100 C155 40 245 40 245 100 C245 155 225 175 200 175 C175 175 155 155 155 100 Z" fill="url(#skin-grad)"/>
+
+    <!-- Hair Foreground Framing & Waves -->
+    <path d="M155 90 C150 40 250 40 245 90 C235 60 165 60 155 90 Z" fill="url(#hair-grad)"/>
+    <path d="M155 90 C140 120 145 180 140 250 C150 250 165 210 160 150 C160 120 155 100 155 90 Z" fill="url(#hair-grad)"/>
+    <path d="M245 90 C260 120 255 180 260 250 C250 250 235 210 240 150 C240 120 245 100 245 90 Z" fill="url(#hair-grad)"/>
+
+    <!-- Eyebrows -->
+    <path d="M168 92 Q180 88 190 92" stroke="#1E293B" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    <path d="M210 92 Q220 88 232 92" stroke="#1E293B" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+
+    <!-- Eyes -->
+    <ellipse cx="178" cy="104" rx="6.5" ry="4.5" fill="#FFFFFF"/>
+    <circle cx="178" cy="104" r="3.5" fill="#0F172A"/>
+    <circle cx="179" cy="103" r="1" fill="#FFFFFF"/>
+
+    <ellipse cx="222" cy="104" rx="6.5" ry="4.5" fill="#FFFFFF"/>
+    <circle cx="222" cy="104" r="3.5" fill="#0F172A"/>
+    <circle cx="223" cy="103" r="1" fill="#FFFFFF"/>
+
+    <!-- Modern Round Glasses (Matching Visual Reference Image) -->
+    <circle cx="178" cy="104" r="14" stroke="#0F172A" stroke-width="2.5" fill="none"/>
+    <circle cx="222" cy="104" r="14" stroke="#0F172A" stroke-width="2.5" fill="none"/>
+    <path d="M192 104 Q200 100 208 104" stroke="#0F172A" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    <path d="M164 104 L152 100 M236 104 L248 100" stroke="#0F172A" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- Nose -->
+    <path d="M197 108 Q200 124 195 128" stroke="#D97706" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+
+    <!-- Confident Warm Smile -->
+    <path d="M182 144 Q200 156 218 144" stroke="#E11D48" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path d="M184 144 Q200 152 216 144" fill="#FFFFFF"/>
+
+    <!-- Folded Arms Holding Sleek Silver Laptop (Matching Visual Reference) -->
+    <!-- Laptop Body -->
+    <rect x="140" y="310" width="130" height="90" rx="10" fill="url(#laptop-grad)" transform="rotate(-12 205 355)" stroke="#E2E8F0" stroke-width="2"/>
+    <path d="M148 318 L262 294" stroke="#059669" stroke-width="3" opacity="0.6"/>
+
+    <!-- Left Arm & Hand Holding Laptop -->
+    <path d="M130 360 Q160 410 220 370" stroke="url(#skin-grad)" stroke-width="22" stroke-linecap="round" fill="none"/>
+    <path d="M130 360 Q160 410 220 370" stroke="url(#jacket-grad)" stroke-width="20" stroke-linecap="round" fill="none"/>
+
+    <!-- Right Arm & Hand -->
+    <path d="M270 360 Q240 420 180 390" stroke="url(#skin-grad)" stroke-width="22" stroke-linecap="round" fill="none"/>
+    <!-- Fingers Hugging Laptop Edge -->
+    <ellipse cx="175" cy="385" rx="6" ry="12" fill="url(#skin-grad)" transform="rotate(30 175 385)"/>
+    <ellipse cx="185" cy="390" rx="5" ry="11" fill="url(#skin-grad)" transform="rotate(30 185 390)"/>
+    <ellipse cx="195" cy="393" rx="5" ry="10" fill="url(#skin-grad)" transform="rotate(30 195 393)"/>
+  </g>
+</svg>

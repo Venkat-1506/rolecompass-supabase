@@ -1,0 +1,777 @@
+import { companyLogos } from '../companyLogos.js';
+
+export const COMPANY_ASSET_MANIFEST = {
+  // Existing 44 companies + canonical records
+  google: {
+    id: "google",
+    name: "Google",
+    logo: companyLogos.google,
+    fallbackInitials: "G",
+    brandColor: "#4285F4",
+    source: "Official Google Brand Resources",
+    usageNote: "Demo/company identification asset"
+  },
+  microsoft: {
+    id: "microsoft",
+    name: "Microsoft",
+    logo: companyLogos.microsoft,
+    fallbackInitials: "MS",
+    brandColor: "#00A4EF",
+    source: "Official Microsoft Brand Resources",
+    usageNote: "Demo/company identification asset"
+  },
+  amazon: {
+    id: "amazon",
+    name: "Amazon",
+    logo: companyLogos.amazon,
+    fallbackInitials: "AMZ",
+    brandColor: "#FF9900",
+    source: "Official Amazon Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  adobe: {
+    id: "adobe",
+    name: "Adobe",
+    logo: companyLogos.adobe,
+    fallbackInitials: "AD",
+    brandColor: "#FF0000",
+    source: "Official Adobe Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  stripe: {
+    id: "stripe",
+    name: "Stripe",
+    logo: companyLogos.stripe,
+    fallbackInitials: "ST",
+    brandColor: "#635BFF",
+    source: "Official Stripe Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  zoho: {
+    id: "zoho",
+    name: "Zoho",
+    logo: companyLogos.zoho,
+    fallbackInitials: "ZH",
+    brandColor: "#C0272D",
+    source: "Official Zoho Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  freshworks: {
+    id: "freshworks",
+    name: "Freshworks",
+    logo: companyLogos.freshworks,
+    fallbackInitials: "FW",
+    brandColor: "#F47920",
+    source: "Official Freshworks Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  accenture: {
+    id: "accenture",
+    name: "Accenture",
+    logo: companyLogos.accenture,
+    fallbackInitials: "AC",
+    brandColor: "#A100FF",
+    source: "Official Accenture Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  tcs: {
+    id: "tcs",
+    name: "TCS",
+    logo: companyLogos.tcs,
+    fallbackInitials: "TC",
+    brandColor: "#003366",
+    source: "Official TCS Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  infosys: {
+    id: "infosys",
+    name: "Infosys",
+    logo: companyLogos.infosys,
+    fallbackInitials: "INF",
+    brandColor: "#007CC3",
+    source: "Official Infosys Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  wipro: {
+    id: "wipro",
+    name: "Wipro",
+    logo: companyLogos.wipro,
+    fallbackInitials: "WP",
+    brandColor: "#7B2CBF",
+    source: "Official Wipro Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  deloitte: {
+    id: "deloitte",
+    name: "Deloitte",
+    logo: companyLogos.deloitte,
+    fallbackInitials: "DL",
+    brandColor: "#86BC25",
+    source: "Official Deloitte Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  ibm: {
+    id: "ibm",
+    name: "IBM",
+    logo: companyLogos.ibm,
+    fallbackInitials: "IBM",
+    brandColor: "#054ADA",
+    source: "Official IBM Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  oracle: {
+    id: "oracle",
+    name: "Oracle",
+    logo: companyLogos.oracle,
+    fallbackInitials: "OR",
+    brandColor: "#F80000",
+    source: "Official Oracle Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  atlassian: {
+    id: "atlassian",
+    name: "Atlassian",
+    logo: companyLogos.atlassian,
+    fallbackInitials: "AT",
+    brandColor: "#0052CC",
+    source: "Official Atlassian Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  razorpay: {
+    id: "razorpay",
+    name: "Razorpay",
+    logo: companyLogos.razorpay,
+    fallbackInitials: "RZ",
+    brandColor: "#0C2340",
+    source: "Official Razorpay Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  swiggy: {
+    id: "swiggy",
+    name: "Swiggy",
+    logo: companyLogos.swiggy,
+    fallbackInitials: "SW",
+    brandColor: "#FC8019",
+    source: "Official Swiggy Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  zomato: {
+    id: "zomato",
+    name: "Zomato",
+    logo: companyLogos.zomato,
+    fallbackInitials: "ZM",
+    brandColor: "#CB202D",
+    source: "Official Zomato Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  flipkart: {
+    id: "flipkart",
+    name: "Flipkart",
+    logo: companyLogos.flipkart,
+    fallbackInitials: "FK",
+    brandColor: "#2874F0",
+    source: "Official Flipkart Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  phonepe: {
+    id: "phonepe",
+    name: "PhonePe",
+    logo: companyLogos.phonepe,
+    fallbackInitials: "PE",
+    brandColor: "#5F259F",
+    source: "Official PhonePe Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  cred: {
+    id: "cred",
+    name: "CRED",
+    logo: companyLogos.cred,
+    fallbackInitials: "CR",
+    brandColor: "#000000",
+    source: "Official CRED Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  tatadigital: {
+    id: "tatadigital",
+    name: "Tata Digital",
+    logo: companyLogos.tatadigital,
+    fallbackInitials: "TD",
+    brandColor: "#1B365D",
+    source: "Official Tata Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  tata: {
+    id: "tata",
+    name: "Tata Group",
+    logo: companyLogos.tata,
+    fallbackInitials: "TATA",
+    brandColor: "#1B365D",
+    source: "Official Tata Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  goldmansachs: {
+    id: "goldmansachs",
+    name: "Goldman Sachs",
+    logo: companyLogos.goldmansachs,
+    fallbackInitials: "GS",
+    brandColor: "#7399C6",
+    source: "Official Goldman Sachs Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  cisco: {
+    id: "cisco",
+    name: "Cisco",
+    logo: companyLogos.cisco,
+    fallbackInitials: "CS",
+    brandColor: "#1BA0D7",
+    source: "Official Cisco Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  nvidia: {
+    id: "nvidia",
+    name: "NVIDIA",
+    logo: companyLogos.nvidia,
+    fallbackInitials: "NV",
+    brandColor: "#76B900",
+    source: "Official NVIDIA Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  uber: {
+    id: "uber",
+    name: "Uber",
+    logo: companyLogos.uber,
+    fallbackInitials: "UB",
+    brandColor: "#000000",
+    source: "Official Uber Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  airteldigital: {
+    id: "airteldigital",
+    name: "Airtel Digital",
+    logo: companyLogos.airteldigital,
+    fallbackInitials: "AD",
+    brandColor: "#ED1C24",
+    source: "Official Airtel Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  hdfc: {
+    id: "hdfc",
+    name: "HDFC Bank",
+    logo: companyLogos.hdfc,
+    fallbackInitials: "HDFC",
+    brandColor: "#004C8F",
+    source: "Official HDFC Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  hdfcbank: {
+    id: "hdfcbank",
+    name: "HDFC Bank",
+    logo: companyLogos.hdfcbank,
+    fallbackInitials: "HDFC",
+    brandColor: "#004C8F",
+    source: "Official HDFC Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  airbnb: {
+    id: "airbnb",
+    name: "Airbnb",
+    logo: companyLogos.airbnb,
+    fallbackInitials: "AB",
+    brandColor: "#FF5A5F",
+    source: "Official Airbnb Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  airindia: {
+    id: "airindia",
+    name: "Air India",
+    logo: companyLogos.airindia,
+    fallbackInitials: "AI",
+    brandColor: "#ED1C24",
+    source: "Official Air India Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  airtel: {
+    id: "airtel",
+    name: "Bharti Airtel",
+    logo: companyLogos.airtel,
+    fallbackInitials: "AT",
+    brandColor: "#E40000",
+    source: "Official Airtel Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  axisbank: {
+    id: "axisbank",
+    name: "Axis Bank",
+    logo: companyLogos.axisbank,
+    fallbackInitials: "AXIS",
+    brandColor: "#97144D",
+    source: "Official Axis Bank Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  bmw: {
+    id: "bmw",
+    name: "BMW Group",
+    logo: companyLogos.bmw,
+    fallbackInitials: "BMW",
+    brandColor: "#0066B1",
+    source: "Official BMW Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  cocacola: {
+    id: "cocacola",
+    name: "The Coca-Cola Company",
+    logo: companyLogos.cocacola,
+    fallbackInitials: "KO",
+    brandColor: "#F40009",
+    source: "Official Coca-Cola Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  github: {
+    id: "github",
+    name: "GitHub",
+    logo: companyLogos.github,
+    fallbackInitials: "GH",
+    brandColor: "#24292F",
+    source: "Official GitHub Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  icicibank: {
+    id: "icicibank",
+    name: "ICICI Bank",
+    logo: companyLogos.icicibank,
+    fallbackInitials: "ICICI",
+    brandColor: "#B02A30",
+    source: "Official ICICI Bank Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  jio: {
+    id: "jio",
+    name: "Reliance Jio",
+    logo: companyLogos.jio,
+    fallbackInitials: "JIO",
+    brandColor: "#0A2885",
+    source: "Official Jio Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  linkedin: {
+    id: "linkedin",
+    name: "LinkedIn",
+    logo: companyLogos.linkedin,
+    fallbackInitials: "LI",
+    brandColor: "#0A66C2",
+    source: "Official LinkedIn Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  mahindra: {
+    id: "mahindra",
+    name: "Tech Mahindra",
+    logo: companyLogos.mahindra,
+    fallbackInitials: "TM",
+    brandColor: "#E31837",
+    source: "Official Mahindra Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  netflix: {
+    id: "netflix",
+    name: "Netflix",
+    logo: companyLogos.netflix,
+    fallbackInitials: "NFLX",
+    brandColor: "#E50914",
+    source: "Official Netflix Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  paypal: {
+    id: "paypal",
+    name: "PayPal",
+    logo: companyLogos.paypal,
+    fallbackInitials: "PYPL",
+    brandColor: "#003087",
+    source: "Official PayPal Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  paytm: {
+    id: "paytm",
+    name: "Paytm",
+    logo: companyLogos.paytm,
+    fallbackInitials: "PTM",
+    brandColor: "#002970",
+    source: "Official Paytm Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  samsung: {
+    id: "samsung",
+    name: "Samsung Electronics",
+    logo: companyLogos.samsung,
+    fallbackInitials: "SS",
+    brandColor: "#1428A0",
+    source: "Official Samsung Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  spotify: {
+    id: "spotify",
+    name: "Spotify",
+    logo: companyLogos.spotify,
+    fallbackInitials: "SPOT",
+    brandColor: "#1DB954",
+    source: "Official Spotify Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  toyota: {
+    id: "toyota",
+    name: "Toyota Motor",
+    logo: companyLogos.toyota,
+    fallbackInitials: "TY",
+    brandColor: "#EB0A1E",
+    source: "Official Toyota Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+
+  // 32 New companies from companies2
+  adidas: {
+    id: "adidas",
+    name: "Adidas",
+    logo: companyLogos.adidas,
+    fallbackInitials: "ADI",
+    brandColor: "#000000",
+    source: "Official Adidas Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  android: {
+    id: "android",
+    name: "Android",
+    logo: companyLogos.android,
+    fallbackInitials: "AND",
+    brandColor: "#34A853",
+    source: "Official Android Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  apple: {
+    id: "apple",
+    name: "Apple",
+    logo: companyLogos.apple,
+    fallbackInitials: "AAPL",
+    brandColor: "#555555",
+    source: "Official Apple Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  audi: {
+    id: "audi",
+    name: "Audi",
+    logo: companyLogos.audi,
+    fallbackInitials: "AUDI",
+    brandColor: "#BB0A30",
+    source: "Official Audi Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  aws: {
+    id: "aws",
+    name: "Amazon Web Services (AWS)",
+    logo: companyLogos.aws,
+    fallbackInitials: "AWS",
+    brandColor: "#FF9900",
+    source: "Official AWS Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  boat: {
+    id: "boat",
+    name: "boAt",
+    logo: companyLogos.boat,
+    fallbackInitials: "BOAT",
+    brandColor: "#E50914",
+    source: "Official boAt Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  bookmyshow: {
+    id: "bookmyshow",
+    name: "BookMyShow",
+    logo: companyLogos.bookmyshow,
+    fallbackInitials: "BMS",
+    brandColor: "#E51837",
+    source: "Official BookMyShow Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  chessdotcom: {
+    id: "chessdotcom",
+    name: "Chess.com",
+    logo: companyLogos.chessdotcom,
+    fallbackInitials: "CHESS",
+    brandColor: "#7FA650",
+    source: "Official Chess.com Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  anthropic: {
+    id: "anthropic",
+    name: "Anthropic",
+    logo: companyLogos.anthropic,
+    fallbackInitials: "ANTH",
+    brandColor: "#D97706",
+    source: "Official Anthropic Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  claude: {
+    id: "claude",
+    name: "Anthropic",
+    logo: companyLogos.claude,
+    fallbackInitials: "ANTH",
+    brandColor: "#D97706",
+    source: "Official Anthropic Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  ea: {
+    id: "ea",
+    name: "Electronic Arts",
+    logo: companyLogos.ea,
+    fallbackInitials: "EA",
+    brandColor: "#FF4747",
+    source: "Official EA Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  meta: {
+    id: "meta",
+    name: "Meta",
+    logo: companyLogos.meta,
+    fallbackInitials: "META",
+    brandColor: "#0668E1",
+    source: "Official Meta Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  facebook: {
+    id: "facebook",
+    name: "Meta",
+    logo: companyLogos.facebook,
+    fallbackInitials: "META",
+    brandColor: "#0668E1",
+    source: "Official Meta Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  epicgames: {
+    id: "epicgames",
+    name: "Epic Games",
+    logo: companyLogos.epicgames,
+    fallbackInitials: "EPIC",
+    brandColor: "#313131",
+    source: "Official Epic Games Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  fortnite: {
+    id: "fortnite",
+    name: "Epic Games",
+    logo: companyLogos.fortnite,
+    fallbackInitials: "EPIC",
+    brandColor: "#313131",
+    source: "Official Epic Games Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  gameloft: {
+    id: "gameloft",
+    name: "Gameloft",
+    logo: companyLogos.gameloft,
+    fallbackInitials: "GL",
+    brandColor: "#1A1A1A",
+    source: "Official Gameloft Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  deepmind: {
+    id: "deepmind",
+    name: "Google DeepMind",
+    logo: companyLogos.deepmind,
+    fallbackInitials: "GDM",
+    brandColor: "#4285F4",
+    source: "Official Google DeepMind Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  gemini: {
+    id: "gemini",
+    name: "Google DeepMind",
+    logo: companyLogos.gemini,
+    fallbackInitials: "GDM",
+    brandColor: "#4285F4",
+    source: "Official Google DeepMind Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  handm: {
+    id: "handm",
+    name: "H&M Group",
+    logo: companyLogos.handm,
+    fallbackInitials: "HM",
+    brandColor: "#E50010",
+    source: "Official H&M Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  honda: {
+    id: "honda",
+    name: "Honda",
+    logo: companyLogos.honda,
+    fallbackInitials: "HND",
+    brandColor: "#CC0000",
+    source: "Official Honda Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  mastercard: {
+    id: "mastercard",
+    name: "Mastercard",
+    logo: companyLogos.mastercard,
+    fallbackInitials: "MC",
+    brandColor: "#EB001B",
+    source: "Official Mastercard Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  mcdonalds: {
+    id: "mcdonalds",
+    name: "McDonald's",
+    logo: companyLogos.mcdonalds,
+    fallbackInitials: "MCD",
+    brandColor: "#FFC72C",
+    source: "Official McDonald's Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  nike: {
+    id: "nike",
+    name: "Nike",
+    logo: companyLogos.nike,
+    fallbackInitials: "NKE",
+    brandColor: "#111111",
+    source: "Official Nike Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  openai: {
+    id: "openai",
+    name: "OpenAI",
+    logo: companyLogos.openai,
+    fallbackInitials: "OAI",
+    brandColor: "#10A37F",
+    source: "Official OpenAI Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  playstation: {
+    id: "playstation",
+    name: "Sony PlayStation",
+    logo: companyLogos.playstation,
+    fallbackInitials: "PS",
+    brandColor: "#003791",
+    source: "Official PlayStation Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  riotgames: {
+    id: "riotgames",
+    name: "Riot Games",
+    logo: companyLogos.riotgames,
+    fallbackInitials: "RIOT",
+    brandColor: "#D13639",
+    source: "Official Riot Games Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  roblox: {
+    id: "roblox",
+    name: "Roblox",
+    logo: companyLogos.roblox,
+    fallbackInitials: "RBLX",
+    brandColor: "#000000",
+    source: "Official Roblox Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  rockstargames: {
+    id: "rockstargames",
+    name: "Rockstar Games",
+    logo: companyLogos.rockstargames,
+    fallbackInitials: "R*",
+    brandColor: "#FCAF17",
+    source: "Official Rockstar Games Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  starbucks: {
+    id: "starbucks",
+    name: "Starbucks",
+    logo: companyLogos.starbucks,
+    fallbackInitials: "SBUX",
+    brandColor: "#00704A",
+    source: "Official Starbucks Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  valve: {
+    id: "valve",
+    name: "Valve / Steam",
+    logo: companyLogos.valve,
+    fallbackInitials: "STM",
+    brandColor: "#1B2838",
+    source: "Official Valve Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  steam: {
+    id: "steam",
+    name: "Valve / Steam",
+    logo: companyLogos.steam,
+    fallbackInitials: "STM",
+    brandColor: "#1B2838",
+    source: "Official Valve Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  suzuki: {
+    id: "suzuki",
+    name: "Maruti Suzuki",
+    logo: companyLogos.suzuki,
+    fallbackInitials: "MSZ",
+    brandColor: "#003399",
+    source: "Official Suzuki Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  tesla: {
+    id: "tesla",
+    name: "Tesla",
+    logo: companyLogos.tesla,
+    fallbackInitials: "TSLA",
+    brandColor: "#E82127",
+    source: "Official Tesla Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  twitch: {
+    id: "twitch",
+    name: "Twitch",
+    logo: companyLogos.twitch,
+    fallbackInitials: "TW",
+    brandColor: "#9146FF",
+    source: "Official Twitch Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  whatsapp: {
+    id: "whatsapp",
+    name: "WhatsApp",
+    logo: companyLogos.whatsapp,
+    fallbackInitials: "WA",
+    brandColor: "#25D366",
+    source: "Official WhatsApp Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  x: {
+    id: "x",
+    name: "X Corp.",
+    logo: companyLogos.x,
+    fallbackInitials: "X",
+    brandColor: "#000000",
+    source: "Official X Brand Assets",
+    usageNote: "Demo/company identification asset"
+  },
+  youtube: {
+    id: "youtube",
+    name: "YouTube",
+    logo: companyLogos.youtube,
+    fallbackInitials: "YT",
+    brandColor: "#FF0000",
+    source: "Official YouTube Brand Assets",
+    usageNote: "Demo/company identification asset"
+  }
+};
+
+export function getCompanyAsset(companyId) {
+  if (!companyId) return null;
+  const key = String(companyId).toLowerCase().trim().replace(/[^a-z0-9-]/g, '');
+  return COMPANY_ASSET_MANIFEST[key] || {
+    id: key,
+    name: companyId,
+    logo: companyLogos[key] || null,
+    fallbackInitials: key.substring(0, 2).toUpperCase(),
+    brandColor: "#059669",
+    source: "Generated Fallback",
+    usageNote: "Fallback initials"
+  };
+}

@@ -1,0 +1,266 @@
+/* ==========================================================================
+   ROLECOMPASS INTERACTION & COMPONENT MOTION LAYER
+   Entrance + micro-interaction animations for overlays, drawers, toasts,
+   buttons, tabs, navigation links and list grids.
+
+   FILL-MODE NOTE: entrance helpers below use `backwards` (never `both`) so
+   no transform is held after they finish. Holding a transform creates a
+   containing block that breaks descendants using position: fixed, and it
+   also overrides hover transforms on the same element.
+   ========================================================================== */
+
+/* 1. OVERLAYS ------------------------------------------------------------- */
+@keyframes rcOverlayFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.rc-glass-overlay {
+  animation: rcOverlayFade 0.22s ease-out backwards;
+}
+
+/* 2. DRAWERS — slide in from the right edge */
+@keyframes rcDrawerIn {
+  from {
+    opacity: 0.4;
+    transform: translate3d(100%, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.rc-drawer-container {
+  animation: rcDrawerIn 0.34s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 2b. MODAL DIALOG — softer, slightly springier entrance */
+.rc-modal-container {
+  animation: rcDialogIn 0.34s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes rcDialogEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(14px);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* TOASTS */
+@keyframes rcToastIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.rc-toast-anim {
+  animation: rcToastIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+/* 3. BUTTONS — press feedback + primary sheen sweep */
+.rc-btn {
+  position: relative;
+}
+
+.rc-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.rc-btn-primary {
+  overflow: hidden;
+}
+
+.rc-btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 45%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.45) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: translateX(-160%) skewX(-18deg);
+  pointer-events: none;
+}
+
+@keyframes rcBtnSheen {
+  0% {
+    transform: translateX(-160%) skewX(-18deg);
+  }
+  100% {
+    transform: translateX(260%) skewX(-18deg);
+  }
+}
+
+.rc-btn-primary:hover:not(:disabled)::after {
+  animation: rcBtnSheen 0.75s ease;
+}
+
+/* 4. TABS — pop on activation + soft hover lift */
+@keyframes rcTabPop {
+  0% {
+    transform: scale(0.94);
+  }
+  60% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.rc-tab-item[aria-selected='true'] {
+  animation: rcTabPop 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rc-tab-item:hover {
+  transform: translateY(-1px);
+}
+
+/* 5. NAVIGATION LINKS — animated underline + lift */
+.rc-nav-link {
+  position: relative;
+}
+
+.rc-nav-link:hover {
+  transform: translateY(-1px);
+}
+
+.rc-nav-link::after {
+  content: '';
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 3px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  opacity: 0.55;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rc-nav-link:hover::after {
+  transform: scaleX(1);
+}
+
+/* 6. LIST GRID ENTRANCE — staggered rise for direct children */
+@keyframes rcStaggerUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.rc-stagger-grid > * {
+  animation: rcStaggerUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.rc-stagger-grid > *:nth-child(1) { animation-delay: 0.02s; }
+.rc-stagger-grid > *:nth-child(2) { animation-delay: 0.07s; }
+.rc-stagger-grid > *:nth-child(3) { animation-delay: 0.12s; }
+.rc-stagger-grid > *:nth-child(4) { animation-delay: 0.17s; }
+.rc-stagger-grid > *:nth-child(5) { animation-delay: 0.22s; }
+.rc-stagger-grid > *:nth-child(6) { animation-delay: 0.27s; }
+.rc-stagger-grid > *:nth-child(7) { animation-delay: 0.32s; }
+.rc-stagger-grid > *:nth-child(8) { animation-delay: 0.36s; }
+.rc-stagger-grid > *:nth-child(9) { animation-delay: 0.40s; }
+.rc-stagger-grid > *:nth-child(10) { animation-delay: 0.44s; }
+.rc-stagger-grid > *:nth-child(n + 11) { animation-delay: 0.48s; }
+
+/* 7. GENERIC ENTRANCE UTILITIES */
+.rc-anim-fade {
+  animation: rcToastIn 0.4s ease backwards;
+}
+
+.rc-anim-rise {
+  animation: rcStaggerUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+@keyframes rcPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.rc-anim-pop {
+  animation: rcPopIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+/* 8. OVERLAY SCROLL LOCK & BACKGROUND THROTTLING
+   While a dialog is open we freeze the page behind it and pause the ambient
+   background orbs (each a multi-hundred-px blurred layer). Re-compositing
+   those huge blurs on every scroll frame is the main source of dialog jank. */
+html.rc-overlay-open body {
+  overflow: hidden;
+}
+
+html.rc-overlay-open .rc-animate-orb-1,
+html.rc-overlay-open .rc-animate-orb-2,
+html.rc-overlay-open .rc-animate-pulse {
+  animation-play-state: paused !important;
+}
+
+/* 9. HOVER LIFT HELPER */
+.rc-hover-lift {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
+}
+
+.rc-hover-lift:hover {
+  transform: translateY(-3px);
+}
+
+/* 8b. ACCESSIBILITY: REDUCED MOTION */
+@media (prefers-reduced-motion: reduce) {
+  .rc-glass-overlay,
+  .rc-drawer-container,
+  .rc-toast-anim,
+  .rc-tab-item[aria-selected='true'],
+  .rc-stagger-grid > *,
+  .rc-anim-fade,
+  .rc-anim-rise,
+  .rc-anim-pop {
+    animation: none !important;
+  }
+
+  .rc-btn-primary:hover:not(:disabled)::after {
+    animation: none !important;
+  }
+
+  .rc-btn:active:not(:disabled),
+  .rc-nav-link:hover,
+  .rc-tab-item:hover {
+    transform: none !important;
+  }
+}

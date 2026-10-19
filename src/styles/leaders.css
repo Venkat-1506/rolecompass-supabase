@@ -1,0 +1,231 @@
+/* HERO — "HIRE & DISCOVER WITH LEADERS" COMPANY LOGO STRIP */
+
+.rc-leader-strip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 22px;
+  padding: 24px 32px;
+  border-radius: 20px;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(130% 200% at 0% 0%, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.92) 45%, rgba(241, 245, 249, 0.94) 100%),
+    linear-gradient(135deg, #ffffff 0%, #f8fafc 55%, #f1f5f9 100%);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  box-shadow:
+    0 18px 40px -14px rgba(15, 23, 42, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  transition:
+    transform var(--rc-motion-medium),
+    box-shadow var(--rc-motion-medium),
+    border-color var(--rc-motion-medium);
+}
+
+.rc-leader-strip:hover {
+  transform: translateY(-3px);
+  border-color: rgba(5, 150, 105, 0.3);
+  box-shadow:
+    0 28px 54px -18px rgba(15, 23, 42, 0.18),
+    0 0 0 1px rgba(5, 150, 105, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* Slow travelling light sweep across the strip */
+.rc-leader-strip::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(
+    100deg,
+    transparent 34%,
+    rgba(5, 150, 105, 0.09) 46%,
+    rgba(184, 242, 58, 0.18) 50%,
+    rgba(5, 150, 105, 0.09) 54%,
+    transparent 66%
+  );
+  transform: translateX(-130%);
+  animation: rcLeaderSheen 6.5s cubic-bezier(0.4, 0, 0.2, 1) 1.4s infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.rc-leader-strip > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Label with pulsing live dot */
+.rc-leader-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rc-color-deep-charcoal-900);
+  white-space: nowrap;
+}
+
+.rc-leader-label::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--rc-color-green-accent);
+  animation: rcLeaderDotPulse 2.4s ease-out infinite;
+}
+
+.rc-leader-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Company logo chip */
+.rc-leader-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 18px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+  overflow: hidden;
+  transition:
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.3s ease,
+    background-color 0.3s ease;
+}
+
+/* Logos sit muted/light, colourise on interaction */
+.rc-leader-chip .rc-marquee-logo-wrapper {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rc-leader-chip .rc-marquee-logo-wrapper img {
+  filter: grayscale(1) opacity(0.55);
+  transition: filter 0.35s ease;
+}
+
+.rc-leader-chip:hover,
+.rc-leader-chip:focus-visible {
+  transform: translateY(-4px) scale(1.04);
+  background: #ffffff;
+  border-color: rgba(5, 150, 105, 0.45);
+  box-shadow:
+    0 16px 28px -10px rgba(5, 150, 105, 0.3),
+    0 6px 14px rgba(15, 23, 42, 0.08);
+}
+
+.rc-leader-chip:hover .rc-marquee-logo-wrapper img,
+.rc-leader-chip:focus-visible .rc-marquee-logo-wrapper img {
+  filter: none;
+}
+
+.rc-leader-chip:hover .rc-marquee-logo-wrapper,
+.rc-leader-chip:focus-visible .rc-marquee-logo-wrapper {
+  transform: scale(1.06);
+}
+
+/* Staggered chip entrance, fires when the parent ScrollReveal becomes visible */
+.rc-reveal-visible .rc-leader-chip {
+  animation: rcLeaderChipIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation-delay: calc(var(--rc-chip-i, 0) * 75ms + 150ms);
+}
+
+/* Browse-all CTA */
+.rc-leader-browse {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--rc-color-green-accent);
+  background: rgba(5, 150, 105, 0.08);
+  border: 1px solid rgba(5, 150, 105, 0.25);
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease,
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s ease;
+}
+
+.rc-leader-browse svg {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rc-leader-browse:hover {
+  color: var(--rc-color-green-accent-hover);
+  background: rgba(5, 150, 105, 0.16);
+  border-color: rgba(5, 150, 105, 0.45);
+  transform: translateX(3px);
+  box-shadow: 0 10px 20px -8px rgba(5, 150, 105, 0.35);
+}
+
+.rc-leader-browse:hover svg {
+  transform: translateX(5px);
+}
+
+@keyframes rcLeaderSheen {
+  0% {
+    transform: translateX(-130%);
+  }
+  55%,
+  100% {
+    transform: translateX(130%);
+  }
+}
+
+@keyframes rcLeaderDotPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 9px rgba(5, 150, 105, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(5, 150, 105, 0);
+  }
+}
+
+@keyframes rcLeaderChipIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 768px) {
+  .rc-leader-strip {
+    padding: 20px;
+    gap: 16px;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .rc-leader-chips {
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .rc-leader-chip {
+    padding: 7px 14px;
+  }
+}

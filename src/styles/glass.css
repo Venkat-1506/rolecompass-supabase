@@ -1,0 +1,208 @@
+/* ROLECOMPASS REFINED GLASS DESIGN SYSTEM & HIERARCHY */
+
+/* Primitive Glass Base Surface */
+.rc-glass-base {
+  position: relative;
+  box-sizing: border-box;
+  transition: background-color var(--rc-motion-medium),
+              backdrop-filter var(--rc-motion-medium),
+              border-color var(--rc-motion-medium),
+              box-shadow var(--rc-motion-medium);
+}
+
+/* LEVEL 1 — SUBTLE GLASS (Nav, Filters, Secondary Sections, Supporting Info) */
+.rc-glass-level-1 {
+  background: rgba(255, 255, 255, 0.42);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow: 0 6px 20px -2px rgba(15, 23, 42, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+/* LEVEL 2 & SIGNATURE EXPLORE CARD GLASS (Job Cards, Role Cards, Company Cards, Dashboard Panels) */
+.rc-glass-level-2,
+.rc-card-glass {
+  background: rgba(255, 255, 255, 0.48);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: 0 10px 30px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  border-radius: 16px;
+  box-sizing: border-box;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+/* LEVEL 3 — STRONG GLASS (Major Modal Windows, Application Wizard, Focused Overlays) */
+.rc-glass-level-3 {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 20px 50px 0 rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+/* Glass Interactive Hover Modifiers */
+.rc-glass-hoverable {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.rc-glass-hoverable:hover,
+.rc-card-glass:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px 0 rgba(15, 23, 42, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  border-color: rgba(5, 150, 105, 0.35);
+}
+
+/* Glass Overlay Mask */
+.rc-glass-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: var(--rc-z-modal, 2000);
+  padding: 32px 16px;
+  overflow-y: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Company Card Hover Transition */
+.rc-company-card {
+  background: rgba(255, 255, 255, 0.48) !important;
+  backdrop-filter: blur(22px) !important;
+  -webkit-backdrop-filter: blur(22px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.75) !important;
+  box-shadow: 0 10px 30px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.85) !important;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, border-color 0.2s ease !important;
+}
+
+.rc-company-card:hover {
+  transform: translateY(-3px) !important;
+  border-color: rgba(5, 150, 105, 0.35) !important;
+  box-shadow: 0 16px 36px 0 rgba(15, 23, 42, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+}
+
+.rc-company-card:hover .rc-company-arrow {
+  background: #059669 !important;
+  color: #ffffff !important;
+  transform: scale(1.08);
+}
+
+/* Continuous Infinite Logo Marquee */
+@keyframes rcContinuousMarquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(var(--marquee-distance, -50%), 0, 0);
+  }
+}
+
+.rc-logo-marquee-banner {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 16px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  padding: 14px 24px;
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+  position: relative;
+  overflow: hidden;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.rc-logo-marquee-label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(203, 213, 225, 0.8);
+  padding-right: 20px;
+  z-index: 2;
+  white-space: nowrap;
+}
+
+.rc-logo-marquee-container {
+  overflow: hidden;
+  position: relative;
+  flex: 1;
+  display: flex;
+  max-width: 100%;
+  box-sizing: border-box;
+  mask-image: linear-gradient(to right, transparent 0%, black 48px, black calc(100% - 48px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 48px, black calc(100% - 48px), transparent 100%);
+}
+
+.rc-logo-marquee-track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  animation-name: rcContinuousMarquee;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-duration: 45s;
+  will-change: transform;
+}
+
+.rc-logo-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+.rc-marquee-group {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  padding-right: 48px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.rc-marquee-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.88;
+  cursor: pointer;
+  transition: opacity 180ms ease, transform 180ms ease, filter 180ms ease;
+  flex-shrink: 0;
+  user-select: none;
+  padding: 2px 4px;
+}
+
+.rc-marquee-item:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  filter: drop-shadow(0 2px 8px rgba(15, 23, 42, 0.08));
+}
+
+@media (max-width: 640px) {
+  .rc-logo-marquee-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+  }
+  .rc-logo-marquee-label {
+    border-right: none;
+    border-bottom: 1px solid rgba(203, 213, 225, 0.8);
+    padding-right: 0;
+    padding-bottom: 8px;
+    width: 100%;
+  }
+  .rc-logo-marquee-container {
+    width: 100%;
+    mask-image: linear-gradient(to right, transparent 0%, black 24px, black calc(100% - 24px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 24px, black calc(100% - 24px), transparent 100%);
+  }
+}
+
+

@@ -1,0 +1,338 @@
+/* =====================================================================
+   ROLECOMPASS — JOB APPLICATION WORKSPACE MODAL
+   Light application-sheet styling with a dedicated mobile layout.
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   SCROLL PERFORMANCE
+   The dialog surface is essentially opaque, so the backdrop-filter blurs
+   (32px on the sheet, 18px on the overlay) only cost frames without adding
+   real depth. Dropping them and isolating the scroll container keeps
+   scrolling smooth on low-end devices.
+   --------------------------------------------------------------------- */
+.rc-application-overlay {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: rgba(15, 23, 42, 0.62) !important;
+}
+
+.rc-application-modal {
+  background: #ffffff !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.rc-application-modal .rc-modal-header,
+.rc-application-modal .rc-modal-footer {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: #ffffff !important;
+}
+
+.rc-application-modal .rc-modal-body {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  contain: paint;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* --- Wizard stepper (desktop base) --- */
+.rc-app-stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.rc-app-stepper-track {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.rc-app-step {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: opacity 0.3s ease;
+}
+
+.rc-app-step-bar {
+  height: 5px;
+  border-radius: 3px;
+  transition: background 0.3s ease;
+}
+
+.rc-app-step-done .rc-app-step-bar,
+.rc-app-step-current .rc-app-step-bar {
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.25);
+}
+
+.rc-app-step-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Mobile-only step summary (hidden ≥768px via .rc-show-mobile) */
+.rc-app-stepper-mobile {
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rc-app-stepper-mobile-step {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #059669;
+}
+
+.rc-app-stepper-mobile-title {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* --- Mobile: full-screen application sheet --- */
+@media (max-width: 767px) {
+  .rc-application-overlay {
+    align-items: stretch !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    background: rgba(15, 23, 42, 0.5) !important;
+  }
+
+  .rc-application-modal {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    max-height: 100vh !important;
+    max-height: 100dvh !important;
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    animation: rcAppSheetEnter 0.34s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .rc-application-modal .rc-modal-header {
+    padding: 12px 16px !important;
+    background: rgba(255, 255, 255, 0.94) !important;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.9) !important;
+  }
+
+  .rc-application-modal .rc-modal-header .rc-h3 {
+    font-size: 1.02rem !important;
+    line-height: 1.25 !important;
+    padding-right: 8px;
+  }
+
+  .rc-application-modal .rc-modal-body {
+    padding: 14px 16px 20px !important;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .rc-application-modal .rc-modal-footer {
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+    background: rgba(255, 255, 255, 0.96) !important;
+    border-top: 1px solid rgba(226, 232, 240, 0.9) !important;
+  }
+
+  /* ---------- Hero banner ---------- */
+  .rc-application-modal .rc-app-hero {
+    padding: 14px !important;
+    border-radius: 16px !important;
+    margin-bottom: 16px !important;
+    gap: 12px !important;
+  }
+
+  .rc-application-modal .rc-app-hero-main {
+    flex: 1 1 100% !important;
+    min-width: 0 !important;
+    gap: 12px !important;
+  }
+
+  .rc-application-modal .rc-app-hero h3 {
+    font-size: 1.02rem !important;
+  }
+
+  .rc-application-modal .rc-app-hero-match {
+    flex: 1 1 100% !important;
+  }
+
+  .rc-application-modal .rc-app-hero-match > div {
+    width: 100% !important;
+    justify-content: center;
+  }
+
+  /* ---------- Stepper ---------- */
+  .rc-application-modal .rc-app-stepper {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .rc-application-modal .rc-app-stepper-mobile {
+    display: flex;
+  }
+
+  .rc-application-modal .rc-app-step-label {
+    display: none !important;
+  }
+
+  /* ---------- Cards & content blocks ---------- */
+  .rc-application-modal .rc-app-card {
+    padding: 14px !important;
+    border-radius: 14px !important;
+  }
+
+  .rc-application-modal .rc-app-dossier-row {
+    gap: 12px !important;
+  }
+
+  .rc-application-modal .rc-app-dossier-meta {
+    width: 100% !important;
+    text-align: left !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+  }
+
+  .rc-application-modal .rc-h2 {
+    font-size: 1.45rem !important;
+  }
+
+  /* ---------- Resume widget ---------- */
+  .rc-application-modal .rc-app-resume {
+    padding: 12px !important;
+    gap: 12px !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    margin-top: 14px !important;
+    overflow-wrap: anywhere;
+  }
+
+  .rc-application-modal .rc-app-resume-main {
+    gap: 12px !important;
+    align-items: flex-start !important;
+  }
+
+  .rc-application-modal .rc-app-resume-label {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* ---------- Step headers ---------- */
+  .rc-application-modal .rc-app-subhead,
+  .rc-application-modal .rc-app-pitch-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 6px !important;
+  }
+
+  /* ---------- Auth gate ---------- */
+  .rc-application-modal .rc-app-auth-card {
+    padding: 16px !important;
+    border-radius: 14px !important;
+  }
+
+  .rc-application-modal .rc-app-auth-row {
+    flex-wrap: wrap;
+    gap: 12px !important;
+  }
+
+  .rc-application-modal .rc-app-auth-row > div:nth-child(2) {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  /* ---------- Review rows (stack label over value) ---------- */
+  .rc-application-modal .rc-app-review-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 3px !important;
+  }
+
+  .rc-application-modal .rc-app-review-row > span:last-child {
+    text-align: left !important;
+    font-size: 0.9rem !important;
+    overflow-wrap: anywhere;
+  }
+
+  .rc-application-modal .rc-app-esign {
+    padding: 14px !important;
+    border-radius: 14px !important;
+  }
+
+  /* ---------- Footer ---------- */
+  .rc-application-modal .rc-app-footer-bar {
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+  }
+
+  .rc-application-modal .rc-app-footer-actions {
+    width: 100% !important;
+    gap: 10px !important;
+  }
+
+  .rc-application-modal .rc-app-footer-actions .rc-btn {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .rc-application-modal .rc-app-footer-bar > .rc-btn {
+    width: 100%;
+  }
+
+  /* ---------- Success step ---------- */
+  .rc-application-modal .rc-app-pipeline {
+    padding: 16px !important;
+  }
+
+  .rc-application-modal .rc-app-success-actions {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    width: 100%;
+    gap: 10px !important;
+  }
+
+  .rc-application-modal .rc-app-success-actions .rc-btn {
+    width: 100%;
+  }
+}
+
+@keyframes rcAppSheetEnter {
+  from {
+    opacity: 0;
+    transform: translateY(26px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Ultra-compact screens (<= 360px) */
+@media (max-width: 360px) {
+  .rc-application-modal .rc-app-step-bar {
+    height: 4px;
+  }
+
+  .rc-application-modal .rc-modal-header .rc-h3 {
+    font-size: 0.95rem !important;
+  }
+}

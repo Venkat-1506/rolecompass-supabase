@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="470" height="100" viewBox="0 0 470 100" role="img" aria-label="RoleCompass logo">
+
+<g transform="translate(10 5) scale(1.05)">
+  <path d="M20 12H55.5C72.8 12 84 22.6 84 37.1C84 48.8 76.6 57.4 64.8 60.2L91 88H64L42.5 65.5L20 92V12Z" fill="currentColor"/>
+  <path d="M20 39.5L55 39.5L73.2 25.1L55.4 51.6L36.2 67.5L47.2 49.5L20 39.5Z" fill="#FFFFFF"/>
+  <path d="M47.2 49.5L73.2 25.1L60.5 53.5L36.2 67.5L47.2 49.5Z" fill="#FFFFFF"/>
+</g>
+<text x="122" y="67" font-family="Inter, Avenir Next, Montserrat, Arial, sans-serif" font-size="47" font-weight="650" letter-spacing="-2.1" fill="#111827">RoleCompass</text>
+</svg>

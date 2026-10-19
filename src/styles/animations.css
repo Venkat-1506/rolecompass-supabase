@@ -1,0 +1,196 @@
+/* ROLECOMPASS ADVANCED MOTION & SCROLL ANIMATIONS */
+
+/* PAGE-TO-PAGE ROUTE TRANSITIONS
+   Directional entrance driven by route depth (see PageTransition.jsx).
+   NOTE: fill-mode is intentionally left at the default (none) so no transform
+   lingers after the animation — that keeps position:fixed children (modals,
+   drawers, bottom nav) correctly anchored once the page has settled. */
+.rc-page-transition {
+  animation: rcPageEnter 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rc-page-enter-forward {
+  animation-name: rcPageEnterForward;
+}
+
+.rc-page-enter-back {
+  animation-name: rcPageEnterBack;
+}
+
+.rc-page-enter-lateral {
+  animation-name: rcPageEnterLateral;
+}
+
+@keyframes rcPageEnterForward {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0) scale(0.988);
+    filter: blur(6px);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes rcPageEnterBack {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -16px, 0) scale(0.994);
+    filter: blur(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes rcPageEnterLateral {
+  0% {
+    opacity: 0;
+    transform: translate3d(16px, 8px, 0) scale(0.992);
+    filter: blur(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Legacy base entrance (still referenced by onboarding views) */
+@keyframes rcPageEnter {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 26px, 0) scale(0.985);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+/* Top-of-viewport sweep that plays on every navigation */
+.rc-page-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  z-index: 150;
+  transform-origin: left center;
+  background: linear-gradient(90deg, #059669, #34d399, #b8f23a);
+  box-shadow: 0 0 14px rgba(5, 150, 105, 0.6);
+  animation: rcPageProgress 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  pointer-events: none;
+}
+
+@keyframes rcPageProgress {
+  0% {
+    transform: scaleX(0);
+    opacity: 1;
+  }
+  65% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+
+/* Keyframes for scroll reveals */
+.rc-reveal {
+  opacity: 0;
+  transition-property: opacity, transform;
+  transition-duration: 0.75s;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+/* Slide from Left */
+.rc-reveal-slide-left {
+  transform: translateX(-60px);
+}
+
+/* Slide from Right */
+.rc-reveal-slide-right {
+  transform: translateX(60px);
+}
+
+/* Slide from Bottom (Up) */
+.rc-reveal-slide-up {
+  transform: translateY(45px);
+}
+
+/* Scale Up */
+.rc-reveal-scale-up {
+  transform: scale(0.92) translateY(20px);
+}
+
+/* Fade In */
+.rc-reveal-fade-in {
+  transform: translateY(0);
+}
+
+/* Active Visible State */
+.rc-reveal.rc-reveal-visible {
+  opacity: 1;
+  transform: translateX(0) translateY(0) scale(1);
+}
+
+/* Floating ambient movement for hero elements */
+@keyframes rcFloatSlow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(1deg);
+  }
+}
+
+@keyframes rcFloatReverse {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(8px) rotate(-1deg);
+  }
+}
+
+@keyframes rcGlowPulse {
+  0%, 100% {
+    box-shadow: 0 10px 30px rgba(5, 150, 105, 0.15);
+  }
+  50% {
+    box-shadow: 0 16px 45px rgba(5, 150, 105, 0.3);
+  }
+}
+
+.rc-animate-float {
+  animation: rcFloatSlow 6s ease-in-out infinite;
+}
+
+.rc-animate-float-reverse {
+  animation: rcFloatReverse 7s ease-in-out infinite;
+}
+
+.rc-animate-glow-pulse {
+  animation: rcGlowPulse 4s ease-in-out infinite;
+}
+
+/* Stagger delay utilities */
+.rc-delay-100 { transition-delay: 100ms; }
+.rc-delay-200 { transition-delay: 200ms; }
+.rc-delay-300 { transition-delay: 300ms; }
+.rc-delay-400 { transition-delay: 400ms; }
+.rc-delay-500 { transition-delay: 500ms; }
