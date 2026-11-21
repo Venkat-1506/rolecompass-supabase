@@ -16,6 +16,7 @@ import {
   validateDemoCredentials,
 } from '../../services/auth/demoAuthService.js';
 import {
+  accountFromAuthUser,
   getSupabaseSession,
   isSupabaseAuthEnabled,
   loadSupabaseAccount,
@@ -188,8 +189,14 @@ export function AppProviders({ children }) {
         return;
       }
 
-      const loaded = await loadSupabaseAccount(session.user);
-      if (cancelled || !loaded) return;
+      let loaded;
+      try {
+        loaded = await loadSupabaseAccount(session.user);
+      } catch (error) {
+        showToast('error', error?.message || 'Unable to load profile data.');
+        loaded = { account: accountFromAuthUser(session.user), preferences: null };
+      }
+      if (cancelled || !loaded?.account) return;
 
       setCurrentUser(loaded.account);
       setIsAuthenticated(true);

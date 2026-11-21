@@ -38,7 +38,7 @@ function defaultProfile(fullName, email, candidateTrack) {
   };
 }
 
-function accountFromAuthUser(authUser, overrides = {}) {
+export function accountFromAuthUser(authUser, overrides = {}) {
   if (!authUser) return null;
   const metadata = authUser.user_metadata || {};
   const email = normalizedEmail(authUser.email || metadata.email || '');
