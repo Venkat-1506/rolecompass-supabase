@@ -557,14 +557,18 @@ export function AppProviders({ children }) {
     return { success: true, role: canonical, roleFit: fit };
   };
 
-  const updateCandidateProfile = (partialProfile = {}) => {
-    if (!currentUser) return;
+  const buildUpdatedCandidateAccount = (partialProfile = {}) => {
+    if (!currentUser) return null;
     if (partialProfile?.roleProfile?.primaryTarget) {
       setTargetRoleTitle(partialProfile.roleProfile.primaryTarget);
       storageService.set('target_role', partialProfile.roleProfile.primaryTarget);
     }
-    const updated = {
+    const nextFullName =
+      String(partialProfile?.personal?.fullName || '').trim() || currentUser.fullName;
+
+    return {
       ...currentUser,
+      fullName: nextFullName,
       profile: {
         ...(currentUser.profile || {}),
         ...partialProfile,
@@ -580,7 +584,43 @@ export function AppProviders({ children }) {
         links: { ...(currentUser.profile?.links || {}), ...(partialProfile.links || {}) },
       },
     };
-    persistActiveUser(updated);
+  };
+
+  const updateCandidateProfile = (partialProfile = {}) => {
+    const updated = buildUpdatedCandidateAccount(partialProfile);
+    if (!updated) return null;
+    return persistActiveUser(updated);
+  };
+
+  const saveCandidateProfile = async (partialProfile = {}) => {
+    const updated = buildUpdatedCandidateAccount(partialProfile);
+    if (!updated) return { ok: false, error: 'No signed-in candidate was found.' };
+
+    const cleaned = sanitizeAccount(updated);
+    setCurrentUser(cleaned);
+    const saved = saveSession(cleaned);
+    if (saved?.ok === false) {
+      return {
+        ok: false,
+        error: 'Unable to persist session locally. Check browser storage settings.',
+      };
+    }
+    setAccounts((prev) => {
+      const next = prev.map((account) => (account.id === cleaned.id ? cleaned : account));
+      saveAccounts(next);
+      return next;
+    });
+
+    if (supabaseEnabled && !String(cleaned.id).startsWith('user-')) {
+      const result = await updateSupabaseAccount(cleaned, {
+        data: { learning_view_mode: storageService.get('learning_view_mode', 'focused') },
+      });
+      if (result?.ok === false) {
+        return { ok: false, error: result.error || 'Unable to save profile to Supabase.' };
+      }
+    }
+
+    return { ok: true, account: cleaned };
   };
 
   const updateProfile = updateCandidateProfile;
@@ -838,6 +878,7 @@ export function AppProviders({ children }) {
     updateOnboardingStep,
     setProfileMethod,
     updateCandidateProfile,
+    saveCandidateProfile,
     updateProfile,
     updateCandidate,
     setTargetRole,

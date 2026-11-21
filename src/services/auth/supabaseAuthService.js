@@ -1,5 +1,6 @@
 import { isSupabaseConfigured, supabase } from '../../lib/supabase.js';
 import { sanitizeAccount } from './demoAuthService.js';
+import { normalizeCandidateProfileContact } from '../profile/profileService.js';
 
 export function isSupabaseAuthEnabled() {
   return Boolean(isSupabaseConfigured && supabase);
@@ -18,6 +19,8 @@ function defaultProfile(fullName, email, candidateTrack) {
       email,
       phone: '',
       location: '',
+      githubUrl: '',
+      linkedinUrl: '',
       headline: `${String(candidateTrack || 'fresher')
         .charAt(0)
         .toUpperCase()}${String(candidateTrack || 'fresher').slice(1)} Candidate`,
@@ -62,6 +65,139 @@ function hasProfileData(value) {
   return value && typeof value === 'object' && Object.keys(value).length > 0;
 }
 
+function profileHasContactColumns(profile) {
+  return (
+    Boolean(profile) &&
+    ['phone', 'location', 'github_url', 'linkedin_url'].every((column) =>
+      Object.prototype.hasOwnProperty.call(profile, column),
+    )
+  );
+}
+
+function profileContactFromRow(profile, authUser, fallback = {}) {
+  const profileData = hasProfileData(profile?.profile_data) ? profile.profile_data : {};
+  const personal = profileData.personal || {};
+  const links = profileData.links || {};
+  const metadata = authUser?.user_metadata || {};
+  const hasColumn = (column) =>
+    Boolean(profile) && Object.prototype.hasOwnProperty.call(profile, column);
+
+  const contact = normalizeCandidateProfileContact({
+    fullName:
+      profile?.full_name ??
+      personal.fullName ??
+      metadata.full_name ??
+      metadata.fullName ??
+      fallback.fullName ??
+      '',
+    phone: hasColumn('phone') ? profile.phone : (personal.phone ?? ''),
+    location: hasColumn('location') ? profile.location : (personal.location ?? ''),
+    githubUrl: hasColumn('github_url')
+      ? profile.github_url
+      : (personal.githubUrl ?? links.github ?? ''),
+    linkedinUrl: hasColumn('linkedin_url')
+      ? profile.linkedin_url
+      : (personal.linkedinUrl ?? links.linkedin ?? ''),
+  });
+
+  return {
+    ...contact,
+    email: normalizedEmail(authUser?.email ?? personal.email ?? fallback.email ?? ''),
+  };
+}
+
+function buildProfileDataWithContact(profile, contact, email) {
+  const profileData = hasProfileData(profile?.profile_data) ? profile.profile_data : {};
+  const personal = { ...(profileData.personal || {}) };
+  const links = { ...(profileData.links || {}) };
+
+  personal.fullName = contact.fullName;
+  personal.email = email;
+  personal.phone = contact.phone;
+  personal.location = contact.location;
+  personal.githubUrl = contact.githubUrl;
+  personal.linkedinUrl = contact.linkedinUrl;
+  personal.portfolioUrl = contact.githubUrl;
+
+  links.github = contact.githubUrl;
+  links.linkedin = contact.linkedinUrl;
+  links.portfolio = contact.githubUrl;
+
+  return { ...profileData, personal, links };
+}
+
+async function requireSupabaseUser() {
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+  if (error) throw new Error(error.message);
+  if (!user) throw new Error('You must be signed in to manage your profile.');
+  return user;
+}
+
+export async function getCandidateProfileDetails() {
+  if (!isSupabaseAuthEnabled()) return null;
+
+  const authUser = await requireSupabaseUser();
+  const { data: profile, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', authUser.id)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+
+  return {
+    ...profileContactFromRow(profile, authUser),
+    hasContactColumns: profileHasContactColumns(profile),
+  };
+}
+
+export async function saveCandidateProfileDetails(contact) {
+  if (!isSupabaseAuthEnabled()) {
+    throw new Error('Supabase is not configured for this workspace.');
+  }
+
+  const authUser = await requireSupabaseUser();
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', authUser.id)
+    .maybeSingle();
+
+  if (profileError) throw new Error(profileError.message);
+
+  const normalized = normalizeCandidateProfileContact(contact);
+  const email = normalizedEmail(authUser.email);
+  const payload = {
+    full_name: normalized.fullName,
+    profile_data: buildProfileDataWithContact(profile, normalized, email),
+  };
+
+  if (profileHasContactColumns(profile)) {
+    payload.phone = normalized.phone;
+    payload.location = normalized.location;
+    payload.github_url = normalized.githubUrl;
+    payload.linkedin_url = normalized.linkedinUrl;
+  }
+
+  const { data: updated, error: updateError } = await supabase
+    .from('profiles')
+    .update(payload)
+    .eq('id', authUser.id)
+    .select('*')
+    .maybeSingle();
+
+  if (updateError) throw new Error(updateError.message);
+
+  const savedProfile = updated || { ...profile, ...payload };
+  return {
+    ...profileContactFromRow(savedProfile, authUser),
+    hasContactColumns: profileHasContactColumns(savedProfile),
+  };
+}
+
 export async function getSupabaseSession() {
   if (!isSupabaseAuthEnabled()) return null;
   const { data, error } = await supabase.auth.getSession();
@@ -83,15 +219,37 @@ export async function loadSupabaseAccount(authUser, overrides = {}) {
 
   const fallback = accountFromAuthUser(authUser, overrides);
   const email = normalizedEmail(authUser.email);
-  const fullName = profile?.full_name || fallback?.fullName || email.split('@')[0];
   const candidateTrack = profile?.candidate_track || fallback?.candidateTrack || 'fresher';
-  const profileData = hasProfileData(profile?.profile_data)
+  const baseProfileData = hasProfileData(profile?.profile_data)
     ? profile.profile_data
-    : defaultProfile(fullName, email, candidateTrack);
+    : defaultProfile(fallback?.fullName, email, candidateTrack);
+  const contact = profileContactFromRow(profile, authUser, {
+    fullName: fallback?.fullName,
+    email,
+  });
+  const profileData = {
+    ...baseProfileData,
+    personal: {
+      ...(baseProfileData.personal || {}),
+      fullName: contact.fullName,
+      email: contact.email,
+      phone: contact.phone,
+      location: contact.location,
+      githubUrl: contact.githubUrl,
+      linkedinUrl: contact.linkedinUrl,
+      portfolioUrl: contact.githubUrl,
+    },
+    links: {
+      ...(baseProfileData.links || {}),
+      github: contact.githubUrl,
+      linkedin: contact.linkedinUrl,
+      portfolio: contact.githubUrl,
+    },
+  };
 
   const account = sanitizeAccount({
     ...fallback,
-    fullName,
+    fullName: contact.fullName || fallback?.fullName || email.split('@')[0],
     candidateTrack,
     createdAt: profile?.created_at || fallback?.createdAt,
     profileMethod: profile?.profile_method || 'resume',
@@ -185,17 +343,39 @@ export async function updateSupabaseAccount(account, preferences = {}) {
     return { ok: false, error: 'Supabase is not configured for this workspace.' };
   }
 
+  const { data: existingProfile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', account.id)
+    .maybeSingle();
+
+  const accountProfile = hasProfileData(account.profile) ? account.profile : {};
+  const email = normalizedEmail(account.email);
+  const contact = profileContactFromRow(
+    { profile_data: accountProfile },
+    { email },
+    { fullName: account.fullName },
+  );
+  const payload = {
+    full_name: contact.fullName || account.fullName || '',
+    candidate_track: account.candidateTrack || 'fresher',
+    profile_method: account.profileMethod || 'resume',
+    profile_completed: Boolean(account.profileCompleted),
+    onboarding_step: account.onboardingStep || 'created',
+    profile_data: buildProfileDataWithContact({ profile_data: accountProfile }, contact, email),
+    resume_data: account.resume || {},
+  };
+
+  if (profileHasContactColumns(existingProfile)) {
+    payload.phone = contact.phone;
+    payload.location = contact.location;
+    payload.github_url = contact.githubUrl;
+    payload.linkedin_url = contact.linkedinUrl;
+  }
+
   const { error: profileError } = await supabase
     .from('profiles')
-    .update({
-      full_name: account.fullName || '',
-      candidate_track: account.candidateTrack || 'fresher',
-      profile_method: account.profileMethod || 'resume',
-      profile_completed: Boolean(account.profileCompleted),
-      onboarding_step: account.onboardingStep || 'created',
-      profile_data: account.profile || {},
-      resume_data: account.resume || {},
-    })
+    .update(payload)
     .eq('id', account.id);
 
   if (profileError) return { ok: false, error: profileError.message };

@@ -6,7 +6,9 @@ import { Stack } from '../../components/layout/Stack.jsx';
 import { Input } from '../../components/ui/Input.jsx';
 import { OnboardingProgress } from '../../components/onboarding/OnboardingProgress.jsx';
 import { useApp } from '../../app/providers/AppProviders.jsx';
-import { ShieldCheck, Sparkles, UserCheck, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Sparkles, UserCheck, ArrowRight, Eye, EyeOff } from 'lucide-react';
+
+const MIN_PASSWORD_LENGTH = 6;
 
 export function AccountDetails() {
   const navigate = useNavigate();
@@ -17,6 +19,10 @@ export function AccountDetails() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [error, setError] = useState('');
   const [infoMsg, setInfoMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,32 +40,39 @@ export function AccountDetails() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     setError('');
     setInfoMsg('');
 
+    const nextErrors = {};
     if (!fullName.trim()) {
-      setError('Full Name is required.');
-      return;
+      nextErrors.fullName = 'Full Name is required.';
     }
     if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) {
-      setError('Please enter a valid email address.');
-      return;
+      nextErrors.email = 'Please enter a valid email address.';
     }
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.');
-      return;
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      nextErrors.password = `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`;
     }
+    if (!confirmPassword) {
+      nextErrors.confirmPassword = 'Please confirm your password.';
+    } else if (password !== confirmPassword) {
+      nextErrors.confirmPassword = 'Passwords do not match.';
+    }
+
+    setFieldErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
 
     setIsSubmitting(true);
     try {
       const result = await registerAccount({
-        fullName,
-        email,
+        fullName: fullName.trim(),
+        email: email.trim(),
         password,
         accountType: path,
       });
 
-      setIsSubmitting(false);
       if (result?.requiresConfirmation) {
         setInfoMsg(
           `Account created for ${result.email}. Check your email to confirm, then sign in.`,
@@ -68,8 +81,9 @@ export function AccountDetails() {
       }
       navigate('/onboarding/created');
     } catch (err) {
-      setIsSubmitting(false);
       setError(err.message || 'An error occurred while creating your account.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -231,6 +245,7 @@ export function AccountDetails() {
                 {/* ERROR BANNER */}
                 {error && (
                   <div
+                    role="alert"
                     style={{
                       background: 'rgba(254, 242, 242, 0.95)',
                       border: '1px solid rgba(248, 113, 113, 0.8)',
@@ -262,28 +277,101 @@ export function AccountDetails() {
 
                 <Input
                   label="Full Name"
-                  placeholder="e.g. Arjun Verma"
+                  placeholder="Your full name"
                   value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
+                  onChange={(e) => {
+                    setFullName(e.target.value);
+                    setFieldErrors((previous) => ({ ...previous, fullName: '' }));
+                  }}
+                  errorText={fieldErrors.fullName}
+                  autoComplete="name"
                   isRequired
                 />
 
                 <Input
                   label="Email Address"
-                  placeholder="arjun@example.com"
+                  type="email"
+                  placeholder="you@example.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setFieldErrors((previous) => ({ ...previous, email: '' }));
+                  }}
+                  errorText={fieldErrors.email}
+                  autoComplete="email"
                   isRequired
                 />
 
                 <Input
                   label="Password"
-                  type="password"
-                  placeholder="At least 6 characters"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder={`At least ${MIN_PASSWORD_LENGTH} characters`}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setFieldErrors((previous) => ({
+                      ...previous,
+                      password: '',
+                      confirmPassword: '',
+                    }));
+                  }}
+                  errorText={fieldErrors.password}
                   autoComplete="new-password"
                   isRequired
+                  rightIcon={
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        padding: 0,
+                        cursor: 'pointer',
+                        color: 'var(--rc-color-muted-gray-500)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  }
+                />
+
+                <Input
+                  label="Confirm Password"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  placeholder="Re-enter your password"
+                  value={confirmPassword}
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value);
+                    setFieldErrors((previous) => ({ ...previous, confirmPassword: '' }));
+                  }}
+                  errorText={fieldErrors.confirmPassword}
+                  autoComplete="new-password"
+                  isRequired
+                  rightIcon={
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      aria-label={
+                        showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'
+                      }
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        padding: 0,
+                        cursor: 'pointer',
+                        color: 'var(--rc-color-muted-gray-500)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  }
                 />
 
                 {infoMsg && (

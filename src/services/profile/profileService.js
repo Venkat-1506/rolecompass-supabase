@@ -34,3 +34,75 @@ export function calculateProfileCompletion(candidate) {
 
   return Math.min(100, score);
 }
+
+function trimmed(value) {
+  return String(value ?? '').trim();
+}
+
+function parseProfileUrl(value) {
+  const candidate = trimmed(value);
+  if (!candidate) return null;
+
+  try {
+    const url = new URL(/^https?:\/\//i.test(candidate) ? candidate : `https://${candidate}`);
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') return null;
+    if (url.username || url.password) return null;
+    return url;
+  } catch {
+    return null;
+  }
+}
+
+function validGitHubUrl(value) {
+  const url = parseProfileUrl(value);
+  if (!url) return false;
+  const host = url.hostname.toLowerCase().replace(/^www\./, '');
+  const segments = url.pathname.split('/').filter(Boolean);
+  return host === 'github.com' && segments.length === 1;
+}
+
+function validLinkedInUrl(value) {
+  const url = parseProfileUrl(value);
+  if (!url) return false;
+  const host = url.hostname.toLowerCase().replace(/^www\./, '');
+  const segments = url.pathname.split('/').filter(Boolean);
+  const profileIndex = segments.findIndex((segment) => segment === 'in' || segment === 'pub');
+  return host === 'linkedin.com' && profileIndex >= 0 && Boolean(segments[profileIndex + 1]);
+}
+
+export function normalizeCandidateProfileContact(contact = {}) {
+  return {
+    fullName: trimmed(contact.fullName),
+    phone: trimmed(contact.phone),
+    location: trimmed(contact.location),
+    githubUrl: trimmed(contact.githubUrl),
+    linkedinUrl: trimmed(contact.linkedinUrl),
+  };
+}
+
+export function validateCandidateProfileContact(contact = {}) {
+  const value = normalizeCandidateProfileContact(contact);
+  const errors = {};
+
+  if (!value.fullName) {
+    errors.fullName = 'Full name is required.';
+  }
+
+  if (value.phone) {
+    const digits = value.phone.replace(/\D/g, '');
+    if (!/^\+?[0-9()\s.-]+$/.test(value.phone) || digits.length < 7 || digits.length > 15) {
+      errors.phone = 'Enter a valid phone number in international format.';
+    }
+  }
+
+  if (value.githubUrl && !validGitHubUrl(value.githubUrl)) {
+    errors.githubUrl = 'Enter a valid GitHub profile URL, for example https://github.com/username.';
+  }
+
+  if (value.linkedinUrl && !validLinkedInUrl(value.linkedinUrl)) {
+    errors.linkedinUrl =
+      'Enter a valid LinkedIn profile URL, for example https://www.linkedin.com/in/username.';
+  }
+
+  return errors;
+}

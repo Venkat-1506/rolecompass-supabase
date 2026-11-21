@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
 import { Section } from '../../components/layout/Section.jsx';
@@ -16,6 +16,14 @@ import { Progress } from '../../components/ui/Progress.jsx';
 import { ApplicationModal } from '../../components/forms/ApplicationModal.jsx';
 import { AtsTesterCard } from '../../components/cards/AtsTesterCard.jsx';
 import { useApp } from '../../app/providers/AppProviders.jsx';
+import {
+  getCandidateProfileDetails,
+  saveCandidateProfileDetails,
+} from '../../services/auth/supabaseAuthService.js';
+import {
+  normalizeCandidateProfileContact,
+  validateCandidateProfileContact,
+} from '../../services/profile/profileService.js';
 import {
   Save,
   Plus,
@@ -37,6 +45,8 @@ import {
   Mail,
   Phone,
   User,
+  Pencil,
+  X,
 } from 'lucide-react';
 import '../../styles/glass.css';
 
@@ -48,6 +58,8 @@ export function CandidateProfilePage() {
     currentUser,
     updateProfile,
     updateCandidateProfile,
+    saveCandidateProfile,
+    isSupabaseConfigured,
     jobs,
     calculateProfileCompletion,
   } = useApp();
@@ -56,111 +68,56 @@ export function CandidateProfilePage() {
   const targetJob = applyJobId ? jobs.find((j) => j.id === applyJobId) : null;
 
   const candidateName = candidateUser?.personal?.fullName || currentUser?.fullName || 'Candidate';
-  const initialResumeName =
-    candidateUser.resume?.fileName &&
-    candidateUser.resume?.fileName !== 'Arjun_Verma_Resume_2026.pdf'
-      ? candidateUser.resume.fileName
-      : `${candidateName.replace(/\s+/g, '_')}_Resume_2026.pdf`;
 
-  // Profile Form States
   const [personal, setPersonal] = useState({
-    fullName: candidateUser.personal?.fullName || candidateName,
-    title: candidateUser.personal?.title || 'Frontend Engineer & Full Stack Developer',
-    email: candidateUser.personal?.email || currentUser?.email || 'candidate@rolecompass.com',
-    phone: candidateUser.personal?.phone || '+91 98765 43210',
-    location: candidateUser.personal?.location || 'Bengaluru, Karnataka',
-    portfolioUrl:
-      candidateUser.personal?.portfolioUrl ||
-      candidateUser.personal?.githubUrl ||
-      'https://github.com',
-    bio:
-      candidateUser.personal?.bio ||
-      'Passionate engineer specialized in modern responsive web applications, state management, and accessible UI engineering.',
+    fullName: candidateUser?.personal?.fullName || currentUser?.fullName || '',
+    title: candidateUser?.personal?.title || '',
+    email: currentUser?.email || '',
+    phone: candidateUser?.personal?.phone || '',
+    location: candidateUser?.personal?.location || '',
+    githubUrl: candidateUser?.personal?.githubUrl || candidateUser?.personal?.portfolioUrl || '',
+    linkedinUrl: candidateUser?.personal?.linkedinUrl || '',
+    portfolioUrl: candidateUser?.personal?.portfolioUrl || '',
+    bio: candidateUser?.personal?.bio || '',
   });
 
-  const [education, setEducation] = useState(
-    candidateUser.education || [
-      {
-        id: 'edu-1',
-        degree: 'B.Tech in Computer Science & Engineering',
-        institution: 'Anna University',
-        year: '2026',
-        score: '8.8 / 10 CGPA',
-      },
-    ],
-  );
-
-  const [experience, setExperience] = useState(candidateUser.experience || []);
-  const [projects, setProjects] = useState(
-    candidateUser.projects || [
-      {
-        id: 'proj-1',
-        title: 'RoleCompass Career Navigation Studio',
-        tech: 'React, Vite, CSS Design Tokens, Context API',
-        link: 'https://github.com',
-        description:
-          'Full-stack job portal interface with local role-fit scoring, resume readiness checks, and profile editing.',
-      },
-    ],
-  );
-
-  const [skills, setSkills] = useState(
-    candidateUser.skills && candidateUser.skills.length > 0
-      ? candidateUser.skills
-      : [
-          'React',
-          'JavaScript',
-          'HTML/CSS',
-          'TypeScript',
-          'Node.js',
-          'Git',
-          'REST APIs',
-          'TailwindCSS',
-        ],
-  );
-
-  const [certifications, setCertifications] = useState(
-    candidateUser.certifications || [
-      {
-        id: 'cert-1',
-        name: 'AWS Certified Cloud Practitioner',
-        issuer: 'Amazon Web Services',
-        year: '2025',
-      },
-      {
-        id: 'cert-2',
-        name: 'Meta Certified Front-End Developer',
-        issuer: 'Meta / Coursera',
-        year: '2025',
-      },
-    ],
-  );
-
-  const [languages, setLanguages] = useState(
-    candidateUser.languages || [
-      { id: 'lang-1', name: 'English', level: 'Professional Working' },
-      { id: 'lang-2', name: 'Hindi', level: 'Native / Conversational' },
-      { id: 'lang-3', name: 'Tamil', level: 'Conversational' },
-    ],
-  );
+  const [education, setEducation] = useState(candidateUser?.education || []);
+  const [experience, setExperience] = useState(candidateUser?.experience || []);
+  const [projects, setProjects] = useState(candidateUser?.projects || []);
+  const [skills, setSkills] = useState(candidateUser?.skills || []);
+  const [certifications, setCertifications] = useState(candidateUser?.certifications || []);
+  const [languages, setLanguages] = useState(candidateUser?.languages || []);
 
   const [resume, setResume] = useState(() => {
-    const existing = candidateUser.resume || {};
-    const fileName =
-      existing.fileName && existing.fileName !== 'Arjun_Verma_Resume_2026.pdf'
-        ? existing.fileName
-        : initialResumeName;
+    const existing = candidateUser?.resume || {};
     return {
-      fileName,
-      fileType: existing.fileType || 'application/pdf',
-      fileSize: existing.fileSize || '240 KB',
-      uploadedDate: existing.uploadedDate || new Date().toISOString().split('T')[0],
-      parsedScore: existing.parsedScore || 92,
+      fileName: existing.fileName || '',
+      fileType: existing.fileType || '',
+      fileSize: existing.fileSize || '',
+      uploadedDate: existing.uploadedDate || '',
+      parsedScore: existing.parsedScore || 0,
     };
   });
 
+  const [contactDetails, setContactDetails] = useState(() => ({
+    fullName: candidateUser?.personal?.fullName || currentUser?.fullName || '',
+    email: currentUser?.email || '',
+    phone: candidateUser?.personal?.phone || '',
+    location: candidateUser?.personal?.location || '',
+    githubUrl: candidateUser?.personal?.githubUrl || candidateUser?.personal?.portfolioUrl || '',
+    linkedinUrl: candidateUser?.personal?.linkedinUrl || '',
+  }));
+  const [contactDraft, setContactDraft] = useState(contactDetails);
+  const [contactErrors, setContactErrors] = useState({});
+  const [isEditingContact, setIsEditingContact] = useState(false);
+  const [isLoadingContact, setIsLoadingContact] = useState(isSupabaseConfigured);
+  const [isSavingContact, setIsSavingContact] = useState(false);
+  const [contactLoadError, setContactLoadError] = useState('');
+  const [toast, setToast] = useState(null);
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+
+  const toastTimeoutRef = useRef(null);
   const [newSkill, setNewSkill] = useState('');
-  const [toastMsg, setToastMsg] = useState(null);
   const [selectedJobToApply, setSelectedJobToApply] = useState(null);
 
   // New item draft states
@@ -187,12 +144,144 @@ export function CandidateProfilePage() {
         skills,
         projects,
       })
-    : 88;
+    : 0;
 
-  const handleSave = () => {
-    const updater = updateCandidateProfile || updateProfile;
-    updater({
-      personal,
+  const showToast = useCallback((type, message) => {
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    setToast({ type, message });
+    toastTimeoutRef.current = setTimeout(() => setToast(null), 4000);
+  }, []);
+
+  const applyContactDetails = useCallback((details) => {
+    if (!details) return;
+    const next = normalizeCandidateProfileContact(details);
+    next.email = details.email || '';
+
+    setContactDetails(next);
+    setContactDraft(next);
+    setContactErrors({});
+    setPersonal((previous) => ({
+      ...previous,
+      fullName: next.fullName,
+      email: next.email,
+      phone: next.phone,
+      location: next.location,
+      githubUrl: next.githubUrl,
+      linkedinUrl: next.linkedinUrl,
+      portfolioUrl: next.githubUrl,
+    }));
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadContactDetails = async () => {
+      if (!isSupabaseConfigured) {
+        setIsLoadingContact(false);
+        return;
+      }
+
+      setIsLoadingContact(true);
+      setContactLoadError('');
+      try {
+        const details = await getCandidateProfileDetails();
+        if (active && details) applyContactDetails(details);
+      } catch (error) {
+        if (active) {
+          setContactLoadError(error?.message || 'Unable to load your profile details.');
+        }
+      } finally {
+        if (active) setIsLoadingContact(false);
+      }
+    };
+
+    loadContactDetails();
+    return () => {
+      active = false;
+    };
+  }, [applyContactDetails, isSupabaseConfigured]);
+
+  useEffect(
+    () => () => {
+      if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    },
+    [],
+  );
+
+  const handleContactChange = (field, value) => {
+    setContactDraft((previous) => ({ ...previous, [field]: value }));
+    setContactErrors((previous) => ({ ...previous, [field]: '' }));
+    setContactLoadError('');
+  };
+
+  const startContactEdit = () => {
+    setContactDraft({ ...contactDetails });
+    setContactErrors({});
+    setIsEditingContact(true);
+  };
+
+  const cancelContactEdit = () => {
+    setContactDraft({ ...contactDetails });
+    setContactErrors({});
+    setIsEditingContact(false);
+  };
+
+  const handleSaveContact = async () => {
+    if (isSavingContact) return;
+
+    const normalized = normalizeCandidateProfileContact(contactDraft);
+    const errors = validateCandidateProfileContact(normalized);
+    setContactErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
+    setIsSavingContact(true);
+    try {
+      const savedDetails = isSupabaseConfigured
+        ? await saveCandidateProfileDetails(normalized)
+        : { ...normalized, email: contactDetails.email };
+
+      applyContactDetails(savedDetails);
+      Promise.resolve(
+        updateCandidateProfile?.({
+          personal: {
+            fullName: normalized.fullName,
+            email: contactDetails.email,
+            phone: normalized.phone,
+            location: normalized.location,
+            githubUrl: normalized.githubUrl,
+            linkedinUrl: normalized.linkedinUrl,
+            portfolioUrl: normalized.githubUrl,
+          },
+          links: {
+            github: normalized.githubUrl,
+            linkedin: normalized.linkedinUrl,
+            portfolio: normalized.githubUrl,
+          },
+        }),
+      ).catch((error) => {
+        showToast('error', error?.message || 'Unable to refresh your profile locally.');
+      });
+      setIsEditingContact(false);
+      showToast('success', 'Profile details saved.');
+    } catch (error) {
+      showToast('error', error?.message || 'Unable to save your profile details.');
+    } finally {
+      setIsSavingContact(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (isSavingProfile) return;
+    setIsSavingProfile(true);
+
+    const payload = {
+      personal: {
+        ...personal,
+        ...contactDetails,
+        githubUrl: contactDetails.githubUrl,
+        linkedinUrl: contactDetails.linkedinUrl,
+        portfolioUrl: contactDetails.githubUrl,
+      },
       education,
       experience,
       projects,
@@ -200,13 +289,32 @@ export function CandidateProfilePage() {
       certifications,
       languages,
       resume,
-    });
+      links: {
+        github: contactDetails.githubUrl,
+        linkedin: contactDetails.linkedinUrl,
+        portfolio: contactDetails.githubUrl,
+      },
+    };
 
-    if (targetJob) {
-      setSelectedJobToApply(targetJob);
-    } else {
-      setToastMsg('Candidate profile saved to central repository!');
-      setTimeout(() => setToastMsg(null), 3000);
+    try {
+      if (saveCandidateProfile) {
+        const result = await saveCandidateProfile(payload);
+        if (result?.ok === false) {
+          throw new Error(result.error || 'Unable to save your profile.');
+        }
+      } else {
+        await (updateCandidateProfile || updateProfile)?.(payload);
+      }
+
+      if (targetJob) {
+        setSelectedJobToApply(targetJob);
+      } else {
+        showToast('success', 'Candidate profile saved.');
+      }
+    } catch (error) {
+      showToast('error', error?.message || 'Unable to save your profile.');
+    } finally {
+      setIsSavingProfile(false);
     }
   };
 
@@ -221,8 +329,7 @@ export function CandidateProfilePage() {
         status: 'uploaded',
       };
       setResume(updatedResume);
-      setToastMsg(`Uploaded ${file.name} locally in this demo.`);
-      setTimeout(() => setToastMsg(null), 3000);
+      showToast('info', `Selected ${file.name}. Resume upload is not available in this demo.`);
     }
   };
 
@@ -314,7 +421,7 @@ export function CandidateProfilePage() {
             >
               <div style={{ position: 'relative' }}>
                 <Avatar
-                  name={personal.fullName || candidateName}
+                  name={contactDetails.fullName || candidateName}
                   size="lg"
                   style={{
                     width: '84px',
@@ -342,20 +449,21 @@ export function CandidateProfilePage() {
               </div>
 
               <div>
-                <span className="rc-candidate-eyebrow">SINGLE SOURCE OF TRUTH</span>
+                <span className="rc-candidate-eyebrow">CANDIDATE PROFILE</span>
                 <h1
                   className="rc-candidate-h1"
                   style={{ fontSize: 'clamp(1.75rem, 2.5vw, 2.2rem)' }}
                 >
-                  {personal.fullName || candidateName}
+                  {contactDetails.fullName || candidateName}
                 </h1>
                 <p className="rc-candidate-subtitle" style={{ marginTop: '2px' }}>
-                  {personal.title || 'Software Engineer Candidate'} •{' '}
-                  {personal.location || 'Bengaluru, India'}
+                  {[personal.title, contactDetails.location || personal.location]
+                    .filter(Boolean)
+                    .join(' • ') || 'Candidate profile'}
                 </p>
                 <div style={{ display: 'flex', gap: '8px', marginTop: '8px', flexWrap: 'wrap' }}>
                   <Badge variant="success" icon={<ShieldCheck size={13} />}>
-                    Local Demo Profile
+                    {isSupabaseConfigured ? 'Supabase Profile' : 'Candidate Profile'}
                   </Badge>
                   <Badge variant="info">{profileCompletion}% Complete</Badge>
                 </div>
@@ -368,6 +476,8 @@ export function CandidateProfilePage() {
                 onClick={handleSave}
                 size="md"
                 leftIcon={<Save size={17} />}
+                isLoading={isSavingProfile}
+                isDisabled={isSavingContact}
               >
                 {targetJob ? `Save & Apply for ${targetJob.title}` : 'Save Profile Changes'}
               </Button>
@@ -430,14 +540,20 @@ export function CandidateProfilePage() {
                 </div>
               </div>
 
-              <Button variant="primary" onClick={handleSave} rightIcon={<ArrowRight size={16} />}>
+              <Button
+                variant="primary"
+                onClick={handleSave}
+                rightIcon={<ArrowRight size={16} />}
+                isLoading={isSavingProfile}
+                isDisabled={isSavingContact}
+              >
                 Proceed to Apply
               </Button>
             </div>
           )}
 
-          {toastMsg && (
-            <Toast type="success" message={toastMsg} onClose={() => setToastMsg(null)} />
+          {toast && (
+            <Toast type={toast.type} message={toast.message} onClose={() => setToast(null)} />
           )}
 
           {/* MAIN 2-COLUMN DETAILED PROFILE LAYOUT */}
@@ -459,63 +575,136 @@ export function CandidateProfilePage() {
                   }}
                 >
                   <Stack gap="4">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <div
-                        style={{
-                          padding: '8px',
-                          background: '#ecfdf5',
-                          borderRadius: '10px',
-                          color: '#059669',
-                        }}
-                      >
-                        <User size={20} />
+                    <Cluster justify="between" align="center">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div
+                          style={{
+                            padding: '8px',
+                            background: '#ecfdf5',
+                            borderRadius: '10px',
+                            color: '#059669',
+                          }}
+                        >
+                          <User size={20} />
+                        </div>
+                        <div>
+                          <h3 className="rc-h3" style={{ margin: 0, fontSize: '1.2rem' }}>
+                            Personal & Contact Information
+                          </h3>
+                          <p style={{ fontSize: '0.8rem', color: '#64748b', margin: '2px 0 0' }}>
+                            Stored in your Supabase profile and used to prefill application forms
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="rc-h3" style={{ margin: 0, fontSize: '1.2rem' }}>
-                          Personal & Contact Information
-                        </h3>
-                        <p style={{ fontSize: '0.8rem', color: '#64748b', margin: '2px 0 0' }}>
-                          Used to prefill local application forms in this demo
-                        </p>
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        {isEditingContact ? (
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={cancelContactEdit}
+                              leftIcon={<X size={15} />}
+                              isDisabled={isSavingContact}
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              variant="primary"
+                              size="sm"
+                              onClick={handleSaveContact}
+                              leftIcon={<Save size={15} />}
+                              isLoading={isSavingContact}
+                            >
+                              Save Changes
+                            </Button>
+                          </>
+                        ) : (
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={startContactEdit}
+                            leftIcon={<Pencil size={15} />}
+                            isDisabled={isLoadingContact}
+                          >
+                            Edit Profile
+                          </Button>
+                        )}
                       </div>
-                    </div>
+                    </Cluster>
+
+                    {isLoadingContact && (
+                      <p style={{ fontSize: '0.85rem', color: '#64748b', margin: 0 }}>
+                        Loading profile details…
+                      </p>
+                    )}
+                    {contactLoadError && (
+                      <p role="alert" style={{ fontSize: '0.85rem', color: '#991b1b', margin: 0 }}>
+                        {contactLoadError}
+                      </p>
+                    )}
 
                     <Grid cols="responsive-2" gap="4">
                       <Input
                         label="Full Name"
-                        value={personal.fullName || ''}
-                        onChange={(e) => setPersonal({ ...personal, fullName: e.target.value })}
+                        placeholder="Add your full name"
+                        value={isEditingContact ? contactDraft.fullName : contactDetails.fullName}
+                        onChange={(e) => handleContactChange('fullName', e.target.value)}
+                        errorText={contactErrors.fullName}
                         leftIcon={<User size={16} color="#64748b" />}
+                        isDisabled={!isEditingContact || isLoadingContact || isSavingContact}
+                        isRequired={isEditingContact}
+                      />
+                      <Input
+                        label="Email Address"
+                        value={contactDetails.email || ''}
+                        placeholder="Your Supabase email"
+                        helperText="Email is managed by Supabase Auth."
+                        leftIcon={<Mail size={16} color="#64748b" />}
+                        isDisabled
+                      />
+                      <Input
+                        label="Phone Number"
+                        placeholder="Add your phone number"
+                        value={isEditingContact ? contactDraft.phone : contactDetails.phone}
+                        onChange={(e) => handleContactChange('phone', e.target.value)}
+                        errorText={contactErrors.phone}
+                        leftIcon={<Phone size={16} color="#64748b" />}
+                        isDisabled={!isEditingContact || isLoadingContact || isSavingContact}
+                      />
+                      <Input
+                        label="Location / City"
+                        placeholder="Add your location"
+                        value={isEditingContact ? contactDraft.location : contactDetails.location}
+                        onChange={(e) => handleContactChange('location', e.target.value)}
+                        errorText={contactErrors.location}
+                        leftIcon={<MapPin size={16} color="#64748b" />}
+                        isDisabled={!isEditingContact || isLoadingContact || isSavingContact}
+                      />
+                      <Input
+                        label="GitHub Profile URL"
+                        placeholder="Add your GitHub profile"
+                        value={isEditingContact ? contactDraft.githubUrl : contactDetails.githubUrl}
+                        onChange={(e) => handleContactChange('githubUrl', e.target.value)}
+                        errorText={contactErrors.githubUrl}
+                        leftIcon={<Globe size={16} color="#64748b" />}
+                        isDisabled={!isEditingContact || isLoadingContact || isSavingContact}
+                      />
+                      <Input
+                        label="LinkedIn Profile URL"
+                        placeholder="Add your LinkedIn profile"
+                        value={
+                          isEditingContact ? contactDraft.linkedinUrl : contactDetails.linkedinUrl
+                        }
+                        onChange={(e) => handleContactChange('linkedinUrl', e.target.value)}
+                        errorText={contactErrors.linkedinUrl}
+                        leftIcon={<Globe size={16} color="#64748b" />}
+                        isDisabled={!isEditingContact || isLoadingContact || isSavingContact}
                       />
                       <Input
                         label="Professional Title / Persona"
                         value={personal.title || ''}
                         onChange={(e) => setPersonal({ ...personal, title: e.target.value })}
                         leftIcon={<Briefcase size={16} color="#64748b" />}
-                      />
-                      <Input
-                        label="Email Address"
-                        value={personal.email || ''}
-                        onChange={(e) => setPersonal({ ...personal, email: e.target.value })}
-                        leftIcon={<Mail size={16} color="#64748b" />}
-                      />
-                      <Input
-                        label="Phone Number"
-                        value={personal.phone || ''}
-                        onChange={(e) => setPersonal({ ...personal, phone: e.target.value })}
-                        leftIcon={<Phone size={16} color="#64748b" />}
-                      />
-                      <Input
-                        label="Location / City"
-                        value={personal.location || ''}
-                        onChange={(e) => setPersonal({ ...personal, location: e.target.value })}
-                        leftIcon={<MapPin size={16} color="#64748b" />}
-                      />
-                      <Input
-                        label="Portfolio / GitHub Link"
-                        value={personal.portfolioUrl || personal.githubUrl || ''}
-                        onChange={(e) => setPersonal({ ...personal, portfolioUrl: e.target.value })}
-                        leftIcon={<Globe size={16} color="#64748b" />}
                       />
                     </Grid>
 
@@ -1598,7 +1787,9 @@ export function CandidateProfilePage() {
                           margin: 0,
                         }}
                       >
-                        Uploaded {resume.uploadedDate || 'Recently'} • {resume.fileSize || '240 KB'}
+                        {resume.fileName
+                          ? `Uploaded ${resume.uploadedDate || 'date unavailable'} • ${resume.fileSize || 'size unavailable'}`
+                          : 'No resume uploaded'}
                       </p>
                     </div>
 
