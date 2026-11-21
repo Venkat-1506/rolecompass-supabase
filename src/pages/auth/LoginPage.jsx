@@ -6,6 +6,10 @@ import { Stack } from '../../components/layout/Stack.jsx';
 import { Input } from '../../components/ui/Input.jsx';
 import { useApp } from '../../app/providers/AppProviders.jsx';
 import { getStepRoute } from '../../app/router/RouteGuards.jsx';
+import {
+  accountFromAuthUser,
+  getSupabaseSession,
+} from '../../services/auth/supabaseAuthService.js';
 import { ArrowRight, Compass, ShieldCheck, Sparkles, FileText, Eye, EyeOff } from 'lucide-react';
 
 import heroFemaleCutout from '../../assets/images/public/hero-female-professional-cutout.png';
@@ -61,6 +65,22 @@ export function LoginPage() {
     if (isHydrating || !isAuthenticated || !currentUser) return;
     completeSignIn(currentUser);
   }, [completeSignIn, currentUser, isAuthenticated, isHydrating]);
+
+  useEffect(() => {
+    if (isHydrating || isAuthenticated || !isSupabaseConfigured) return undefined;
+
+    let cancelled = false;
+    getSupabaseSession()
+      .then((session) => {
+        if (cancelled || !session?.user || currentUser?.id === session.user.id) return;
+        completeSignIn(accountFromAuthUser(session.user));
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, [completeSignIn, currentUser?.id, isAuthenticated, isHydrating, isSupabaseConfigured]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
