@@ -6,7 +6,7 @@ export function Tabs({
   tabs = [], // [{ id, label, icon, badge }]
   activeTabId,
   onTabChange,
-  className = ''
+  className = '',
 }) {
   return (
     <div
@@ -21,7 +21,7 @@ export function Tabs({
         width: '100%',
         maxWidth: '100%',
         paddingBottom: '6px',
-        boxSizing: 'border-box'
+        boxSizing: 'border-box',
       }}
     >
       {tabs.map((tab) => {
@@ -46,20 +46,22 @@ export function Tabs({
               cursor: 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
-              transition: 'all 0.15s ease'
+              transition: 'all 0.15s ease',
             }}
           >
             {tab.icon && <span style={{ marginRight: '6px' }}>{tab.icon}</span>}
             <span>{tab.label}</span>
             {tab.badge !== undefined && (
-              <span style={{
-                marginLeft: '6px',
-                fontSize: '0.74rem',
-                opacity: isActive ? 0.95 : 0.8,
-                background: isActive ? 'rgba(255, 255, 255, 0.2)' : 'rgba(241, 245, 249, 0.9)',
-                padding: '1px 6px',
-                borderRadius: '6px'
-              }}>
+              <span
+                style={{
+                  marginLeft: '6px',
+                  fontSize: '0.74rem',
+                  opacity: isActive ? 0.95 : 0.8,
+                  background: isActive ? 'rgba(255, 255, 255, 0.2)' : 'rgba(241, 245, 249, 0.9)',
+                  padding: '1px 6px',
+                  borderRadius: '6px',
+                }}
+              >
                 {tab.badge}
               </span>
             )}

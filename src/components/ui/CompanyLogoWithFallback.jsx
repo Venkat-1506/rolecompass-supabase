@@ -9,7 +9,7 @@ export function CompanyLogoWithFallback({
   size = 'md', // sm (32px) | md (46px) | lg (60px)
   variant = 'circle', // circle | square | transparent
   className = '',
-  style = {}
+  style = {},
 }) {
   const [hasError, setHasError] = useState(false);
 
@@ -22,13 +22,16 @@ export function CompanyLogoWithFallback({
   const initials = assetInfo?.fallbackInitials || getInitials(companyName);
 
   // Identify wide wordmark logos that need dedicated scaling & aspect compensation
-  const isWideLogo = ['samsung', 'mahindra', 'freshworks', 'zomato', 'oracle', 'deloitte'].includes(String(companyId).toLowerCase());
+  const isWideLogo = ['samsung', 'mahindra', 'freshworks', 'zomato', 'oracle', 'deloitte'].includes(
+    String(companyId).toLowerCase(),
+  );
 
   // Card Icon Dimensions
   const cardHeight = size === 'sm' ? 32 : size === 'lg' ? 60 : 46;
-  const cardWidth = (isWideLogo && variant === 'square') 
-    ? Math.round(cardHeight * 1.25) // e.g. 58px for md, 40px for sm, 75px for lg
-    : cardHeight;
+  const cardWidth =
+    isWideLogo && variant === 'square'
+      ? Math.round(cardHeight * 1.25) // e.g. 58px for md, 40px for sm, 75px for lg
+      : cardHeight;
 
   // Running bar / transparent dimensions
   const transparentHeight = size === 'sm' ? 28 : size === 'lg' ? 44 : 36;
@@ -38,7 +41,7 @@ export function CompanyLogoWithFallback({
   if (variant === 'transparent') {
     if (logoSrc && !hasError) {
       return (
-        <div 
+        <div
           className={cn('rc-marquee-logo-wrapper', className)}
           style={{
             display: 'flex',
@@ -47,7 +50,7 @@ export function CompanyLogoWithFallback({
             height: `${transparentHeight}px`,
             maxWidth: size === 'sm' ? '140px' : '220px',
             flexShrink: 0,
-            ...style
+            ...style,
           }}
         >
           <img
@@ -61,7 +64,7 @@ export function CompanyLogoWithFallback({
               width: 'auto',
               objectFit: 'contain',
               display: 'block',
-              transform: isWideLogo ? 'scale(1.05)' : 'none'
+              transform: isWideLogo ? 'scale(1.05)' : 'none',
             }}
           />
         </div>
@@ -86,7 +89,7 @@ export function CompanyLogoWithFallback({
           letterSpacing: '0.02em',
           border: '1px solid rgba(226, 232, 240, 0.9)',
           flexShrink: 0,
-          ...style
+          ...style,
         }}
       >
         <span>{initials}</span>
@@ -112,7 +115,7 @@ export function CompanyLogoWithFallback({
         userSelect: 'none',
         flexShrink: 0,
         padding: isWideLogo ? '3px 5px' : '5px',
-        ...style
+        ...style,
       }}
       title={companyName}
     >
@@ -126,7 +129,7 @@ export function CompanyLogoWithFallback({
             height: isWideLogo ? '85%' : '100%',
             objectFit: 'contain',
             transform: isWideLogo ? 'scale(1.15)' : 'none',
-            transformOrigin: 'center center'
+            transformOrigin: 'center center',
           }}
         />
       ) : (

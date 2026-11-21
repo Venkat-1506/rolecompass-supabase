@@ -68,7 +68,9 @@
   font-size: 0.875rem;
   font-weight: 600;
   color: #475569;
-  transition: color 0.15s ease, transform 0.15s ease;
+  transition:
+    color 0.15s ease,
+    transform 0.15s ease;
 }
 
 .rc-footer-link:hover {

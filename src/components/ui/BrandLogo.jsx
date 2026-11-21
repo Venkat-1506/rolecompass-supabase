@@ -25,7 +25,7 @@ export function BrandLogo({
   height = '34px',
   className = '',
   style = {},
-  alt = 'RoleCompass'
+  alt = 'RoleCompass',
 }) {
   let src = horizontalLogo;
 
@@ -66,7 +66,7 @@ export function BrandLogo({
         objectFit: 'contain',
         display: 'inline-block',
         verticalAlign: 'middle',
-        ...style
+        ...style,
       }}
     />
   );

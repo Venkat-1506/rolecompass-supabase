@@ -8,15 +8,15 @@ import { ApplicationModal } from '../../components/forms/ApplicationModal.jsx';
 import { EmptyState } from '../../components/ui/EmptyState.jsx';
 import { ScrollReveal } from '../../components/ui/ScrollReveal.jsx';
 import { useApp } from '../../app/providers/AppProviders.jsx';
-import { fuzzyMatch } from '../../utils/helpers.js';
-import { Search, MapPin, RotateCcw, ChevronDown, SlidersHorizontal, X, Check } from 'lucide-react';
+import { fuzzyMatch, isSalaryWithinCap } from '../../utils/helpers.js';
+import { Search, MapPin, RotateCcw, ChevronDown, SlidersHorizontal, X } from 'lucide-react';
 
 // Deterministic balanced company interleaving to produce a rich mixed job feed
 function getMixedJobFeed(jobList) {
   if (!jobList || jobList.length <= 1) return jobList || [];
 
   const companyGroups = new Map();
-  jobList.forEach(job => {
+  jobList.forEach((job) => {
     const cId = job.companyId || 'other';
     if (!companyGroups.has(cId)) {
       companyGroups.set(cId, []);
@@ -26,7 +26,7 @@ function getMixedJobFeed(jobList) {
 
   const groupArrays = Array.from(companyGroups.values());
   let maxLen = 0;
-  groupArrays.forEach(arr => {
+  groupArrays.forEach((arr) => {
     if (arr.length > maxLen) maxLen = arr.length;
   });
 
@@ -48,15 +48,15 @@ export function ExplorePage() {
 
   const [query, setQuery] = useState(() => searchParams.get('search') || '');
   const [location, setLocation] = useState(() => searchParams.get('location') || '');
-  
+
   // Filter States
   const [workMode, setWorkMode] = useState('');
   const [employmentType, setEmploymentType] = useState('');
   const [category, setCategory] = useState(() => searchParams.get('category') || '');
   const [experience, setExperience] = useState('');
-  const [maxSalaryLimit, setMaxSalaryLimit] = useState(50); // Slider in Lakhs
+  const [maxSalaryLimit, setMaxSalaryLimit] = useState(60);
   const [sortBy, setSortBy] = useState('newest');
-  
+
   const [selectedJobToApply, setSelectedJobToApply] = useState(null);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
@@ -119,33 +119,54 @@ export function ExplorePage() {
     const cat = (category || '').toLowerCase().trim();
     const exp = (experience || '').toLowerCase().trim();
 
-    return safeJobs.filter(j => {
+    return safeJobs.filter((j) => {
       if (!j) return false;
-      const company = safeCompanies.find(c => c && c.id === j.companyId) || {};
+      const company = safeCompanies.find((c) => c && c.id === j.companyId) || {};
       const companyName = company.name || '';
 
       const titleMatch = !q || fuzzyMatch(j.title, q);
       const companyMatch = !q || fuzzyMatch(companyName, q);
       const categoryMatch = !q || fuzzyMatch(j.category, q) || fuzzyMatch(j.subcategory, q);
-      const skillsMatch = !q || (Array.isArray(j.skills) && j.skills.some(s => s && fuzzyMatch(s, q)));
-      
+      const skillsMatch =
+        !q || (Array.isArray(j.skills) && j.skills.some((s) => s && fuzzyMatch(s, q)));
+
       const matchQuery = !q || titleMatch || companyMatch || categoryMatch || skillsMatch;
 
       const matchLoc = !loc || (j.location && String(j.location).toLowerCase().includes(loc));
       const matchWM = !wm || (j.workMode && String(j.workMode).toLowerCase() === wm);
-      const matchEmpType = !empType || (j.employmentType && String(j.employmentType).toLowerCase().includes(empType));
-      const matchCat = !cat || (() => {
-        const jc = (j.category || '').toLowerCase().trim();
-        const target = cat.toLowerCase().trim();
-        if (jc === target) return true;
-        const sub = (j.subcategory || '').toLowerCase().trim();
-        return sub === target || sub.includes(target);
-      })();
-      const matchExp = !exp || (j.experience && String(j.experience).toLowerCase().includes(exp)) || (j.experienceLevel && String(j.experienceLevel).toLowerCase().includes(exp)) || (j.experienceRequirement && String(j.experienceRequirement).toLowerCase().includes(exp));
+      const matchEmpType =
+        !empType || (j.employmentType && String(j.employmentType).toLowerCase().includes(empType));
+      const matchCat =
+        !cat ||
+        (() => {
+          const jc = (j.category || '').toLowerCase().trim();
+          const target = cat.toLowerCase().trim();
+          if (jc === target) return true;
+          const sub = (j.subcategory || '').toLowerCase().trim();
+          return sub === target || sub.includes(target);
+        })();
+      const matchExp =
+        !exp ||
+        (j.experience && String(j.experience).toLowerCase().includes(exp)) ||
+        (j.experienceLevel && String(j.experienceLevel).toLowerCase().includes(exp)) ||
+        (j.experienceRequirement && String(j.experienceRequirement).toLowerCase().includes(exp));
+      const matchSalary = isSalaryWithinCap(j.salary, maxSalaryLimit);
 
-      return matchQuery && matchLoc && matchWM && matchEmpType && matchCat && matchExp;
+      return (
+        matchQuery && matchLoc && matchWM && matchEmpType && matchCat && matchExp && matchSalary
+      );
     });
-  }, [jobs, companies, query, location, workMode, employmentType, category, experience]);
+  }, [
+    jobs,
+    companies,
+    query,
+    location,
+    workMode,
+    employmentType,
+    category,
+    experience,
+    maxSalaryLimit,
+  ]);
 
   // Sort and balance filtered jobs
   const sortedJobs = useMemo(() => {
@@ -177,29 +198,38 @@ export function ExplorePage() {
     setEmploymentType('');
     setCategory('');
     setExperience('');
-    setMaxSalaryLimit(50);
+    setMaxSalaryLimit(60);
     setSortBy('newest');
     setSearchParams({});
     setCurrentPage(1);
   };
 
   // Helper counts for filter badges
-  const getWorkModeCount = (wm) => jobs.filter(j => j.workMode && j.workMode.toLowerCase() === wm).length;
-  const getCategoryCount = (cat) => jobs.filter(j => {
-    if (!j.category) return false;
-    const jc = (j.category || '').toLowerCase().trim();
-    const target = cat.toLowerCase().trim();
-    return jc === target;
-  }).length;
+  const getWorkModeCount = (wm) =>
+    jobs.filter((j) => j.workMode && j.workMode.toLowerCase() === wm).length;
+  const getCategoryCount = (cat) =>
+    jobs.filter((j) => {
+      if (!j.category) return false;
+      const jc = (j.category || '').toLowerCase().trim();
+      const target = cat.toLowerCase().trim();
+      return jc === target;
+    }).length;
 
   return (
     <Section py="8">
       <PageContainer size="lg">
         <Stack gap="6">
-
           {/* 1. PAGE HEADER (CLEAN & UNCLUTTERED, NO SECONDARY NAV TABS) */}
           <div>
-            <h1 className="rc-h1" style={{ fontSize: '2.35rem', color: '#0f172a', fontWeight: '800', letterSpacing: '-0.025em' }}>
+            <h1
+              className="rc-h1"
+              style={{
+                fontSize: '2.35rem',
+                color: '#0f172a',
+                fontWeight: '800',
+                letterSpacing: '-0.025em',
+              }}
+            >
               Explore Career Opportunities
             </h1>
             <p style={{ color: '#475569', fontSize: '1.05rem', marginTop: '6px' }}>
@@ -208,25 +238,53 @@ export function ExplorePage() {
           </div>
 
           {/* 2. COMPACT GLASS SEARCH WORKSPACE CONTAINER */}
-          <div style={{
-            background: 'rgba(255, 255, 255, 0.45)',
-            backdropFilter: 'blur(24px)',
-            WebkitBackdropFilter: 'blur(24px)',
-            borderRadius: '18px',
-            border: '1px solid rgba(255, 255, 255, 0.65)',
-            boxShadow: '0 18px 50px rgba(40, 70, 90, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.95)',
-            padding: '22px 26px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '16px',
-            width: '100%',
-            maxWidth: '100%',
-            boxSizing: 'border-box'
-          }}>
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.45)',
+              backdropFilter: 'blur(24px)',
+              WebkitBackdropFilter: 'blur(24px)',
+              borderRadius: '18px',
+              border: '1px solid rgba(255, 255, 255, 0.65)',
+              boxShadow:
+                '0 18px 50px rgba(40, 70, 90, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.95)',
+              padding: '22px 26px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px',
+              width: '100%',
+              maxWidth: '100%',
+              boxSizing: 'border-box',
+            }}
+          >
             {/* Top Search Controls Bar */}
-            <form onSubmit={(e) => { e.preventDefault(); setCurrentPage(1); }} style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '12px', width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                setCurrentPage(1);
+              }}
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                gap: '12px',
+                width: '100%',
+                maxWidth: '100%',
+                boxSizing: 'border-box',
+              }}
+            >
               {/* Search Title/Company Input */}
-              <div style={{ flex: '2 1 240px', display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(255, 255, 255, 0.65)', padding: '10px 14px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.85)' }}>
+              <div
+                style={{
+                  flex: '2 1 240px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  background: 'rgba(255, 255, 255, 0.65)',
+                  padding: '10px 14px',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(255, 255, 255, 0.85)',
+                }}
+              >
                 <Search size={18} color="#64748b" />
                 <input
                   type="text"
@@ -240,13 +298,24 @@ export function ExplorePage() {
                     fontSize: '0.92rem',
                     background: 'transparent',
                     color: '#0f172a',
-                    fontWeight: '500'
+                    fontWeight: '500',
                   }}
                 />
               </div>
 
               {/* Location Input */}
-              <div style={{ flex: '1 1 180px', display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(255, 255, 255, 0.65)', padding: '10px 14px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.85)' }}>
+              <div
+                style={{
+                  flex: '1 1 180px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  background: 'rgba(255, 255, 255, 0.65)',
+                  padding: '10px 14px',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(255, 255, 255, 0.85)',
+                }}
+              >
                 <MapPin size={18} color="#64748b" />
                 <input
                   type="text"
@@ -260,16 +329,30 @@ export function ExplorePage() {
                     fontSize: '0.92rem',
                     background: 'transparent',
                     color: '#0f172a',
-                    fontWeight: '500'
+                    fontWeight: '500',
                   }}
                 />
               </div>
 
               {/* Sort By Dropdown */}
-              <div style={{ position: 'relative', minWidth: '170px', display: 'flex', alignItems: 'center', background: 'rgba(255, 255, 255, 0.65)', padding: '10px 14px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.85)' }}>
+              <div
+                style={{
+                  position: 'relative',
+                  minWidth: '170px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  background: 'rgba(255, 255, 255, 0.65)',
+                  padding: '10px 14px',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(255, 255, 255, 0.85)',
+                }}
+              >
                 <select
                   value={sortBy}
-                  onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}
+                  onChange={(e) => {
+                    setSortBy(e.target.value);
+                    setCurrentPage(1);
+                  }}
                   style={{
                     border: 'none',
                     outline: 'none',
@@ -280,13 +363,17 @@ export function ExplorePage() {
                     cursor: 'pointer',
                     width: '100%',
                     appearance: 'none',
-                    paddingRight: '20px'
+                    paddingRight: '20px',
                   }}
                 >
                   <option value="newest">Sort: Newest First</option>
                   <option value="fit">Sort: RoleCompass Fit</option>
                 </select>
-                <ChevronDown size={15} color="#64748b" style={{ position: 'absolute', right: '12px', pointerEvents: 'none' }} />
+                <ChevronDown
+                  size={15}
+                  color="#64748b"
+                  style={{ position: 'absolute', right: '12px', pointerEvents: 'none' }}
+                />
               </div>
 
               {/* Lime Accent Search Button */}
@@ -301,9 +388,10 @@ export function ExplorePage() {
                   borderRadius: '10px',
                   border: '1px solid rgba(255, 255, 255, 0.4)',
                   cursor: 'pointer',
-                  boxShadow: '0 4px 18px rgba(184, 242, 58, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.6)',
+                  boxShadow:
+                    '0 4px 18px rgba(184, 242, 58, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.6)',
                   transition: 'all 0.2s ease',
-                  fontFamily: 'Plus Jakarta Sans, sans-serif'
+                  fontFamily: 'Plus Jakarta Sans, sans-serif',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-1px)';
@@ -319,8 +407,17 @@ export function ExplorePage() {
             </form>
 
             {/* Bottom Quick Filter Chips Row & Job Count */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '14px', paddingTop: '12px', borderTop: '1px solid rgba(226, 232, 240, 0.6)' }}>
-              
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '14px',
+                paddingTop: '12px',
+                borderTop: '1px solid rgba(226, 232, 240, 0.6)',
+              }}
+            >
               {/* Quick Filters */}
               <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px' }}>
                 {[
@@ -329,9 +426,12 @@ export function ExplorePage() {
                   { label: 'Hybrid', wm: 'hybrid', emp: '' },
                   { label: 'On-Site', wm: 'on-site', emp: '' },
                   { label: 'Full Time', wm: '', emp: 'full-time' },
-                  { label: 'Internship', wm: '', emp: 'internship' }
-                ].map(f => {
-                  const isSelected = (!f.wm && !f.emp && !workMode && !employmentType) || (f.wm && workMode === f.wm) || (f.emp && employmentType === f.emp);
+                  { label: 'Internship', wm: '', emp: 'internship' },
+                ].map((f) => {
+                  const isSelected =
+                    (!f.wm && !f.emp && !workMode && !employmentType) ||
+                    (f.wm && workMode === f.wm) ||
+                    (f.emp && employmentType === f.emp);
                   return (
                     <button
                       key={f.label}
@@ -346,11 +446,13 @@ export function ExplorePage() {
                         borderRadius: '8px',
                         fontSize: '0.82rem',
                         fontWeight: isSelected ? '700' : '600',
-                        border: isSelected ? '1px solid #B8F23A' : '1px solid rgba(255, 255, 255, 0.7)',
+                        border: isSelected
+                          ? '1px solid #B8F23A'
+                          : '1px solid rgba(255, 255, 255, 0.7)',
                         background: isSelected ? '#B8F23A' : 'rgba(255, 255, 255, 0.5)',
                         color: '#0f172a',
                         cursor: 'pointer',
-                        transition: 'all 0.2s ease'
+                        transition: 'all 0.2s ease',
                       }}
                     >
                       {f.label}
@@ -370,27 +472,35 @@ export function ExplorePage() {
                     padding: '6px 14px',
                     borderRadius: '8px',
                     fontSize: '0.82rem',
-                    fontWeight: (category || experience) ? '700' : '600',
-                    border: (category || experience) ? '1px solid #059669' : '1px solid rgba(255, 255, 255, 0.7)',
-                    background: (category || experience) ? 'rgba(236, 253, 245, 0.95)' : 'rgba(255, 255, 255, 0.5)',
-                    color: (category || experience) ? '#059669' : '#0f172a',
-                    cursor: 'pointer'
+                    fontWeight: category || experience ? '700' : '600',
+                    border:
+                      category || experience
+                        ? '1px solid #059669'
+                        : '1px solid rgba(255, 255, 255, 0.7)',
+                    background:
+                      category || experience
+                        ? 'rgba(236, 253, 245, 0.95)'
+                        : 'rgba(255, 255, 255, 0.5)',
+                    color: category || experience ? '#059669' : '#0f172a',
+                    cursor: 'pointer',
                   }}
                 >
                   <SlidersHorizontal size={14} /> More Filters
                   {(category || experience) && (
-                    <span style={{
-                      background: '#059669',
-                      color: '#ffffff',
-                      fontSize: '0.68rem',
-                      fontWeight: '800',
-                      borderRadius: '50%',
-                      width: '16px',
-                      height: '16px',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
+                    <span
+                      style={{
+                        background: '#059669',
+                        color: '#ffffff',
+                        fontSize: '0.68rem',
+                        fontWeight: '800',
+                        borderRadius: '50%',
+                        width: '16px',
+                        height: '16px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
                       {(category ? 1 : 0) + (experience ? 1 : 0)}
                     </span>
                   )}
@@ -399,12 +509,34 @@ export function ExplorePage() {
 
               {/* Right Side Job Count Indicator */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.86rem', color: '#475569', fontWeight: '600' }}>
-                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#059669' }} />
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    fontSize: '0.86rem',
+                    color: '#475569',
+                    fontWeight: '600',
+                  }}
+                >
+                  <span
+                    style={{
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      background: '#059669',
+                    }}
+                  />
                   {sortedJobs.length} jobs found
                 </div>
 
-                {(query || location || workMode || employmentType || category || experience) && (
+                {(query ||
+                  location ||
+                  workMode ||
+                  employmentType ||
+                  category ||
+                  experience ||
+                  maxSalaryLimit < 60) && (
                   <button
                     type="button"
                     onClick={resetFilters}
@@ -418,59 +550,106 @@ export function ExplorePage() {
                       display: 'flex',
                       alignItems: 'center',
                       gap: '4px',
-                      marginLeft: '8px'
+                      marginLeft: '8px',
                     }}
                   >
                     <RotateCcw size={13} /> Clear
                   </button>
                 )}
               </div>
-
             </div>
           </div>
 
           {/* 3. MAIN DISCOVERY WORKSPACE: FILTER SIDEBAR RAIL + JOBS GRID */}
           <div className="rc-explore-workspace">
-            
             {/* DESKTOP GLASS FILTER RAIL (SIDEBAR) */}
-            <aside className="rc-hide-mobile rc-explore-sidebar" style={{
-              width: '260px',
-              maxWidth: '100%',
-              flexShrink: 0,
-              background: 'rgba(255, 255, 255, 0.38)',
-              backdropFilter: 'blur(22px)',
-              WebkitBackdropFilter: 'blur(22px)',
-              border: '1px solid rgba(255, 255, 255, 0.55)',
-              borderRadius: '16px',
-              padding: '20px',
-              boxShadow: '0 8px 32px 0 rgba(15, 23, 42, 0.04)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '20px',
-              boxSizing: 'border-box',
-              height: 'fit-content'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '12px', borderBottom: '1px solid rgba(203, 213, 225, 0.5)' }}>
-                <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#0f172a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <aside
+              className="rc-hide-mobile rc-explore-sidebar"
+              style={{
+                width: '260px',
+                maxWidth: '100%',
+                flexShrink: 0,
+                background: 'rgba(255, 255, 255, 0.38)',
+                backdropFilter: 'blur(22px)',
+                WebkitBackdropFilter: 'blur(22px)',
+                border: '1px solid rgba(255, 255, 255, 0.55)',
+                borderRadius: '16px',
+                padding: '20px',
+                boxShadow: '0 8px 32px 0 rgba(15, 23, 42, 0.04)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '20px',
+                boxSizing: 'border-box',
+                height: 'fit-content',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  paddingBottom: '12px',
+                  borderBottom: '1px solid rgba(203, 213, 225, 0.5)',
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: '0.95rem',
+                    fontWeight: '800',
+                    color: '#0f172a',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                  }}
+                >
                   <SlidersHorizontal size={16} color="#059669" /> Filters
                 </div>
-                <button onClick={resetFilters} style={{ fontSize: '0.78rem', fontWeight: '700', color: '#059669', background: 'none', border: 'none', cursor: 'pointer' }}>
+                <button
+                  onClick={resetFilters}
+                  style={{
+                    fontSize: '0.78rem',
+                    fontWeight: '700',
+                    color: '#059669',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
+                >
                   Reset
                 </button>
               </div>
 
               {/* Section 1: Work Mode */}
               <div>
-                <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#0f172a', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <div
+                  style={{
+                    fontSize: '0.82rem',
+                    fontWeight: '700',
+                    color: '#0f172a',
+                    marginBottom: '10px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.04em',
+                  }}
+                >
                   Work Mode
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {[
                     { label: 'Remote', val: 'remote' },
                     { label: 'Hybrid', val: 'hybrid' },
-                    { label: 'On-Site', val: 'on-site' }
-                  ].map(item => (
-                    <label key={item.val} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.86rem', color: '#334155', cursor: 'pointer' }}>
+                    { label: 'On-Site', val: 'on-site' },
+                  ].map((item) => (
+                    <label
+                      key={item.val}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        fontSize: '0.86rem',
+                        color: '#334155',
+                        cursor: 'pointer',
+                      }}
+                    >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <input
                           type="checkbox"
@@ -479,11 +658,18 @@ export function ExplorePage() {
                             setWorkMode(workMode === item.val ? '' : item.val);
                             setCurrentPage(1);
                           }}
-                          style={{ accentColor: '#059669', width: '16px', height: '16px', cursor: 'pointer' }}
+                          style={{
+                            accentColor: '#059669',
+                            width: '16px',
+                            height: '16px',
+                            cursor: 'pointer',
+                          }}
                         />
                         {item.label}
                       </div>
-                      <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{getWorkModeCount(item.val)}</span>
+                      <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                        {getWorkModeCount(item.val)}
+                      </span>
                     </label>
                   ))}
                 </div>
@@ -493,7 +679,16 @@ export function ExplorePage() {
 
               {/* Section 2: Experience */}
               <div>
-                <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#0f172a', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <div
+                  style={{
+                    fontSize: '0.82rem',
+                    fontWeight: '700',
+                    color: '#0f172a',
+                    marginBottom: '10px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.04em',
+                  }}
+                >
                   Experience Level
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -501,9 +696,19 @@ export function ExplorePage() {
                     { label: 'Freshers (0-1 Yrs)', val: 'fresher' },
                     { label: '1-3 Years', val: '1-3' },
                     { label: '3-5 Years', val: '3-5' },
-                    { label: '5+ Years', val: '5+' }
-                  ].map(item => (
-                    <label key={item.val} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.86rem', color: '#334155', cursor: 'pointer' }}>
+                    { label: '5+ Years', val: '5+' },
+                  ].map((item) => (
+                    <label
+                      key={item.val}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        fontSize: '0.86rem',
+                        color: '#334155',
+                        cursor: 'pointer',
+                      }}
+                    >
                       <input
                         type="checkbox"
                         checked={experience === item.val}
@@ -511,7 +716,12 @@ export function ExplorePage() {
                           setExperience(experience === item.val ? '' : item.val);
                           setCurrentPage(1);
                         }}
-                        style={{ accentColor: '#059669', width: '16px', height: '16px', cursor: 'pointer' }}
+                        style={{
+                          accentColor: '#059669',
+                          width: '16px',
+                          height: '16px',
+                          cursor: 'pointer',
+                        }}
                       />
                       {item.label}
                     </label>
@@ -523,7 +733,16 @@ export function ExplorePage() {
 
               {/* Section 3: Job Category */}
               <div>
-                <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#0f172a', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <div
+                  style={{
+                    fontSize: '0.82rem',
+                    fontWeight: '700',
+                    color: '#0f172a',
+                    marginBottom: '10px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.04em',
+                  }}
+                >
                   Job Category
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -539,9 +758,19 @@ export function ExplorePage() {
                     'Operations',
                     'Cybersecurity',
                     'Consulting',
-                    'Content'
-                  ].map(cat => (
-                    <label key={cat} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.86rem', color: '#334155', cursor: 'pointer' }}>
+                    'Content',
+                  ].map((cat) => (
+                    <label
+                      key={cat}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        fontSize: '0.86rem',
+                        color: '#334155',
+                        cursor: 'pointer',
+                      }}
+                    >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <input
                           type="checkbox"
@@ -550,11 +779,18 @@ export function ExplorePage() {
                             setCategory(category.toLowerCase() === cat.toLowerCase() ? '' : cat);
                             setCurrentPage(1);
                           }}
-                          style={{ accentColor: '#059669', width: '16px', height: '16px', cursor: 'pointer' }}
+                          style={{
+                            accentColor: '#059669',
+                            width: '16px',
+                            height: '16px',
+                            cursor: 'pointer',
+                          }}
                         />
                         {cat}
                       </div>
-                      <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{getCategoryCount(cat)}</span>
+                      <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                        {getCategoryCount(cat)}
+                      </span>
                     </label>
                   ))}
                 </div>
@@ -564,9 +800,28 @@ export function ExplorePage() {
 
               {/* Section 4: Salary Range Slider */}
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '0.82rem', fontWeight: '700', color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Salary Target</span>
-                  <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#059669' }}>Up to ₹{maxSalaryLimit} LPA</span>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginBottom: '8px',
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: '0.82rem',
+                      fontWeight: '700',
+                      color: '#0f172a',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.04em',
+                    }}
+                  >
+                    Salary Target
+                  </span>
+                  <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#059669' }}>
+                    {maxSalaryLimit >= 60 ? 'Any salary' : `Up to ₹${maxSalaryLimit} LPA`}
+                  </span>
                 </div>
                 <input
                   type="range"
@@ -574,10 +829,21 @@ export function ExplorePage() {
                   max="60"
                   step="5"
                   value={maxSalaryLimit}
-                  onChange={(e) => setMaxSalaryLimit(Number(e.target.value))}
+                  onChange={(e) => {
+                    setMaxSalaryLimit(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
                   style={{ width: '100%', accentColor: '#B8F23A', cursor: 'pointer' }}
                 />
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#64748b', marginTop: '4px' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    fontSize: '0.72rem',
+                    color: '#64748b',
+                    marginTop: '4px',
+                  }}
+                >
                   <span>₹5 LPA</span>
                   <span>₹60+ LPA</span>
                 </div>
@@ -593,7 +859,13 @@ export function ExplorePage() {
                       key={j.id}
                       variant="slide-up"
                       delay={(idx % 3) * 60}
-                      style={{ minWidth: 0, width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}
+                      style={{
+                        minWidth: 0,
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                      }}
                     >
                       <JobCard
                         job={j}
@@ -613,26 +885,32 @@ export function ExplorePage() {
 
               {/* 4. COMPACT GLASS PAGINATION CONTROLS */}
               {totalPages > 1 && (
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  flexWrap: 'wrap',
-                  gap: '12px',
-                  paddingTop: '16px',
-                  borderTop: '1px solid rgba(226, 232, 240, 0.7)',
-                  marginTop: '12px',
-                  width: '100%',
-                  boxSizing: 'border-box'
-                }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '12px',
+                    paddingTop: '16px',
+                    borderTop: '1px solid rgba(226, 232, 240, 0.7)',
+                    marginTop: '12px',
+                    width: '100%',
+                    boxSizing: 'border-box',
+                  }}
+                >
                   <span style={{ fontSize: '0.84rem', color: '#64748b', fontWeight: '500' }}>
-                    Showing {(currentPage - 1) * pageSize + 1}–{Math.min(currentPage * pageSize, sortedJobs.length)} of {sortedJobs.length} jobs
+                    Showing {(currentPage - 1) * pageSize + 1}–
+                    {Math.min(currentPage * pageSize, sortedJobs.length)} of {sortedJobs.length}{' '}
+                    jobs
                   </span>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                  <div
+                    style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}
+                  >
                     <button
                       disabled={currentPage === 1}
-                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                       style={{
                         padding: '6px 12px',
                         borderRadius: '8px',
@@ -641,7 +919,7 @@ export function ExplorePage() {
                         fontSize: '0.84rem',
                         fontWeight: '600',
                         color: currentPage === 1 ? '#cbd5e1' : '#0f172a',
-                        cursor: currentPage === 1 ? 'default' : 'pointer'
+                        cursor: currentPage === 1 ? 'default' : 'pointer',
                       }}
                     >
                       Previous
@@ -657,7 +935,7 @@ export function ExplorePage() {
                               textAlign: 'center',
                               color: '#64748b',
                               fontSize: '0.84rem',
-                              fontWeight: '700'
+                              fontWeight: '700',
                             }}
                           >
                             ...
@@ -672,7 +950,10 @@ export function ExplorePage() {
                             width: '32px',
                             height: '32px',
                             borderRadius: '8px',
-                            border: p === currentPage ? '1px solid #B8F23A' : '1px solid rgba(255, 255, 255, 0.7)',
+                            border:
+                              p === currentPage
+                                ? '1px solid #B8F23A'
+                                : '1px solid rgba(255, 255, 255, 0.7)',
                             background: p === currentPage ? '#B8F23A' : 'rgba(255, 255, 255, 0.5)',
                             fontSize: '0.84rem',
                             fontWeight: '700',
@@ -681,7 +962,7 @@ export function ExplorePage() {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            transition: 'all 0.15s ease'
+                            transition: 'all 0.15s ease',
                           }}
                         >
                           {p}
@@ -691,7 +972,7 @@ export function ExplorePage() {
 
                     <button
                       disabled={currentPage === totalPages}
-                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                       style={{
                         padding: '6px 12px',
                         borderRadius: '8px',
@@ -700,7 +981,7 @@ export function ExplorePage() {
                         fontSize: '0.84rem',
                         fontWeight: '600',
                         color: currentPage === totalPages ? '#cbd5e1' : '#0f172a',
-                        cursor: currentPage === totalPages ? 'default' : 'pointer'
+                        cursor: currentPage === totalPages ? 'default' : 'pointer',
                       }}
                     >
                       Next
@@ -709,9 +990,7 @@ export function ExplorePage() {
                 </div>
               )}
             </div>
-
           </div>
-
         </Stack>
       </PageContainer>
 
@@ -728,7 +1007,7 @@ export function ExplorePage() {
             WebkitBackdropFilter: 'blur(6px)',
             display: 'flex',
             alignItems: 'flex-end',
-            justifyContent: 'center'
+            justifyContent: 'center',
           }}
         >
           <div
@@ -745,18 +1024,29 @@ export function ExplorePage() {
               boxShadow: '0 -10px 40px rgba(15, 23, 42, 0.2)',
               display: 'flex',
               flexDirection: 'column',
-              overflow: 'hidden'
+              overflow: 'hidden',
             }}
           >
             {/* Header */}
-            <div style={{
-              padding: '16px 20px',
-              borderBottom: '1px solid rgba(226, 232, 240, 0.85)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1rem', fontWeight: '800', color: '#0f172a' }}>
+            <div
+              style={{
+                padding: '16px 20px',
+                borderBottom: '1px solid rgba(226, 232, 240, 0.85)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  fontSize: '1rem',
+                  fontWeight: '800',
+                  color: '#0f172a',
+                }}
+              >
                 <SlidersHorizontal size={18} color="#059669" /> Filter Opportunities
               </div>
               <button
@@ -772,7 +1062,7 @@ export function ExplorePage() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   cursor: 'pointer',
-                  color: '#64748b'
+                  color: '#64748b',
                 }}
               >
                 <X size={18} />
@@ -780,17 +1070,43 @@ export function ExplorePage() {
             </div>
 
             {/* Scrollable Body */}
-            <div style={{ padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div
+              style={{
+                padding: '20px',
+                overflowY: 'auto',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '20px',
+              }}
+            >
               {/* Category */}
               <div>
-                <div style={{ fontSize: '0.84rem', fontWeight: '800', color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '10px' }}>
+                <div
+                  style={{
+                    fontSize: '0.84rem',
+                    fontWeight: '800',
+                    color: '#0f172a',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.04em',
+                    marginBottom: '10px',
+                  }}
+                >
                   Job Category
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
                   {[
-                    'Technology', 'Data & AI', 'Product', 'Design',
-                    'Marketing', 'Sales', 'Finance', 'HR',
-                    'Operations', 'Cybersecurity', 'Consulting', 'Content'
+                    'Technology',
+                    'Data & AI',
+                    'Product',
+                    'Design',
+                    'Marketing',
+                    'Sales',
+                    'Finance',
+                    'HR',
+                    'Operations',
+                    'Cybersecurity',
+                    'Consulting',
+                    'Content',
                   ].map((cat) => {
                     const isSelected = category.toLowerCase() === cat.toLowerCase();
                     return (
@@ -806,11 +1122,15 @@ export function ExplorePage() {
                           borderRadius: '8px',
                           fontSize: '0.8rem',
                           fontWeight: isSelected ? '700' : '600',
-                          border: isSelected ? '1px solid #059669' : '1px solid rgba(226, 232, 240, 0.9)',
-                          background: isSelected ? 'rgba(236, 253, 245, 0.95)' : 'rgba(248, 250, 252, 0.8)',
+                          border: isSelected
+                            ? '1px solid #059669'
+                            : '1px solid rgba(226, 232, 240, 0.9)',
+                          background: isSelected
+                            ? 'rgba(236, 253, 245, 0.95)'
+                            : 'rgba(248, 250, 252, 0.8)',
                           color: isSelected ? '#059669' : '#334155',
                           textAlign: 'left',
-                          cursor: 'pointer'
+                          cursor: 'pointer',
                         }}
                       >
                         {cat}
@@ -822,7 +1142,16 @@ export function ExplorePage() {
 
               {/* Experience */}
               <div>
-                <div style={{ fontSize: '0.84rem', fontWeight: '800', color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '10px' }}>
+                <div
+                  style={{
+                    fontSize: '0.84rem',
+                    fontWeight: '800',
+                    color: '#0f172a',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.04em',
+                    marginBottom: '10px',
+                  }}
+                >
                   Experience Level
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
@@ -830,7 +1159,7 @@ export function ExplorePage() {
                     { label: '0–1 Yrs (Fresher)', val: '0-1' },
                     { label: '1–3 Yrs (Junior)', val: '1-3' },
                     { label: '3–5 Yrs (Mid-Level)', val: '3-5' },
-                    { label: '5+ Yrs (Senior)', val: '5+' }
+                    { label: '5+ Yrs (Senior)', val: '5+' },
                   ].map((exp) => {
                     const isSelected = experience === exp.val;
                     return (
@@ -846,11 +1175,15 @@ export function ExplorePage() {
                           borderRadius: '8px',
                           fontSize: '0.8rem',
                           fontWeight: isSelected ? '700' : '600',
-                          border: isSelected ? '1px solid #059669' : '1px solid rgba(226, 232, 240, 0.9)',
-                          background: isSelected ? 'rgba(236, 253, 245, 0.95)' : 'rgba(248, 250, 252, 0.8)',
+                          border: isSelected
+                            ? '1px solid #059669'
+                            : '1px solid rgba(226, 232, 240, 0.9)',
+                          background: isSelected
+                            ? 'rgba(236, 253, 245, 0.95)'
+                            : 'rgba(248, 250, 252, 0.8)',
                           color: isSelected ? '#059669' : '#334155',
                           textAlign: 'left',
-                          cursor: 'pointer'
+                          cursor: 'pointer',
                         }}
                       >
                         {exp.label}
@@ -862,15 +1195,17 @@ export function ExplorePage() {
             </div>
 
             {/* Footer Buttons */}
-            <div style={{
-              padding: '14px 20px calc(14px + env(safe-area-inset-bottom))',
-              borderTop: '1px solid rgba(226, 232, 240, 0.85)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '12px',
-              background: 'rgba(248, 250, 252, 0.95)'
-            }}>
+            <div
+              style={{
+                padding: '14px 20px calc(14px + env(safe-area-inset-bottom))',
+                borderTop: '1px solid rgba(226, 232, 240, 0.85)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '12px',
+                background: 'rgba(248, 250, 252, 0.95)',
+              }}
+            >
               <button
                 type="button"
                 onClick={resetFilters}
@@ -882,7 +1217,7 @@ export function ExplorePage() {
                   color: '#64748b',
                   fontWeight: '700',
                   fontSize: '0.86rem',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
                 }}
               >
                 Reset All
@@ -901,7 +1236,7 @@ export function ExplorePage() {
                   fontWeight: '800',
                   fontSize: '0.88rem',
                   cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(5, 150, 105, 0.25)'
+                  boxShadow: '0 4px 12px rgba(5, 150, 105, 0.25)',
                 }}
               >
                 Apply Filters ({sortedJobs.length} Jobs)

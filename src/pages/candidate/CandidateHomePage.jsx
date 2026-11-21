@@ -1,577 +1,475 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { PageContainer } from '../../components/layout/PageContainer.jsx';
-import { Section } from '../../components/layout/Section.jsx';
-import { Progress } from '../../components/ui/Progress.jsx';
-import { CompanyLogoWithFallback } from '../../components/ui/CompanyLogoWithFallback.jsx';
-import { ApplicationModal } from '../../components/forms/ApplicationModal.jsx';
+import React, { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useApp } from '../../app/providers/AppProviders.jsx';
+import { JobCard } from '../../components/cards/JobCard.jsx';
+import { ApplicationModal } from '../../components/forms/ApplicationModal.jsx';
+import { getRoleRoadmapSteps } from '../../data/learning.js';
 import {
-  Target,
-  FileText,
-  CheckCircle2,
-  Circle,
   ArrowRight,
-  ArrowUpRight,
-  Briefcase,
   BookOpen,
-  Send,
-  Clock,
-  Bookmark,
+  BriefcaseBusiness,
+  CheckCircle2,
+  Compass,
+  FileText,
+  Layers3,
   Sparkles,
-  Award,
-  ChevronRight,
-  SlidersHorizontal,
-  Compass
+  Target,
 } from 'lucide-react';
-import '../../styles/glass.css';
-import '../../styles/candidate.css';
+import '../../styles/candidate-experience.css';
 
 export function CandidateHomePage() {
-  const { candidateUser, currentUser, jobs, applications, learningRecords = {}, savedJobs = [] } = useApp();
-  const navigate = useNavigate();
+  const {
+    candidateUser,
+    currentUser,
+    jobs = [],
+    applications = [],
+    savedJobs = [],
+    activeTargetRole,
+    activeRoleFit,
+    hasTargetRole,
+    getJobFit,
+    calculateProfileCompletion,
+    getLearningSummary,
+    getPathProgress,
+  } = useApp();
 
   const [selectedJobToApply, setSelectedJobToApply] = useState(null);
 
-  // Derived candidate profile data
-  const userName = (currentUser?.fullName || candidateUser?.personal?.fullName || 'Arjun').split(' ')[0];
-  const targetRoleTitle = candidateUser?.roleProfile?.primaryTarget || 'Frontend Engineer';
-  const hasTargetRole = Boolean(candidateUser?.roleProfile?.primaryTarget);
-  const readinessScore = candidateUser?.roleProfile?.readinessScore ?? 0;
-  const userApplications = applications.filter(a => a.candidateId === (candidateUser?.id || currentUser?.id || 'user-cand-01'));
-  
-  // Real metric breakdowns
-  const pendingCount = userApplications.filter(a => a.status === 'Under Review' || a.status === 'Applied').length;
-  const interviewOrShortlistCount = userApplications.filter(a => a.status === 'Shortlisted' || a.status === 'Interview').length;
-  const candidateLearningRecords = Object.values(learningRecords).filter(
-    r => (r.candidateId || 'candidate-1') === (candidateUser?.id || 'candidate-1')
+  const userName = (
+    currentUser?.fullName ||
+    candidateUser?.personal?.fullName ||
+    'Candidate'
+  ).split(' ')[0];
+  const targetRoleTitle = activeTargetRole?.title || 'No target selected';
+  const readinessScore =
+    activeRoleFit?.readinessScore ?? candidateUser?.roleProfile?.readinessScore ?? 0;
+  const profileCompletion = calculateProfileCompletion(candidateUser);
+  const userApplications = useMemo(
+    () => applications.filter((item) => item.candidateId === candidateUser?.id),
+    [applications, candidateUser?.id],
   );
-  const activeLearningCount = candidateLearningRecords.filter(r => r.status === 'in_progress').length;
-  const completedLearningCount = candidateLearningRecords.filter(r => r.status === 'completed').length;
-  const savedJobsCount = savedJobs.length;
+  const pendingCount = userApplications.filter(
+    (item) => item.status === 'Applied' || item.status === 'Under Review',
+  ).length;
+  const progressCount = userApplications.filter(
+    (item) =>
+      item.status === 'Shortlisted' || item.status === 'Interview' || item.status === 'Offer',
+  ).length;
+  const roadmapSteps = activeTargetRole ? getRoleRoadmapSteps(activeTargetRole) : [];
+  const learningSummary = getLearningSummary(activeTargetRole);
+  const pathProgress = getPathProgress(activeTargetRole, roadmapSteps);
 
-  // Profile completion calculation based on candidate record
-  const profileCompletion = candidateUser?.profileCompletion || 90;
+  const recommendedJobs = useMemo(() => {
+    return [...jobs]
+      .map((job) => ({ job, fit: getJobFit(job.id)?.fitScore ?? job.matchScore ?? 0 }))
+      .sort((a, b) => b.fit - a.fit)
+      .slice(0, 4)
+      .map((item) => item.job);
+  }, [jobs, getJobFit]);
 
-  // Select top 4 recommended jobs matching target role or highest fit
-  const recommendedJobs = jobs.slice(0, 4);
+  const skillSlug = (skill = '') =>
+    skill
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+
+  const nextSteps = [
+    !hasTargetRole && {
+      title: 'Choose a target career role',
+      detail: 'See which core skills are already present and which ones need attention.',
+      action: 'Open Job Match',
+      to: '/candidate/roles',
+      icon: Target,
+    },
+    profileCompletion < 80 && {
+      title: 'Strengthen your profile',
+      detail: 'More complete education, project, and skill data improves local fit calculations.',
+      action: 'Edit profile',
+      to: '/candidate/profile',
+      icon: FileText,
+    },
+    activeRoleFit?.topGapSkill && {
+      title: `Bridge ${activeRoleFit.topGapSkill}`,
+      detail: 'Start from the learning workspace selected for your highest-impact skill gap.',
+      action: 'Learn this skill',
+      to: `/candidate/learning?skill=${skillSlug(activeRoleFit.topGapSkill)}&role=${activeTargetRole?.id || ''}`,
+      icon: BookOpen,
+    },
+    learningSummary.inProgressResources === 0 && {
+      title: 'Start your role roadmap',
+      detail: `Your ${targetRoleTitle} roadmap has ${pathProgress.totalSteps} structured phases.`,
+      action: 'Open Learning Hub',
+      to: '/candidate/learning',
+      icon: Layers3,
+    },
+    userApplications.length < 3 && {
+      title: 'Save an application draft locally',
+      detail: 'Review fit and screening prompts before deciding whether to apply in real life.',
+      action: 'Browse jobs',
+      to: '/jobs',
+      icon: BriefcaseBusiness,
+    },
+  ].filter(Boolean);
 
   return (
-    <Section py="6" className="rc-candidate-dashboard">
-      <PageContainer size="lg">
-
-        {/* ========================================================
-            1. COMPACT PERSONALIZED OVERVIEW (Directly on glass background)
-           ======================================================== */}
-        <div style={{
-          background: 'rgba(255, 255, 255, 0.52)',
-          backdropFilter: 'blur(24px)',
-          WebkitBackdropFilter: 'blur(24px)',
-          borderRadius: '20px',
-          padding: '24px 28px',
-          border: '1px solid rgba(255, 255, 255, 0.85)',
-          boxShadow: '0 8px 24px rgba(15, 23, 42, 0.04)',
-          marginBottom: '24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '20px'
-        }}>
+    <main className="cx-page">
+      <section className="cx-hero">
+        <div className="cx-hero-row">
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-              <span className="rc-candidate-eyebrow" style={{ margin: 0 }}>
-                <Compass size={13} /> CAREER WORKSPACE
+            <div className="cx-actions" style={{ marginBottom: 4 }}>
+              <span className="cx-eyebrow">
+                <Compass size={13} /> Career command centre
               </span>
-              <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: '600' }}>
-                • Target: <strong style={{ color: '#0f172a' }}>{targetRoleTitle}</strong>
+              <span className="cx-muted">
+                {hasTargetRole
+                  ? `Primary track: ${targetRoleTitle}`
+                  : 'Set a target role to personalise this view'}
               </span>
             </div>
-
-            <h1 className="rc-candidate-h1" style={{ fontSize: 'clamp(1.75rem, 3.2vw, 2.25rem)', lineHeight: '1.2' }}>
-              Welcome back, {userName}
-            </h1>
-
-            <p style={{ color: '#475569', fontSize: '0.92rem', margin: '4px 0 0', fontWeight: '500' }}>
-              Your profile is matched against {jobs.length} live verified career openings.
+            <h1 className="cx-title">Welcome back, {userName}</h1>
+            <p className="cx-subtitle">
+              This dashboard turns your profile, target role, applications, and learning activity
+              into one clear next move. All figures come from your local RoleCompass workspace.
             </p>
           </div>
-
-          {/* High-Impact Next Action Shortcut */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-            <Link to="/candidate/resume" style={{ textDecoration: 'none' }}>
-              <button style={{
-                background: 'rgba(255, 255, 255, 0.88)',
-                backdropFilter: 'blur(16px)',
-                color: '#0f172a',
-                fontWeight: '700',
-                fontSize: '0.85rem',
-                padding: '9px 16px',
-                borderRadius: '10px',
-                border: '1px solid rgba(203, 213, 225, 0.9)',
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '7px',
-                transition: 'all 180ms ease',
-                boxShadow: '0 2px 6px rgba(15, 23, 42, 0.03)'
-              }}>
-                <FileText size={15} color="#059669" /> Resume Hub
-              </button>
+          <div className="cx-actions">
+            <Link className="cx-button cx-button-primary" to="/candidate/resume">
+              <FileText size={15} /> Resume Hub
             </Link>
-
-            <Link to="/jobs" style={{ textDecoration: 'none' }}>
-              <button style={{
-                background: '#059669',
-                color: '#ffffff',
-                fontWeight: '700',
-                fontSize: '0.85rem',
-                padding: '9px 18px',
-                borderRadius: '10px',
-                border: 'none',
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '7px',
-                boxShadow: '0 4px 12px rgba(5, 150, 105, 0.28)',
-                transition: 'all 180ms ease'
-              }}>
-                Explore Jobs <ArrowRight size={15} />
-              </button>
+            <Link className="cx-button" to="/jobs">
+              Explore Jobs <ArrowRight size={15} />
             </Link>
           </div>
         </div>
+      </section>
 
-        {/* ========================================================
-            2. CLICKABLE CAREER PROGRESS METRICS GRID
-           ======================================================== */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
-          gap: '14px',
-          marginBottom: '26px'
-        }}>
-          {/* Card 1: Applications Submitted */}
-          <div
-            onClick={() => navigate('/candidate/applications')}
-            className="rc-candidate-card rc-candidate-card-hover"
-            style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.74rem', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase', color: '#64748b' }}>
-                Applications
-              </span>
-              <div style={{ background: 'rgba(236, 253, 245, 0.9)', padding: '5px', borderRadius: '8px', color: '#059669' }}>
-                <Send size={15} />
-              </div>
-            </div>
-            <div style={{ marginTop: '10px' }}>
-              <div style={{ fontSize: '1.85rem', fontWeight: '900', color: '#0f172a', lineHeight: '1' }}>
-                {userApplications.length}
-              </div>
-              <span style={{ fontSize: '0.78rem', fontWeight: '700', color: '#059669', marginTop: '4px', display: 'inline-block' }}>
-                {pendingCount} in review →
-              </span>
-            </div>
+      <section className="cx-grid cx-stats-grid" aria-label="Career overview">
+        <Link className="cx-card" to="/candidate/applications">
+          <div className="cx-stat-label">Applications</div>
+          <div className="cx-stat-value">{userApplications.length}</div>
+          <div className="cx-stat-note">{pendingCount} awaiting review</div>
+        </Link>
+        <Link className="cx-card" to="/candidate/applications">
+          <div className="cx-stat-label">Interview pipeline</div>
+          <div className="cx-stat-value">{progressCount}</div>
+          <div className="cx-stat-note">Shortlist, interview, or offer</div>
+        </Link>
+        <Link className="cx-card" to="/candidate/saved-jobs">
+          <div className="cx-stat-label">Saved jobs</div>
+          <div className="cx-stat-value">{savedJobs.length}</div>
+          <div className="cx-stat-note">Local bookmarks</div>
+        </Link>
+        <Link className="cx-card" to="/candidate/roles">
+          <div className="cx-stat-label">Role readiness</div>
+          <div className="cx-stat-value">{hasTargetRole ? `${readinessScore}%` : '—'}</div>
+          <div className="cx-stat-note">Profile-derived fit</div>
+          <div className="cx-progress">
+            <div className="cx-progress-fill" style={{ width: `${readinessScore}%` }} />
           </div>
-
-          {/* Card 2: Shortlisted / Interviews */}
-          <div
-            onClick={() => navigate('/candidate/applications')}
-            className="rc-candidate-card rc-candidate-card-hover"
-            style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.74rem', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase', color: '#64748b' }}>
-                Interviews & Offers
-              </span>
-              <div style={{ background: 'rgba(243, 232, 255, 0.9)', padding: '5px', borderRadius: '8px', color: '#7b2cbf' }}>
-                <Award size={15} />
-              </div>
-            </div>
-            <div style={{ marginTop: '10px' }}>
-              <div style={{ fontSize: '1.85rem', fontWeight: '900', color: '#7b2cbf', lineHeight: '1' }}>
-                {interviewOrShortlistCount}
-              </div>
-              <span style={{ fontSize: '0.78rem', fontWeight: '700', color: '#7b2cbf', marginTop: '4px', display: 'inline-block' }}>
-                Active pipeline →
-              </span>
-            </div>
+        </Link>
+        <Link className="cx-card" to="/candidate/profile">
+          <div className="cx-stat-label">Profile strength</div>
+          <div className="cx-stat-value">{profileCompletion}%</div>
+          <div className="cx-stat-note">Complete profile sections</div>
+          <div className="cx-progress">
+            <div className="cx-progress-fill" style={{ width: `${profileCompletion}%` }} />
           </div>
+        </Link>
+      </section>
 
-          {/* Card 3: Saved Jobs */}
-          <div
-            onClick={() => navigate('/jobs')}
-            className="rc-candidate-card rc-candidate-card-hover"
-            style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.74rem', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase', color: '#64748b' }}>
-                Saved Jobs
-              </span>
-              <div style={{ background: 'rgba(254, 243, 199, 0.9)', padding: '5px', borderRadius: '8px', color: '#d97706' }}>
-                <Bookmark size={15} />
-              </div>
-            </div>
-            <div style={{ marginTop: '10px' }}>
-              <div style={{ fontSize: '1.85rem', fontWeight: '900', color: '#0f172a', lineHeight: '1' }}>
-                {savedJobsCount}
-              </div>
-              <span style={{ fontSize: '0.78rem', fontWeight: '700', color: '#d97706', marginTop: '4px', display: 'inline-block' }}>
-                Browse saved roles →
-              </span>
-            </div>
-          </div>
-
-          {/* Card 4: Role Readiness Score */}
-          <div
-            onClick={() => navigate('/candidate/roles')}
-            className="rc-candidate-card rc-candidate-card-hover"
-            style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.74rem', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase', color: '#64748b' }}>
-                Role Readiness
-              </span>
-              <div style={{ background: 'rgba(236, 253, 245, 0.9)', padding: '5px', borderRadius: '8px', color: '#059669' }}>
-                <Target size={15} />
-              </div>
-            </div>
-            <div style={{ marginTop: '10px' }}>
-              <div style={{ fontSize: '1.85rem', fontWeight: '900', color: '#059669', lineHeight: '1' }}>
-                {hasTargetRole ? `${readinessScore}%` : '—'}
-              </div>
-              <span style={{ fontSize: '0.78rem', fontWeight: '700', color: '#059669', marginTop: '4px', display: 'inline-block' }}>
-                {hasTargetRole ? 'Skill match breakdown →' : 'Select a target role →'}
-              </span>
-            </div>
-          </div>
-
-          {/* Card 5: Profile Completion */}
-          <div
-            onClick={() => navigate('/candidate/profile')}
-            className="rc-candidate-card rc-candidate-card-hover"
-            style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.74rem', fontWeight: '800', letterSpacing: '0.05em', textTransform: 'uppercase', color: '#64748b' }}>
-                Profile Strength
-              </span>
-              <div style={{ background: 'rgba(224, 242, 254, 0.9)', padding: '5px', borderRadius: '8px', color: '#0284c7' }}>
-                <CheckCircle2 size={15} />
-              </div>
-            </div>
-            <div style={{ marginTop: '10px' }}>
-              <div style={{ fontSize: '1.85rem', fontWeight: '900', color: '#0284c7', lineHeight: '1' }}>
-                {profileCompletion}%
-              </div>
-              <div style={{ marginTop: '6px' }}>
-                <Progress value={profileCompletion} />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ========================================================
-            3. ACTION SHORTCUTS PILLS
-           ======================================================== */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          overflowX: 'auto',
-          paddingBottom: '8px',
-          marginBottom: '28px',
-          WebkitOverflowScrolling: 'touch'
-        }}>
-          <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', flexShrink: 0 }}>
-            Quick Shortcuts:
-          </span>
-          <Link to="/candidate/profile" className="rc-candidate-nav-link" style={{ background: 'rgba(255, 255, 255, 0.8)', border: '1px solid rgba(226, 232, 240, 0.8)' }}>
-            <CheckCircle2 size={14} color="#059669" /> Edit Profile
-          </Link>
-          <Link to="/jobs" className="rc-candidate-nav-link" style={{ background: 'rgba(255, 255, 255, 0.8)', border: '1px solid rgba(226, 232, 240, 0.8)' }}>
-            <Briefcase size={14} color="#0284c7" /> Find Jobs
-          </Link>
-          <Link to="/candidate/roles" className="rc-candidate-nav-link" style={{ background: 'rgba(255, 255, 255, 0.8)', border: '1px solid rgba(226, 232, 240, 0.8)' }}>
-            <Target size={14} color="#7b2cbf" /> Roles & Fit
-          </Link>
-          <Link to="/candidate/learning" className="rc-candidate-nav-link" style={{ background: 'rgba(255, 255, 255, 0.8)', border: '1px solid rgba(226, 232, 240, 0.8)' }}>
-            <BookOpen size={14} color="#059669" /> Learning Hub ({activeLearningCount})
-          </Link>
-          <Link to="/candidate/preferences" className="rc-candidate-nav-link" style={{ background: 'rgba(255, 255, 255, 0.8)', border: '1px solid rgba(226, 232, 240, 0.8)' }}>
-            <SlidersHorizontal size={14} color="#64748b" /> Career Preferences
-          </Link>
-        </div>
-
-        {/* ========================================================
-            4. MAIN SPLIT: RECOMMENDED OPPORTUNITIES (LEFT) + RECENT ACTIVITY (RIGHT)
-           ======================================================== */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 460px), 1fr))',
-          gap: '24px',
-          alignItems: 'start'
-        }}>
-
-          {/* LEFT COLUMN: RECOMMENDED JOBS */}
+      <section className="cx-section">
+        <div className="cx-section-head">
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <div>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0f172a', margin: 0, fontFamily: 'Outfit, sans-serif' }}>
-                  Recommended Opportunities
-                </h2>
-                <p style={{ fontSize: '0.84rem', color: '#64748b', margin: '2px 0 0', fontWeight: '500' }}>
-                  Tailored to your {targetRoleTitle} competencies.
-                </p>
-              </div>
+            <p className="cx-kicker">Guided next steps</p>
+            <h2>What to do next</h2>
+          </div>
+          <span className="cx-pill">Data-derived, not guessed</span>
+        </div>
+        <div className="cx-grid cx-two-even">
+          {nextSteps.length === 0 ? (
+            <div className="cx-empty">
+              Your profile, target role, learning path, and application pipeline are all active.
+              Keep progressing in the Learning Hub.
+            </div>
+          ) : (
+            nextSteps.slice(0, 4).map((step, index) => {
+              const Icon = step.icon;
+              return (
+                <Link className="cx-card cx-card-soft" key={step.title} to={step.to}>
+                  <div className="cx-actions" style={{ justifyContent: 'space-between' }}>
+                    <span className="cx-pill cx-pill-neutral">0{index + 1}</span>
+                    <Icon size={18} color="#0f766e" />
+                  </div>
+                  <div className="cx-list-title" style={{ marginTop: 12 }}>
+                    {step.title}
+                  </div>
+                  <p className="cx-muted" style={{ margin: '6px 0 12px' }}>
+                    {step.detail}
+                  </p>
+                  <span className="cx-button cx-button-soft">
+                    {step.action} <ArrowRight size={14} />
+                  </span>
+                </Link>
+              );
+            })
+          )}
+        </div>
+      </section>
 
-              <Link to="/jobs" style={{ fontSize: '0.84rem', fontWeight: '700', color: '#059669', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                All {jobs.length} Jobs <ArrowRight size={14} />
+      <section className="cx-section cx-grid cx-two-col">
+        <div className="cx-card">
+          <div className="cx-section-head">
+            <div>
+              <p className="cx-kicker">Insights</p>
+              <h2>Your current position</h2>
+            </div>
+          </div>
+          <div className="cx-inline-metrics">
+            <div className="cx-inline-metric">
+              <strong>{activeRoleFit?.skillsCoveragePercent ?? 0}%</strong>
+              <span className="cx-muted">Core skill coverage</span>
+            </div>
+            <div className="cx-inline-metric">
+              <strong>
+                {activeRoleFit?.matchedCoreCount ?? 0}/{activeRoleFit?.totalCoreCount ?? 0}
+              </strong>
+              <span className="cx-muted">Core requirements met</span>
+            </div>
+            <div className="cx-inline-metric">
+              <strong>{learningSummary.completedResources}</strong>
+              <span className="cx-muted">Learning sources complete</span>
+            </div>
+            <div className="cx-inline-metric">
+              <strong>{pathProgress.percent}%</strong>
+              <span className="cx-muted">Roadmap phases complete</span>
+            </div>
+          </div>
+          <div className="cx-list" style={{ marginTop: 18 }}>
+            <div className="cx-list-row">
+              <div>
+                <div className="cx-list-title">Strongest matched skill</div>
+                <div className="cx-list-meta">
+                  {activeRoleFit?.strongestSkill || 'Select a target role to calculate this.'}
+                </div>
+              </div>
+              <CheckCircle2 size={18} color="#059669" />
+            </div>
+            <div className="cx-list-row">
+              <div>
+                <div className="cx-list-title">Priority skill gap</div>
+                <div className="cx-list-meta">
+                  {activeRoleFit?.topGapSkill || 'No target role selected.'}
+                </div>
+              </div>
+              {activeRoleFit?.topGapSkill && (
+                <Link
+                  className="cx-button cx-button-soft"
+                  to={`/candidate/learning?skill=${skillSlug(activeRoleFit.topGapSkill)}&role=${activeTargetRole?.id || ''}`}
+                >
+                  Learn <ArrowRight size={14} />
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="cx-card cx-card-dark">
+          <p className="cx-kicker">Learning pulse</p>
+          <h2 style={{ color: '#fff' }}>Roadmap progress</h2>
+          <div className="cx-stat-value" style={{ color: '#fff' }}>
+            {pathProgress.completedSteps}/{pathProgress.totalSteps || 0}
+          </div>
+          <p className="cx-muted">structured phases completed for {targetRoleTitle}</p>
+          <div className="cx-progress" style={{ background: 'rgba(255,255,255,0.18)' }}>
+            <div className="cx-progress-fill" style={{ width: `${pathProgress.percent}%` }} />
+          </div>
+          <div className="cx-inline-metrics" style={{ marginTop: 18 }}>
+            <div className="cx-inline-metric">
+              <strong style={{ color: '#fff' }}>{learningSummary.inProgressResources}</strong>
+              <span>Active workspaces</span>
+            </div>
+            <div className="cx-inline-metric">
+              <strong style={{ color: '#fff' }}>{learningSummary.checkpointPercent}%</strong>
+              <span>Checkpoints complete</span>
+            </div>
+          </div>
+          <Link
+            className="cx-button cx-button-primary"
+            to="/candidate/learning"
+            style={{ marginTop: 18 }}
+          >
+            <BookOpen size={15} /> Continue learning
+          </Link>
+        </div>
+      </section>
+
+      <section className="cx-section">
+        <div className="cx-section-head">
+          <div>
+            <p className="cx-kicker">Recommended opportunities</p>
+            <h2>Sample roles ranked by local fit</h2>
+          </div>
+          <Link className="cx-button" to="/jobs">
+            All jobs <ArrowRight size={14} />
+          </Link>
+        </div>
+        {recommendedJobs.length === 0 ? (
+          <div className="cx-empty">No sample opportunities are available in this workspace.</div>
+        ) : (
+          <div className="cx-grid cx-three-col">
+            {recommendedJobs.map((job) => (
+              <JobCard
+                key={job.id}
+                job={job}
+                showFit
+                onApply={(selectedJob) => setSelectedJobToApply(selectedJob)}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="cx-section cx-grid cx-two-col">
+        <div className="cx-card">
+          <div className="cx-section-head">
+            <div>
+              <p className="cx-kicker">Application tracker</p>
+              <h2>Recent local drafts</h2>
+            </div>
+            <Link className="cx-button" to="/candidate/applications">
+              Tracker <ArrowRight size={14} />
+            </Link>
+          </div>
+          {userApplications.length === 0 ? (
+            <div className="cx-empty">
+              No applications saved yet. Browse sample opportunities to create a local draft.
+            </div>
+          ) : (
+            <div className="cx-list">
+              {userApplications.slice(0, 3).map((application) => (
+                <Link className="cx-list-row" key={application.id} to="/candidate/applications">
+                  <div>
+                    <div className="cx-list-title">
+                      {application.jobTitle || 'Software Engineer'}
+                    </div>
+                    <div className="cx-list-meta">
+                      {application.companyName || 'Technology Employer'} ·{' '}
+                      {application.submittedAt || application.lastUpdated || 'Recently'}
+                    </div>
+                  </div>
+                  <span className="cx-pill cx-pill-neutral">
+                    {application.status || 'Under Review'}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="cx-card">
+          <div className="cx-section-head">
+            <div>
+              <p className="cx-kicker">Career milestones</p>
+              <h2>Keep the momentum</h2>
+            </div>
+          </div>
+          <div className="cx-list">
+            <Link className="cx-list-row" to="/candidate/profile">
+              <div>
+                <div className="cx-list-title">Candidate profile review</div>
+                <div className="cx-list-meta">Profile completion: {profileCompletion}%</div>
+              </div>
+              <ArrowRight size={16} />
+            </Link>
+            <Link className="cx-list-row" to="/candidate/resume">
+              <div>
+                <div className="cx-list-title">Local resume readiness</div>
+                <div className="cx-list-meta">Heuristic format and keyword coverage check</div>
+              </div>
+              <ArrowRight size={16} />
+            </Link>
+            <Link className="cx-list-row" to="/candidate/learning">
+              <div>
+                <div className="cx-list-title">Bridge high-impact skill gaps</div>
+                <div className="cx-list-meta">
+                  {learningSummary.inProgressResources} in progress ·{' '}
+                  {learningSummary.completedResources} completed learning sources
+                </div>
+              </div>
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="cx-section">
+        <div className="cx-section-head">
+          <div>
+            <p className="cx-kicker">Quick actions</p>
+            <h2>Everything else, grouped</h2>
+          </div>
+        </div>
+        <div className="cx-grid cx-three-col">
+          <div className="cx-card">
+            <div className="cx-list-title">Profile & documents</div>
+            <div className="cx-mini-actions">
+              <Link className="cx-button" to="/candidate/profile">
+                Edit profile
+              </Link>
+              <Link className="cx-button" to="/candidate/resume">
+                Resume Hub
+              </Link>
+              <Link className="cx-button" to="/candidate/preferences">
+                Preferences
               </Link>
             </div>
-
-            <div className="rc-stagger-grid" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {recommendedJobs.map((job) => {
-                const fitScore = job.matchScore || (job.companyId === 'google' ? 88 : job.companyId === 'microsoft' ? 82 : job.companyId === 'amazon' ? 79 : 75);
-                const isInternship = job.employmentType === 'Internship';
-
-                return (
-                  <div
-                    key={job.id}
-                    onClick={() => navigate(`/jobs/${job.id}`)}
-                    className="rc-candidate-card rc-candidate-card-hover"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      gap: '16px',
-                      padding: '16px 20px'
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flex: 1, minWidth: 0 }}>
-                      <CompanyLogoWithFallback
-                        companyId={job.companyId}
-                        name={job.companyName || 'Company'}
-                        logo={job.logo}
-                        size="md"
-                        variant="square"
-                      />
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                          <h3 style={{ fontSize: '0.98rem', fontWeight: '800', color: '#0f172a', margin: 0, lineHeight: '1.3' }}>
-                            {job.title}
-                          </h3>
-                          {isInternship && (
-                            <span style={{
-                              fontSize: '0.68rem',
-                              fontWeight: '800',
-                              color: '#7b2cbf',
-                              background: 'rgba(243, 232, 255, 0.95)',
-                              padding: '2px 7px',
-                              borderRadius: '6px',
-                              border: '1px solid rgba(216, 180, 254, 0.8)',
-                              letterSpacing: '0.04em'
-                            }}>
-                              STIPEND
-                            </span>
-                          )}
-                        </div>
-
-                        <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '3px', fontWeight: '500' }}>
-                          <strong style={{ color: '#334155' }}>{job.companyName}</strong> • {job.location || 'India'} • {job.workMode || 'Hybrid'}
-                        </div>
-
-                        {/* COMPENSATION & SKILLS ROW */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '6px', flexWrap: 'wrap' }}>
-                          <span style={{ fontSize: '0.8rem', fontWeight: '700', color: isInternship ? '#7b2cbf' : '#059669' }}>
-                            {job.salary || (isInternship ? '₹20,000 – ₹30,000 / month (Stipend)' : '₹12 – ₹18 LPA')}
-                          </span>
-                          <span style={{ color: '#cbd5e1' }}>•</span>
-                          <span style={{ fontSize: '0.74rem', color: '#64748b', fontWeight: '600' }}>
-                            {job.experience || '0-2 Yrs'}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
-                      <span className="rc-fit-pill rc-fit-pill-high" style={{ fontSize: '0.78rem', padding: '4px 10px' }}>
-                        {fitScore}% Fit
-                      </span>
-                      <div style={{
-                        width: '32px',
-                        height: '32px',
-                        borderRadius: '50%',
-                        background: 'rgba(236, 253, 245, 0.95)',
-                        color: '#059669',
-                        border: '1px solid rgba(167, 243, 208, 0.9)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        transition: 'all 180ms ease'
-                      }}>
-                        <ArrowUpRight size={16} />
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+          </div>
+          <div className="cx-card">
+            <div className="cx-list-title">Opportunities</div>
+            <div className="cx-mini-actions">
+              <Link className="cx-button" to="/jobs">
+                Find jobs
+              </Link>
+              <Link className="cx-button" to="/candidate/saved-jobs">
+                Saved jobs
+              </Link>
+              <Link className="cx-button" to="/candidate/applications">
+                Applications
+              </Link>
             </div>
           </div>
-
-          {/* RIGHT COLUMN: RECENT APPLICATION ACTIVITY & NEXT STEPS */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-
-            {/* BOX 1: RECENT APPLICATION ACTIVITY */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <div>
-                  <h2 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0f172a', margin: 0, fontFamily: 'Outfit, sans-serif' }}>
-                    Application Tracker
-                  </h2>
-                  <p style={{ fontSize: '0.84rem', color: '#64748b', margin: '2px 0 0', fontWeight: '500' }}>
-                    {userApplications.length} active applications submitted.
-                  </p>
-                </div>
-
-                <Link to="/candidate/applications" style={{ fontSize: '0.84rem', fontWeight: '700', color: '#059669', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                  Tracker →
-                </Link>
-              </div>
-
-              <div className="rc-candidate-card" style={{ padding: 0, overflow: 'hidden' }}>
-                {userApplications.length === 0 ? (
-                  <div style={{ padding: '28px', textAlign: 'center', color: '#64748b', fontSize: '0.88rem' }}>
-                    No applications submitted yet. Browse recommended opportunities to get started!
-                  </div>
-                ) : (
-                  userApplications.slice(0, 3).map((app, idx) => {
-                    const matchedJob = jobs.find(j => j.id === app.jobId) || {
-                      title: 'Software Engineer',
-                      companyName: 'Technology Employer'
-                    };
-
-                    let badgeColor = '#0284c7';
-                    let badgeBg = 'rgba(224, 242, 254, 0.95)';
-                    let badgeBorder = 'rgba(186, 230, 253, 0.9)';
-
-                    if (app.status === 'Shortlisted') {
-                      badgeColor = '#7b2cbf';
-                      badgeBg = 'rgba(243, 232, 255, 0.95)';
-                      badgeBorder = 'rgba(216, 180, 254, 0.9)';
-                    } else if (app.status === 'Interview') {
-                      badgeColor = '#059669';
-                      badgeBg = 'rgba(236, 253, 245, 0.95)';
-                      badgeBorder = 'rgba(167, 243, 208, 0.9)';
-                    }
-
-                    return (
-                      <div
-                        key={app.id || idx}
-                        onClick={() => navigate('/candidate/applications')}
-                        style={{
-                          padding: '14px 18px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          gap: '12px',
-                          borderBottom: idx < userApplications.slice(0, 3).length - 1 ? '1px solid rgba(226, 232, 240, 0.7)' : 'none',
-                          cursor: 'pointer',
-                          transition: 'background 0.15s ease'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(236, 253, 245, 0.4)'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                      >
-                        <div>
-                          <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#0f172a' }}>
-                            {matchedJob.title}
-                          </div>
-                          <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '2px' }}>
-                            {matchedJob.companyName} • Applied {app.appliedDate || 'Recently'}
-                          </div>
-                        </div>
-
-                        <span style={{
-                          fontSize: '0.74rem',
-                          fontWeight: '800',
-                          color: badgeColor,
-                          background: badgeBg,
-                          padding: '4px 10px',
-                          borderRadius: '8px',
-                          border: `1px solid ${badgeBorder}`,
-                          whiteSpace: 'nowrap'
-                        }}>
-                          {app.status || 'Under Review'}
-                        </span>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
+          <div className="cx-card">
+            <div className="cx-list-title">Direction</div>
+            <div className="cx-mini-actions">
+              <Link className="cx-button" to="/candidate/roles">
+                Roles & fit
+              </Link>
+              <Link className="cx-button" to="/candidate/learning">
+                Learning Hub
+              </Link>
+              <Link className="cx-button" to="/roles">
+                Role guides
+              </Link>
             </div>
-
-            {/* BOX 2: CAREER ACTION SHORTCUTS & LEARNING PROGRESS */}
-            <div>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0f172a', margin: '0 0 16px', fontFamily: 'Outfit, sans-serif' }}>
-                Next Career Milestones
-              </h2>
-
-              <div className="rc-candidate-card" style={{ padding: 0, overflow: 'hidden' }}>
-                {/* Milestone 1: Profile Completeness */}
-                <Link to="/candidate/profile" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: '1px solid rgba(226, 232, 240, 0.7)', transition: 'background 0.15s ease' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(236, 253, 245, 0.4)'} onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <CheckCircle2 size={18} color="#059669" />
-                    <div>
-                      <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#0f172a' }}>Candidate Profile Review</div>
-                      <div style={{ fontSize: '0.76rem', color: '#64748b' }}>Strengths verified at {profileCompletion}%</div>
-                    </div>
-                  </div>
-                  <ChevronRight size={16} color="#64748b" />
-                </Link>
-
-                {/* Milestone 2: Resume ATS Readiness */}
-                <Link to="/candidate/resume" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', borderBottom: '1px solid rgba(226, 232, 240, 0.7)', transition: 'background 0.15s ease' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(236, 253, 245, 0.4)'} onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <FileText size={18} color="#0284c7" />
-                    <div>
-                      <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#0f172a' }}>Audit ATS Resume Readiness</div>
-                      <div style={{ fontSize: '0.76rem', color: '#64748b' }}>Evaluate keyword density against target roles</div>
-                    </div>
-                  </div>
-                  <ChevronRight size={16} color="#64748b" />
-                </Link>
-
-                {/* Milestone 3: Skill Upskilling */}
-                <Link to="/candidate/learning" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', transition: 'background 0.15s ease' }} onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(236, 253, 245, 0.4)'} onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <BookOpen size={18} color="#7b2cbf" />
-                    <div>
-                      <div style={{ fontSize: '0.88rem', fontWeight: '800', color: '#0f172a' }}>Bridge High-Impact Skill Gaps</div>
-                      <div style={{ fontSize: '0.76rem', color: '#64748b' }}>{activeLearningCount} in progress • {completedLearningCount} completed learning sources</div>
-                    </div>
-                  </div>
-                  <ChevronRight size={16} color="#64748b" />
-                </Link>
-              </div>
-            </div>
-
           </div>
-
         </div>
+      </section>
 
-      </PageContainer>
+      <div className="cx-callout" style={{ marginTop: 24 }}>
+        <Sparkles size={17} style={{ flexShrink: 0, marginTop: 2 }} />
+        <span>
+          This is a local career-planning demo. Applications stay in this browser, no employer or
+          ATS is contacted, and fit scores are calculated from the profile data you provide.
+        </span>
+      </div>
 
-      {/* Application Modal */}
       {selectedJobToApply && (
         <ApplicationModal
           job={selectedJobToApply}
-          isOpen={!!selectedJobToApply}
+          isOpen={Boolean(selectedJobToApply)}
           onClose={() => setSelectedJobToApply(null)}
         />
       )}
-    </Section>
+    </main>
   );
 }
-
-export default CandidateHomePage;

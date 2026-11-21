@@ -13,7 +13,7 @@ export function Section({
       style={{
         paddingTop: `var(--rc-space-${py})`,
         paddingBottom: `var(--rc-space-${py})`,
-        ...style
+        ...style,
       }}
       {...props}
     >

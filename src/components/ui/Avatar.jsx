@@ -7,7 +7,7 @@ export function Avatar({
   src,
   name,
   size = 'md', // sm | md | lg
-  className = ''
+  className = '',
 }) {
   const [hasError, setHasError] = useState(false);
   const initials = getInitials(name);
@@ -16,11 +16,7 @@ export function Avatar({
   return (
     <div className={cn('rc-avatar', sizeClass, className)} title={name}>
       {src && !hasError ? (
-        <img
-          src={src}
-          alt={name || 'Avatar'}
-          onError={() => setHasError(true)}
-        />
+        <img src={src} alt={name || 'Avatar'} onError={() => setHasError(true)} />
       ) : name ? (
         <span>{initials}</span>
       ) : (

@@ -16,7 +16,8 @@ export function Textarea({
   placeholder,
   ...props
 }) {
-  const textareaId = id || (label ? `textarea-${label.toLowerCase().replace(/\s+/g, '-')}` : undefined);
+  const textareaId =
+    id || (label ? `textarea-${label.toLowerCase().replace(/\s+/g, '-')}` : undefined);
 
   return (
     <div className="rc-form-group">

@@ -7,7 +7,7 @@ export function Cluster({
   align = 'center',
   justify = 'start',
   className = '',
-  style = {}
+  style = {},
 }) {
   return (
     <div
@@ -16,7 +16,7 @@ export function Cluster({
         gap: `var(--rc-space-${gap})`,
         alignItems: align,
         justifyContent: justify,
-        ...style
+        ...style,
       }}
     >
       {children}

@@ -4,7 +4,14 @@ import { PageContainer } from '../../components/layout/PageContainer.jsx';
 import { Section } from '../../components/layout/Section.jsx';
 import { OnboardingProgress } from '../../components/onboarding/OnboardingProgress.jsx';
 import { useApp } from '../../app/providers/AppProviders.jsx';
-import { UploadCloud, FileText, CheckCircle2, RefreshCw, ArrowRight, AlertCircle } from 'lucide-react';
+import {
+  UploadCloud,
+  FileText,
+  CheckCircle2,
+  RefreshCw,
+  ArrowRight,
+  AlertCircle,
+} from 'lucide-react';
 
 export function ResumeUpload() {
   const navigate = useNavigate();
@@ -17,7 +24,7 @@ export function ResumeUpload() {
         rawFile: null,
         name: currentUser.resume.fileName,
         size: currentUser.resume.fileSize || '2.4 MB',
-        ready: true
+        ready: true,
       };
     }
     return null;
@@ -60,7 +67,7 @@ export function ResumeUpload() {
       rawFile: file,
       name: file.name,
       size: formatFileSize(file.size),
-      ready: true
+      ready: true,
     });
   };
 
@@ -95,7 +102,7 @@ export function ResumeUpload() {
       fileSize: selectedFile.size,
       uploadedAt: new Date().toISOString(),
       status: 'uploaded',
-      rawFile: selectedFile.rawFile
+      rawFile: selectedFile.rawFile,
     });
 
     updateOnboardingStep('processing');
@@ -117,73 +124,86 @@ export function ResumeUpload() {
         />
 
         <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 32px' }}>
-          <span style={{
-            fontSize: '0.75rem',
-            fontWeight: '700',
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-            color: '#059669',
-            background: 'rgba(236, 253, 245, 0.85)',
-            padding: '6px 16px',
-            borderRadius: '10px',
-            border: '1px solid rgba(167, 243, 208, 0.8)'
-          }}>
+          <span
+            style={{
+              fontSize: '0.75rem',
+              fontWeight: '700',
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              color: '#059669',
+              background: 'rgba(236, 253, 245, 0.85)',
+              padding: '6px 16px',
+              borderRadius: '10px',
+              border: '1px solid rgba(167, 243, 208, 0.8)',
+            }}
+          >
             AUTOMATED PROFILE EXTRACTION
           </span>
 
-          <h1 style={{
-            fontFamily: 'Outfit, sans-serif',
-            fontSize: 'clamp(2.2rem, 3.5vw, 3rem)',
-            fontWeight: '800',
-            color: '#0f172a',
-            marginTop: '16px',
-            letterSpacing: '-0.02em'
-          }}>
+          <h1
+            style={{
+              fontFamily: 'Outfit, sans-serif',
+              fontSize: 'clamp(2.2rem, 3.5vw, 3rem)',
+              fontWeight: '800',
+              color: '#0f172a',
+              marginTop: '16px',
+              letterSpacing: '-0.02em',
+            }}
+          >
             Upload Your Resume
           </h1>
 
           <p style={{ color: '#475569', fontSize: '1.05rem', marginTop: '8px' }}>
-            Upload your latest resume and we'll extract the information needed to build your RoleCompass profile.
+            Upload your latest resume and we'll extract the information needed to build your
+            RoleCompass profile.
           </p>
         </div>
 
         {/* ERROR DISPLAY BANNER */}
         {errorMsg && (
-          <div style={{
-            maxWidth: '680px',
-            margin: '0 auto 20px',
-            background: 'rgba(254, 242, 242, 0.95)',
-            border: '1px solid rgba(254, 202, 202, 0.9)',
-            color: '#991b1b',
-            padding: '12px 18px',
-            borderRadius: '14px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            fontSize: '0.9rem',
-            fontWeight: '700'
-          }}>
+          <div
+            style={{
+              maxWidth: '680px',
+              margin: '0 auto 20px',
+              background: 'rgba(254, 242, 242, 0.95)',
+              border: '1px solid rgba(254, 202, 202, 0.9)',
+              color: '#991b1b',
+              padding: '12px 18px',
+              borderRadius: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              fontSize: '0.9rem',
+              fontWeight: '700',
+            }}
+          >
             <AlertCircle size={18} />
             <span>{errorMsg}</span>
           </div>
         )}
 
         {/* UPLOAD WORKSPACE CARD */}
-        <div style={{
-          background: 'rgba(255, 255, 255, 0.48)',
-          backdropFilter: 'blur(22px)',
-          WebkitBackdropFilter: 'blur(22px)',
-          borderRadius: '24px',
-          padding: '44px 36px',
-          border: '1px solid rgba(255, 255, 255, 0.75)',
-          boxShadow: '0 10px 30px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.85)',
-          maxWidth: '680px',
-          margin: '0 auto'
-        }}>
+        <div
+          style={{
+            background: 'rgba(255, 255, 255, 0.48)',
+            backdropFilter: 'blur(22px)',
+            WebkitBackdropFilter: 'blur(22px)',
+            borderRadius: '24px',
+            padding: '44px 36px',
+            border: '1px solid rgba(255, 255, 255, 0.75)',
+            boxShadow:
+              '0 10px 30px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.85)',
+            maxWidth: '680px',
+            margin: '0 auto',
+          }}
+        >
           {/* DRAG & DROP DASHED ZONE */}
           <div
             onClick={handleBrowseClick}
-            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setIsDragging(true);
+            }}
             onDragLeave={() => setIsDragging(false)}
             onDrop={handleDrop}
             style={{
@@ -197,20 +217,22 @@ export function ResumeUpload() {
               flexDirection: 'column',
               alignItems: 'center',
               gap: '14px',
-              cursor: 'pointer'
+              cursor: 'pointer',
             }}
           >
-            <div style={{
-              width: '64px',
-              height: '64px',
-              borderRadius: '50%',
-              background: 'rgba(236, 253, 245, 0.95)',
-              color: '#059669',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 6px 16px rgba(5, 150, 105, 0.15)'
-            }}>
+            <div
+              style={{
+                width: '64px',
+                height: '64px',
+                borderRadius: '50%',
+                background: 'rgba(236, 253, 245, 0.95)',
+                color: '#059669',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 6px 16px rgba(5, 150, 105, 0.15)',
+              }}
+            >
               <UploadCloud size={32} />
             </div>
 
@@ -219,42 +241,69 @@ export function ResumeUpload() {
                 Drag & drop your resume here
               </h3>
               <p style={{ color: '#64748b', fontSize: '0.88rem', marginTop: '4px' }}>
-                or <span style={{ color: '#059669', fontWeight: '700', textDecoration: 'underline' }}>Browse Files</span> from your computer
+                or{' '}
+                <span style={{ color: '#059669', fontWeight: '700', textDecoration: 'underline' }}>
+                  Browse Files
+                </span>{' '}
+                from your computer
               </p>
             </div>
 
-            <div style={{
-              fontSize: '0.78rem',
-              color: '#94a3b8',
-              fontWeight: '600',
-              background: 'rgba(241, 245, 249, 0.8)',
-              padding: '4px 14px',
-              borderRadius: '8px'
-            }}>
+            <div
+              style={{
+                fontSize: '0.78rem',
+                color: '#94a3b8',
+                fontWeight: '600',
+                background: 'rgba(241, 245, 249, 0.8)',
+                padding: '4px 14px',
+                borderRadius: '8px',
+              }}
+            >
               Supported Formats: PDF, DOC, DOCX (Max 10MB)
             </div>
           </div>
 
           {/* SELECTED FILE DISPLAY STATE */}
           {selectedFile && (
-            <div style={{
-              marginTop: '24px',
-              background: 'rgba(236, 253, 245, 0.9)',
-              border: '1px solid rgba(167, 243, 208, 0.9)',
-              borderRadius: '16px',
-              padding: '16px 20px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '14px'
-            }}>
+            <div
+              style={{
+                marginTop: '24px',
+                background: 'rgba(236, 253, 245, 0.9)',
+                border: '1px solid rgba(167, 243, 208, 0.9)',
+                borderRadius: '16px',
+                padding: '16px 20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '14px',
+              }}
+            >
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <div style={{ background: '#059669', color: '#ffffff', padding: '10px', borderRadius: '10px' }}>
+                <div
+                  style={{
+                    background: '#059669',
+                    color: '#ffffff',
+                    padding: '10px',
+                    borderRadius: '10px',
+                  }}
+                >
                   <FileText size={20} />
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#0f172a' }}>{selectedFile.name}</div>
-                  <div style={{ fontSize: '0.78rem', color: '#059669', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#0f172a' }}>
+                    {selectedFile.name}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: '0.78rem',
+                      color: '#059669',
+                      fontWeight: '700',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      marginTop: '2px',
+                    }}
+                  >
                     <CheckCircle2 size={14} /> {selectedFile.size} • Ready to continue
                   </div>
                 </div>
@@ -277,7 +326,7 @@ export function ResumeUpload() {
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px'
+                  gap: '6px',
                 }}
               >
                 <RefreshCw size={14} /> Change File
@@ -303,7 +352,7 @@ export function ResumeUpload() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
-                transition: 'all 200ms ease'
+                transition: 'all 200ms ease',
               }}
             >
               Continue <ArrowRight size={18} />

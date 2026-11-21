@@ -7,12 +7,21 @@ import { Cluster } from '../../components/layout/Cluster.jsx';
 import { Button } from '../../components/ui/Button.jsx';
 import { Input } from '../../components/ui/Input.jsx';
 import { Tag } from '../../components/ui/Tag.jsx';
-import { Badge } from '../../components/ui/Badge.jsx';
 import { Toast } from '../../components/ui/Toast.jsx';
 import { useApp } from '../../app/providers/AppProviders.jsx';
-import { 
-  Save, Briefcase, MapPin, IndianRupee, Laptop, Building2, 
-  Home, CheckCircle2, Plus, Sparkles, Sliders, Bell, Eye, Zap, ShieldCheck 
+import {
+  Save,
+  Briefcase,
+  MapPin,
+  IndianRupee,
+  Laptop,
+  Building2,
+  Home,
+  CheckCircle2,
+  Plus,
+  Bell,
+  Eye,
+  Zap,
 } from 'lucide-react';
 import '../../styles/glass.css';
 
@@ -21,13 +30,17 @@ export function CandidatePreferencesPage() {
   const prefs = candidateUser.careerPreferences || {};
 
   // Standardize salary default from bloated zeros to LPA notation
-  const rawSalary = prefs.targetSalaryRange || "₹12 - ₹18 LPA";
-  const initialSalary = rawSalary.includes("000,000") ? "₹12 - ₹18 LPA" : rawSalary;
+  const rawSalary = prefs.targetSalaryRange || '₹12 - ₹18 LPA';
+  const initialSalary = rawSalary.includes('000,000') ? '₹12 - ₹18 LPA' : rawSalary;
 
-  const [desiredRoles, setDesiredRoles] = useState(prefs.desiredRoles || ["Frontend Engineer", "Full Stack Developer"]);
+  const [desiredRoles, setDesiredRoles] = useState(
+    prefs.desiredRoles || ['Frontend Engineer', 'Full Stack Developer'],
+  );
   const [targetSalary, setTargetSalary] = useState(initialSalary);
-  const [preferredLocations, setPreferredLocations] = useState(prefs.preferredLocations || ["Bengaluru", "Hyderabad", "Remote"]);
-  const [workModes, setWorkModes] = useState(prefs.workModes || ["Hybrid", "Remote"]);
+  const [preferredLocations, setPreferredLocations] = useState(
+    prefs.preferredLocations || ['Bengaluru', 'Hyderabad', 'Remote'],
+  );
+  const [workModes, setWorkModes] = useState(prefs.workModes || ['Hybrid', 'Remote']);
   const [newRoleInput, setNewRoleInput] = useState('');
   const [newLocInput, setNewLocInput] = useState('');
   const [toastMsg, setToastMsg] = useState(null);
@@ -38,20 +51,32 @@ export function CandidatePreferencesPage() {
   const [immediateJoiner, setImmediateJoiner] = useState(true);
 
   const POPULAR_ROLES = [
-    "Frontend Engineer", "Full Stack Developer", "React Developer",
-    "Software Engineer", "UI/UX Designer", "Product Engineer", "Data Analyst", "DevOps Engineer"
+    'Frontend Engineer',
+    'Full Stack Developer',
+    'React Developer',
+    'Software Engineer',
+    'UI/UX Designer',
+    'Product Engineer',
+    'Data Analyst',
+    'DevOps Engineer',
   ];
 
   const POPULAR_LOCATIONS = [
-    "Bengaluru", "Hyderabad", "Pune", "Chennai", "Mumbai", "Delhi NCR", "Remote (India)"
+    'Bengaluru',
+    'Hyderabad',
+    'Pune',
+    'Chennai',
+    'Mumbai',
+    'Delhi NCR',
+    'Remote (India)',
   ];
 
   const SALARY_BRACKETS = [
-    { label: "₹6 - ₹10 LPA", desc: "Fresher / Junior" },
-    { label: "₹10 - ₹15 LPA", desc: "Early Career (1-3 yrs)" },
-    { label: "₹15 - ₹25 LPA", desc: "Mid-Level (3-5 yrs)" },
-    { label: "₹25 - ₹40 LPA", desc: "Senior (5-8 yrs)" },
-    { label: "₹40+ LPA", desc: "Lead / Principal" }
+    { label: '₹6 - ₹10 LPA', desc: 'Fresher / Junior' },
+    { label: '₹10 - ₹15 LPA', desc: 'Early Career (1-3 yrs)' },
+    { label: '₹15 - ₹25 LPA', desc: 'Mid-Level (3-5 yrs)' },
+    { label: '₹25 - ₹40 LPA', desc: 'Senior (5-8 yrs)' },
+    { label: '₹40+ LPA', desc: 'Lead / Principal' },
   ];
 
   const handleSave = () => {
@@ -63,10 +88,10 @@ export function CandidatePreferencesPage() {
         workModes,
         emailAlerts,
         recruiterVisibility,
-        immediateJoiner
-      }
+        immediateJoiner,
+      },
     });
-    setToastMsg("Career preferences & job search settings saved successfully!");
+    setToastMsg('Career preferences & job search settings saved successfully!');
     setTimeout(() => setToastMsg(null), 3000);
   };
 
@@ -79,7 +104,7 @@ export function CandidatePreferencesPage() {
   };
 
   const removeRole = (roleToRemove) => {
-    setDesiredRoles(desiredRoles.filter(r => r !== roleToRemove));
+    setDesiredRoles(desiredRoles.filter((r) => r !== roleToRemove));
   };
 
   const addLocation = (locToAdd) => {
@@ -91,13 +116,13 @@ export function CandidatePreferencesPage() {
   };
 
   const removeLocation = (locToRemove) => {
-    setPreferredLocations(preferredLocations.filter(l => l !== locToRemove));
+    setPreferredLocations(preferredLocations.filter((l) => l !== locToRemove));
   };
 
   const toggleWorkMode = (mode) => {
     if (workModes.includes(mode)) {
       if (workModes.length > 1) {
-        setWorkModes(workModes.filter(m => m !== mode));
+        setWorkModes(workModes.filter((m) => m !== mode));
       }
     } else {
       setWorkModes([...workModes, mode]);
@@ -111,12 +136,11 @@ export function CandidatePreferencesPage() {
           {/* Unified Candidate Header Banner */}
           <div className="rc-candidate-header-banner">
             <div>
-              <span className="rc-candidate-eyebrow">
-                JOB SEARCH PREFERENCES
-              </span>
+              <span className="rc-candidate-eyebrow">JOB SEARCH PREFERENCES</span>
               <h1 className="rc-candidate-h1">Career Preferences & Settings</h1>
               <p className="rc-candidate-subtitle">
-                Set your desired target roles, salary brackets, locations, and work modes to personalize your RoleCompass recommendations.
+                Set your desired target roles, salary brackets, locations, and work modes to
+                personalize your RoleCompass recommendations.
               </p>
             </div>
 
@@ -125,27 +149,40 @@ export function CandidatePreferencesPage() {
             </Button>
           </div>
 
-          {toastMsg && <Toast type="success" message={toastMsg} onClose={() => setToastMsg(null)} />}
+          {toastMsg && (
+            <Toast type="success" message={toastMsg} onClose={() => setToastMsg(null)} />
+          )}
 
           <Grid cols="responsive-2" gap="6">
-            
             {/* 1. TARGET CAREER ROLES */}
-            <div style={{
-              background: 'rgba(255, 255, 255, 0.48)',
-              backdropFilter: 'blur(22px)',
-              WebkitBackdropFilter: 'blur(22px)',
-              borderRadius: '20px',
-              padding: '24px',
-              border: '1px solid rgba(255, 255, 255, 0.75)',
-              boxShadow: '0 10px 30px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.85)'
-            }}>
+            <div
+              style={{
+                background: 'rgba(255, 255, 255, 0.48)',
+                backdropFilter: 'blur(22px)',
+                WebkitBackdropFilter: 'blur(22px)',
+                borderRadius: '20px',
+                padding: '24px',
+                border: '1px solid rgba(255, 255, 255, 0.75)',
+                boxShadow:
+                  '0 10px 30px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.85)',
+              }}
+            >
               <Stack gap="4">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{ padding: '8px', background: '#ecfdf5', borderRadius: '10px', color: '#059669' }}>
+                  <div
+                    style={{
+                      padding: '8px',
+                      background: '#ecfdf5',
+                      borderRadius: '10px',
+                      color: '#059669',
+                    }}
+                  >
                     <Briefcase size={20} />
                   </div>
                   <div>
-                    <h3 className="rc-h3" style={{ margin: 0, fontSize: '1.15rem' }}>Target Career Roles</h3>
+                    <h3 className="rc-h3" style={{ margin: 0, fontSize: '1.15rem' }}>
+                      Target Career Roles
+                    </h3>
                     <p style={{ fontSize: '0.8rem', color: '#64748b', margin: '2px 0 0' }}>
                       Positions you want RoleCompass matching algorithms to prioritize
                     </p>
@@ -157,33 +194,62 @@ export function CandidatePreferencesPage() {
                     placeholder="Add target role (e.g. Data Engineer)"
                     value={newRoleInput}
                     onChange={(e) => setNewRoleInput(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addRole(); } }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addRole();
+                      }
+                    }}
                     style={{ flex: 1 }}
                   />
-                  <Button variant="secondary" onClick={() => addRole()} leftIcon={<Plus size={16} />}>
+                  <Button
+                    variant="secondary"
+                    onClick={() => addRole()}
+                    leftIcon={<Plus size={16} />}
+                  >
                     Add
                   </Button>
                 </div>
 
                 {/* Selected Roles */}
                 <div>
-                  <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569', marginBottom: '8px', display: 'block' }}>
+                  <span
+                    style={{
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      color: '#475569',
+                      marginBottom: '8px',
+                      display: 'block',
+                    }}
+                  >
                     Selected Target Roles ({desiredRoles.length}):
                   </span>
                   <Cluster gap="2">
-                    {desiredRoles.map(r => (
-                      <Tag key={r} onRemove={() => removeRole(r)}>{r}</Tag>
+                    {desiredRoles.map((r) => (
+                      <Tag key={r} onRemove={() => removeRole(r)}>
+                        {r}
+                      </Tag>
                     ))}
                   </Cluster>
                 </div>
 
                 {/* Popular Quick Suggestions */}
                 <div style={{ paddingTop: '8px', borderTop: '1px solid #f1f5f9' }}>
-                  <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '8px', display: 'block' }}>
+                  <span
+                    style={{
+                      fontSize: '0.74rem',
+                      fontWeight: 800,
+                      color: '#94a3b8',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.04em',
+                      marginBottom: '8px',
+                      display: 'block',
+                    }}
+                  >
                     Suggested Roles (click to add):
                   </span>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                    {POPULAR_ROLES.filter(r => !desiredRoles.includes(r)).map(pr => (
+                    {POPULAR_ROLES.filter((r) => !desiredRoles.includes(r)).map((pr) => (
                       <button
                         key={pr}
                         type="button"
@@ -200,7 +266,7 @@ export function CandidatePreferencesPage() {
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '4px',
-                          transition: 'all 0.15s ease'
+                          transition: 'all 0.15s ease',
                         }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.background = '#ecfdf5';
@@ -222,22 +288,34 @@ export function CandidatePreferencesPage() {
             </div>
 
             {/* 2. PREFERRED LOCATIONS */}
-            <div style={{
-              background: 'rgba(255, 255, 255, 0.48)',
-              backdropFilter: 'blur(22px)',
-              WebkitBackdropFilter: 'blur(22px)',
-              borderRadius: '20px',
-              padding: '24px',
-              border: '1px solid rgba(255, 255, 255, 0.75)',
-              boxShadow: '0 10px 30px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.85)'
-            }}>
+            <div
+              style={{
+                background: 'rgba(255, 255, 255, 0.48)',
+                backdropFilter: 'blur(22px)',
+                WebkitBackdropFilter: 'blur(22px)',
+                borderRadius: '20px',
+                padding: '24px',
+                border: '1px solid rgba(255, 255, 255, 0.75)',
+                boxShadow:
+                  '0 10px 30px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.85)',
+              }}
+            >
               <Stack gap="4">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{ padding: '8px', background: '#ecfdf5', borderRadius: '10px', color: '#059669' }}>
+                  <div
+                    style={{
+                      padding: '8px',
+                      background: '#ecfdf5',
+                      borderRadius: '10px',
+                      color: '#059669',
+                    }}
+                  >
                     <MapPin size={20} />
                   </div>
                   <div>
-                    <h3 className="rc-h3" style={{ margin: 0, fontSize: '1.15rem' }}>Preferred Locations</h3>
+                    <h3 className="rc-h3" style={{ margin: 0, fontSize: '1.15rem' }}>
+                      Preferred Locations
+                    </h3>
                     <p style={{ fontSize: '0.8rem', color: '#64748b', margin: '2px 0 0' }}>
                       Cities and regions where you wish to work or relocate
                     </p>
@@ -249,33 +327,62 @@ export function CandidatePreferencesPage() {
                     placeholder="Add location (e.g. Coimbatore)"
                     value={newLocInput}
                     onChange={(e) => setNewLocInput(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addLocation(); } }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addLocation();
+                      }
+                    }}
                     style={{ flex: 1 }}
                   />
-                  <Button variant="secondary" onClick={() => addLocation()} leftIcon={<Plus size={16} />}>
+                  <Button
+                    variant="secondary"
+                    onClick={() => addLocation()}
+                    leftIcon={<Plus size={16} />}
+                  >
                     Add
                   </Button>
                 </div>
 
                 {/* Selected Locations */}
                 <div>
-                  <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569', marginBottom: '8px', display: 'block' }}>
+                  <span
+                    style={{
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      color: '#475569',
+                      marginBottom: '8px',
+                      display: 'block',
+                    }}
+                  >
                     Selected Locations ({preferredLocations.length}):
                   </span>
                   <Cluster gap="2">
-                    {preferredLocations.map(loc => (
-                      <Tag key={loc} onRemove={() => removeLocation(loc)}>{loc}</Tag>
+                    {preferredLocations.map((loc) => (
+                      <Tag key={loc} onRemove={() => removeLocation(loc)}>
+                        {loc}
+                      </Tag>
                     ))}
                   </Cluster>
                 </div>
 
                 {/* Top Hiring Hubs */}
                 <div style={{ paddingTop: '8px', borderTop: '1px solid #f1f5f9' }}>
-                  <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '8px', display: 'block' }}>
+                  <span
+                    style={{
+                      fontSize: '0.74rem',
+                      fontWeight: 800,
+                      color: '#94a3b8',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.04em',
+                      marginBottom: '8px',
+                      display: 'block',
+                    }}
+                  >
                     Top Tech Hubs (click to add):
                   </span>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                    {POPULAR_LOCATIONS.filter(l => !preferredLocations.includes(l)).map(pl => (
+                    {POPULAR_LOCATIONS.filter((l) => !preferredLocations.includes(l)).map((pl) => (
                       <button
                         key={pl}
                         type="button"
@@ -292,7 +399,7 @@ export function CandidatePreferencesPage() {
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '4px',
-                          transition: 'all 0.15s ease'
+                          transition: 'all 0.15s ease',
                         }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.background = '#ecfdf5';
@@ -314,22 +421,34 @@ export function CandidatePreferencesPage() {
             </div>
 
             {/* 3. TARGET SALARY EXPECTATION */}
-            <div style={{
-              background: 'rgba(255, 255, 255, 0.48)',
-              backdropFilter: 'blur(22px)',
-              WebkitBackdropFilter: 'blur(22px)',
-              borderRadius: '20px',
-              padding: '24px',
-              border: '1px solid rgba(255, 255, 255, 0.75)',
-              boxShadow: '0 10px 30px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.85)'
-            }}>
+            <div
+              style={{
+                background: 'rgba(255, 255, 255, 0.48)',
+                backdropFilter: 'blur(22px)',
+                WebkitBackdropFilter: 'blur(22px)',
+                borderRadius: '20px',
+                padding: '24px',
+                border: '1px solid rgba(255, 255, 255, 0.75)',
+                boxShadow:
+                  '0 10px 30px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.85)',
+              }}
+            >
               <Stack gap="4">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{ padding: '8px', background: '#ecfdf5', borderRadius: '10px', color: '#059669' }}>
+                  <div
+                    style={{
+                      padding: '8px',
+                      background: '#ecfdf5',
+                      borderRadius: '10px',
+                      color: '#059669',
+                    }}
+                  >
                     <IndianRupee size={20} />
                   </div>
                   <div>
-                    <h3 className="rc-h3" style={{ margin: 0, fontSize: '1.15rem' }}>Target Salary Expectation</h3>
+                    <h3 className="rc-h3" style={{ margin: 0, fontSize: '1.15rem' }}>
+                      Target Salary Expectation
+                    </h3>
                     <p style={{ fontSize: '0.8rem', color: '#64748b', margin: '2px 0 0' }}>
                       Set your expected annual CTC bracket for competitive job matching
                     </p>
@@ -345,11 +464,21 @@ export function CandidatePreferencesPage() {
 
                 {/* Quick Salary Bracket Buttons */}
                 <div>
-                  <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '8px', display: 'block' }}>
+                  <span
+                    style={{
+                      fontSize: '0.74rem',
+                      fontWeight: 800,
+                      color: '#94a3b8',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.04em',
+                      marginBottom: '8px',
+                      display: 'block',
+                    }}
+                  >
                     Standard Salary Brackets (click to apply):
                   </span>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                    {SALARY_BRACKETS.map(sb => {
+                    {SALARY_BRACKETS.map((sb) => {
                       const isSelected = targetSalary === sb.label;
                       return (
                         <button
@@ -370,11 +499,16 @@ export function CandidatePreferencesPage() {
                             alignItems: 'flex-start',
                             gap: '2px',
                             transition: 'all 0.15s ease',
-                            boxShadow: isSelected ? '0 0 0 2px rgba(5, 150, 105, 0.2)' : 'none'
+                            boxShadow: isSelected ? '0 0 0 2px rgba(5, 150, 105, 0.2)' : 'none',
                           }}
                         >
                           <span>{sb.label}</span>
-                          <span style={{ fontSize: '0.7rem', color: isSelected ? '#059669' : '#94a3b8' }}>
+                          <span
+                            style={{
+                              fontSize: '0.7rem',
+                              color: isSelected ? '#059669' : '#94a3b8',
+                            }}
+                          >
                             {sb.desc}
                           </span>
                         </button>
@@ -383,36 +517,51 @@ export function CandidatePreferencesPage() {
                   </div>
                 </div>
 
-                <div style={{
-                  background: 'rgba(248, 250, 252, 0.9)',
-                  padding: '10px 14px',
-                  borderRadius: '10px',
-                  border: '1px solid #e2e8f0',
-                  fontSize: '0.8rem',
-                  color: '#475569'
-                }}>
-                  💡 <strong>Tip:</strong> Candidates with realistic market CTC ranges receive up to <strong>3.2x more interview invitations</strong> from hiring managers.
+                <div
+                  style={{
+                    background: 'rgba(248, 250, 252, 0.9)',
+                    padding: '10px 14px',
+                    borderRadius: '10px',
+                    border: '1px solid #e2e8f0',
+                    fontSize: '0.8rem',
+                    color: '#475569',
+                  }}
+                >
+                  💡 <strong>Tip:</strong> A realistic market CTC range helps refine local role
+                  suggestions. It does not affect real invitations or employer decisions.
                 </div>
               </Stack>
             </div>
 
             {/* 4. WORK MODES */}
-            <div style={{
-              background: 'rgba(255, 255, 255, 0.48)',
-              backdropFilter: 'blur(22px)',
-              WebkitBackdropFilter: 'blur(22px)',
-              borderRadius: '20px',
-              padding: '24px',
-              border: '1px solid rgba(255, 255, 255, 0.75)',
-              boxShadow: '0 10px 30px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.85)'
-            }}>
+            <div
+              style={{
+                background: 'rgba(255, 255, 255, 0.48)',
+                backdropFilter: 'blur(22px)',
+                WebkitBackdropFilter: 'blur(22px)',
+                borderRadius: '20px',
+                padding: '24px',
+                border: '1px solid rgba(255, 255, 255, 0.75)',
+                boxShadow:
+                  '0 10px 30px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.85)',
+              }}
+            >
               <Stack gap="4">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{ padding: '8px', background: '#ecfdf5', borderRadius: '10px', color: '#059669' }}>
+                  <div
+                    style={{
+                      padding: '8px',
+                      background: '#ecfdf5',
+                      borderRadius: '10px',
+                      color: '#059669',
+                    }}
+                  >
                     <Laptop size={20} />
                   </div>
                   <div>
-                    <h3 className="rc-h3" style={{ margin: 0, fontSize: '1.15rem' }}>Work Mode Preferences</h3>
+                    <h3 className="rc-h3" style={{ margin: 0, fontSize: '1.15rem' }}>
+                      Work Mode Preferences
+                    </h3>
                     <p style={{ fontSize: '0.8rem', color: '#64748b', margin: '2px 0 0' }}>
                       Select all workplace environments you are comfortable with
                     </p>
@@ -423,24 +572,24 @@ export function CandidatePreferencesPage() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {[
                     {
-                      id: "Remote",
+                      id: 'Remote',
                       icon: <Home size={18} />,
-                      title: "100% Remote",
-                      desc: "Work flexibly from anywhere in India with periodic virtual syncs"
+                      title: '100% Remote',
+                      desc: 'Work flexibly from anywhere in India with periodic virtual syncs',
                     },
                     {
-                      id: "Hybrid",
+                      id: 'Hybrid',
                       icon: <Laptop size={18} />,
-                      title: "Hybrid Model",
-                      desc: "Balanced split between office (2-3 days/week) and remote work"
+                      title: 'Hybrid Model',
+                      desc: 'Balanced split between office (2-3 days/week) and remote work',
                     },
                     {
-                      id: "On-Site",
+                      id: 'On-Site',
                       icon: <Building2 size={18} />,
-                      title: "Full-Time On-Site",
-                      desc: "Work on-location at the employer corporate office or technology center"
-                    }
-                  ].map(mode => {
+                      title: 'Full-Time On-Site',
+                      desc: 'Work on-location at the employer corporate office or technology center',
+                    },
+                  ].map((mode) => {
                     const isSelected = workModes.includes(mode.id);
                     return (
                       <div
@@ -457,24 +606,35 @@ export function CandidatePreferencesPage() {
                           gap: '14px',
                           cursor: 'pointer',
                           transition: 'all 0.18s ease',
-                          boxShadow: isSelected ? '0 4px 16px rgba(5, 150, 105, 0.12)' : '0 2px 6px rgba(15, 23, 42, 0.02)'
+                          boxShadow: isSelected
+                            ? '0 4px 16px rgba(5, 150, 105, 0.12)'
+                            : '0 2px 6px rgba(15, 23, 42, 0.02)',
                         }}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                          <div style={{
-                            padding: '10px',
-                            background: isSelected ? '#059669' : '#f1f5f9',
-                            color: isSelected ? '#ffffff' : '#64748b',
-                            borderRadius: '10px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            transition: 'all 0.18s ease'
-                          }}>
+                          <div
+                            style={{
+                              padding: '10px',
+                              background: isSelected ? '#059669' : '#f1f5f9',
+                              color: isSelected ? '#ffffff' : '#64748b',
+                              borderRadius: '10px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              transition: 'all 0.18s ease',
+                            }}
+                          >
                             {mode.icon}
                           </div>
                           <div>
-                            <h4 style={{ fontSize: '0.94rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                            <h4
+                              style={{
+                                fontSize: '0.94rem',
+                                fontWeight: 800,
+                                color: '#0f172a',
+                                margin: 0,
+                              }}
+                            >
                               {mode.title}
                             </h4>
                             <p style={{ fontSize: '0.78rem', color: '#64748b', margin: '2px 0 0' }}>
@@ -483,18 +643,20 @@ export function CandidatePreferencesPage() {
                           </div>
                         </div>
 
-                        <div style={{
-                          width: '22px',
-                          height: '22px',
-                          borderRadius: '50%',
-                          border: isSelected ? '2px solid #059669' : '2px solid #cbd5e1',
-                          background: isSelected ? '#059669' : '#ffffff',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: '#ffffff',
-                          flexShrink: 0
-                        }}>
+                        <div
+                          style={{
+                            width: '22px',
+                            height: '22px',
+                            borderRadius: '50%',
+                            border: isSelected ? '2px solid #059669' : '2px solid #cbd5e1',
+                            background: isSelected ? '#059669' : '#ffffff',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#ffffff',
+                            flexShrink: 0,
+                          }}
+                        >
                           {isSelected && <CheckCircle2 size={16} />}
                         </div>
                       </div>
@@ -503,28 +665,39 @@ export function CandidatePreferencesPage() {
                 </div>
               </Stack>
             </div>
-
           </Grid>
 
           {/* 5. PRIVACY & JOB ALERTS ROW */}
-          <div style={{
-            background: 'rgba(255, 255, 255, 0.48)',
-            backdropFilter: 'blur(22px)',
-            WebkitBackdropFilter: 'blur(22px)',
-            borderRadius: '20px',
-            padding: '24px 28px',
-            border: '1px solid rgba(255, 255, 255, 0.75)',
-            boxShadow: '0 10px 30px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.85)'
-          }}>
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.48)',
+              backdropFilter: 'blur(22px)',
+              WebkitBackdropFilter: 'blur(22px)',
+              borderRadius: '20px',
+              padding: '24px 28px',
+              border: '1px solid rgba(255, 255, 255, 0.75)',
+              boxShadow:
+                '0 10px 30px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.85)',
+            }}
+          >
             <Stack gap="4">
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ padding: '8px', background: '#ecfdf5', borderRadius: '10px', color: '#059669' }}>
+                <div
+                  style={{
+                    padding: '8px',
+                    background: '#ecfdf5',
+                    borderRadius: '10px',
+                    color: '#059669',
+                  }}
+                >
                   <Bell size={20} />
                 </div>
                 <div>
-                  <h3 className="rc-h3" style={{ margin: 0, fontSize: '1.15rem' }}>Job Alert & Recruiter Visibility Preferences</h3>
+                  <h3 className="rc-h3" style={{ margin: 0, fontSize: '1.15rem' }}>
+                    Job Alert & Privacy Preferences
+                  </h3>
                   <p style={{ fontSize: '0.8rem', color: '#64748b', margin: '2px 0 0' }}>
-                    Control how employers and RoleCompass automated matching engines reach you
+                    Demo settings stored locally. No emails or employer visibility are active.
                   </p>
                 </div>
               </div>
@@ -542,18 +715,20 @@ export function CandidatePreferencesPage() {
                     display: 'flex',
                     alignItems: 'flex-start',
                     gap: '12px',
-                    transition: 'all 0.15s ease'
+                    transition: 'all 0.15s ease',
                   }}
                 >
                   <div style={{ color: emailAlerts ? '#059669' : '#94a3b8', marginTop: '2px' }}>
                     <Bell size={18} />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <h4 style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                      Instant Job Alerts
+                    <h4
+                      style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0f172a', margin: 0 }}
+                    >
+                      Job Alert Preference
                     </h4>
                     <p style={{ fontSize: '0.76rem', color: '#64748b', margin: '4px 0 0' }}>
-                      Get notified when new jobs matching your target roles are posted
+                      Stored locally in this demo. No email notifications are sent.
                     </p>
                   </div>
                   <input
@@ -576,18 +751,22 @@ export function CandidatePreferencesPage() {
                     display: 'flex',
                     alignItems: 'flex-start',
                     gap: '12px',
-                    transition: 'all 0.15s ease'
+                    transition: 'all 0.15s ease',
                   }}
                 >
-                  <div style={{ color: recruiterVisibility ? '#059669' : '#94a3b8', marginTop: '2px' }}>
+                  <div
+                    style={{ color: recruiterVisibility ? '#059669' : '#94a3b8', marginTop: '2px' }}
+                  >
                     <Eye size={18} />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <h4 style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                      Recruiter Discovery
+                    <h4
+                      style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0f172a', margin: 0 }}
+                    >
+                      Profile Visibility
                     </h4>
                     <p style={{ fontSize: '0.76rem', color: '#64748b', margin: '4px 0 0' }}>
-                      Allow verified hiring managers to view your profile and send invites
+                      Local demo preference only. No employer can view this profile.
                     </p>
                   </div>
                   <input
@@ -610,18 +789,20 @@ export function CandidatePreferencesPage() {
                     display: 'flex',
                     alignItems: 'flex-start',
                     gap: '12px',
-                    transition: 'all 0.15s ease'
+                    transition: 'all 0.15s ease',
                   }}
                 >
                   <div style={{ color: immediateJoiner ? '#059669' : '#94a3b8', marginTop: '2px' }}>
                     <Zap size={18} />
                   </div>
                   <div style={{ flex: 1 }}>
-                    <h4 style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                      Immediate Joiner Badge
+                    <h4
+                      style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0f172a', margin: 0 }}
+                    >
+                      Availability Signal
                     </h4>
                     <p style={{ fontSize: '0.76rem', color: '#64748b', margin: '4px 0 0' }}>
-                      Signal to recruiters that you can join in &le; 15 days or immediate notice
+                      Local demo preference for your own reference. Nothing is shared.
                     </p>
                   </div>
                   <input
@@ -636,7 +817,9 @@ export function CandidatePreferencesPage() {
           </div>
 
           {/* Bottom Save Action Bar */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', paddingTop: '8px' }}>
+          <div
+            style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', paddingTop: '8px' }}
+          >
             <Button variant="primary" size="lg" onClick={handleSave} leftIcon={<Save size={18} />}>
               Save Preferences
             </Button>

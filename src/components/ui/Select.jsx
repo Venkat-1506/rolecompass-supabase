@@ -33,7 +33,11 @@ export function Select({
         className={cn('rc-select', errorText && 'rc-select-error', className)}
         {...props}
       >
-        {placeholder && <option value="" disabled>{placeholder}</option>}
+        {placeholder && (
+          <option value="" disabled>
+            {placeholder}
+          </option>
+        )}
         {options.map((opt, i) => (
           <option key={opt.value || i} value={opt.value}>
             {opt.label || opt.value}

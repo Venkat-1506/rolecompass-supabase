@@ -10,17 +10,28 @@ export function EmptyState({
   icon = null,
   actionLabel,
   onAction,
-  className = ''
+  className = '',
 }) {
   return (
-    <Card variant="glass" className={cn('rc-flex', 'rc-flex-col', 'rc-items-center', 'rc-justify-center', className)} padding="8">
+    <Card
+      variant="glass"
+      className={cn('rc-flex', 'rc-flex-col', 'rc-items-center', 'rc-justify-center', className)}
+      padding="8"
+    >
       <div style={{ color: 'var(--rc-color-muted-gray-400)', marginBottom: 'var(--rc-space-4)' }}>
         {icon || <Inbox size={48} strokeWidth={1.5} />}
       </div>
       <h3 className="rc-h3" style={{ marginBottom: 'var(--rc-space-2)', textAlign: 'center' }}>
         {title}
       </h3>
-      <p className="rc-small" style={{ textAlign: 'center', maxWidth: '420px', marginBottom: actionLabel ? 'var(--rc-space-6)' : '0' }}>
+      <p
+        className="rc-small"
+        style={{
+          textAlign: 'center',
+          maxWidth: '420px',
+          marginBottom: actionLabel ? 'var(--rc-space-6)' : '0',
+        }}
+      >
         {description}
       </p>
       {actionLabel && onAction && (

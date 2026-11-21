@@ -1,63 +1,113 @@
-import React from 'react';
+﻿import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
-// Layouts
 import { PublicLayout } from '../layouts/PublicLayout.jsx';
 import { CandidateLayout } from '../layouts/CandidateLayout.jsx';
-import { EmployerLayout } from '../layouts/EmployerLayout.jsx';
+import { GuestRoute, ProtectedRoute, OnboardingRoute } from './RouteGuards.jsx';
 
-// Public Pages
 import { HomePage } from '../../pages/public/HomePage.jsx';
-import { ExplorePage } from '../../pages/public/ExplorePage.jsx';
-import { JobDetailsPage } from '../../pages/public/JobDetailsPage.jsx';
-import { RolesPage } from '../../pages/public/RolesPage.jsx';
-import { RoleDetailsPage } from '../../pages/public/RoleDetailsPage.jsx';
-import { CompaniesPage } from '../../pages/public/CompaniesPage.jsx';
-import { CompanyDetailsPage } from '../../pages/public/CompanyDetailsPage.jsx';
-import { AboutPage } from '../../pages/public/AboutPage.jsx';
-import { ContactPage } from '../../pages/public/ContactPage.jsx';
-import { HowItWorksPage } from '../../pages/public/HowItWorksPage.jsx';
-
-// Auth Pages
 import { LoginPage } from '../../pages/auth/LoginPage.jsx';
 
-// Onboarding Pages
-import { ChoosePath } from '../../pages/onboarding/ChoosePath.jsx';
-import { AccountDetails } from '../../pages/onboarding/AccountDetails.jsx';
-import { AccountCreated } from '../../pages/onboarding/AccountCreated.jsx';
-import { ProfileMethod } from '../../pages/onboarding/ProfileMethod.jsx';
-import { ResumeUpload } from '../../pages/onboarding/ResumeUpload.jsx';
-import { ResumeProcessing } from '../../pages/onboarding/ResumeProcessing.jsx';
-import { ProfileReveal } from '../../pages/onboarding/ProfileReveal.jsx';
-import { ManualProfile } from '../../pages/onboarding/ManualProfile.jsx';
-import { ProfileComplete } from '../../pages/onboarding/ProfileComplete.jsx';
+const lazyPage = (loader, name) =>
+  React.lazy(() => loader().then((module) => ({ default: module[name] })));
 
-// Candidate Pages
-import { CandidateHomePage } from '../../pages/candidate/CandidateHomePage.jsx';
-import { CandidateProfilePage } from '../../pages/candidate/CandidateProfilePage.jsx';
-import { CandidatePreferencesPage } from '../../pages/candidate/CandidatePreferencesPage.jsx';
-import { CandidateRolesPage } from '../../pages/candidate/CandidateRolesPage.jsx';
-import { LearningHubPage } from '../../pages/candidate/LearningHubPage.jsx';
-import { SkillDetailsPage } from '../../pages/candidate/SkillDetailsPage.jsx';
-import { ApplicationsTrackerPage } from '../../pages/candidate/ApplicationsTrackerPage.jsx';
-import { ResumePage } from '../../pages/candidate/ResumePage.jsx';
+const ExplorePage = lazyPage(() => import('../../pages/public/ExplorePage.jsx'), 'ExplorePage');
+const JobDetailsPage = lazyPage(
+  () => import('../../pages/public/JobDetailsPage.jsx'),
+  'JobDetailsPage',
+);
+const RolesPage = lazyPage(() => import('../../pages/public/RolesPage.jsx'), 'RolesPage');
+const RoleDetailsPage = lazyPage(
+  () => import('../../pages/public/RoleDetailsPage.jsx'),
+  'RoleDetailsPage',
+);
+const CompaniesPage = lazyPage(
+  () => import('../../pages/public/CompaniesPage.jsx'),
+  'CompaniesPage',
+);
+const CompanyDetailsPage = lazyPage(
+  () => import('../../pages/public/CompanyDetailsPage.jsx'),
+  'CompanyDetailsPage',
+);
+const AboutPage = lazyPage(() => import('../../pages/public/AboutPage.jsx'), 'AboutPage');
+const ContactPage = lazyPage(() => import('../../pages/public/ContactPage.jsx'), 'ContactPage');
+const HowItWorksPage = lazyPage(
+  () => import('../../pages/public/HowItWorksPage.jsx'),
+  'HowItWorksPage',
+);
 
-// Employer Pages
-import { EmployerOverviewPage } from '../../pages/employer/EmployerOverviewPage.jsx';
-import { CompanySetupPage } from '../../pages/employer/CompanySetupPage.jsx';
-import { EmployerJobsPage } from '../../pages/employer/EmployerJobsPage.jsx';
-import { CreateRoleWizardPage } from '../../pages/employer/CreateRoleWizardPage.jsx';
-import { EmployerCandidatesPage } from '../../pages/employer/EmployerCandidatesPage.jsx';
-import { HiringPipelinePage } from '../../pages/employer/HiringPipelinePage.jsx';
+const ChoosePath = lazyPage(() => import('../../pages/onboarding/ChoosePath.jsx'), 'ChoosePath');
+const AccountDetails = lazyPage(
+  () => import('../../pages/onboarding/AccountDetails.jsx'),
+  'AccountDetails',
+);
+const AccountCreated = lazyPage(
+  () => import('../../pages/onboarding/AccountCreated.jsx'),
+  'AccountCreated',
+);
+const ProfileMethod = lazyPage(
+  () => import('../../pages/onboarding/ProfileMethod.jsx'),
+  'ProfileMethod',
+);
+const ResumeUpload = lazyPage(
+  () => import('../../pages/onboarding/ResumeUpload.jsx'),
+  'ResumeUpload',
+);
+const ResumeProcessing = lazyPage(
+  () => import('../../pages/onboarding/ResumeProcessing.jsx'),
+  'ResumeProcessing',
+);
+const ProfileReveal = lazyPage(
+  () => import('../../pages/onboarding/ProfileReveal.jsx'),
+  'ProfileReveal',
+);
+const ManualProfile = lazyPage(
+  () => import('../../pages/onboarding/ManualProfile.jsx'),
+  'ManualProfile',
+);
+const ProfileComplete = lazyPage(
+  () => import('../../pages/onboarding/ProfileComplete.jsx'),
+  'ProfileComplete',
+);
 
-// Route Guards
-import { GuestRoute, ProtectedRoute, OnboardingRoute } from './RouteGuards.jsx';
+const CandidateHomePage = lazyPage(
+  () => import('../../pages/candidate/CandidateHomePage.jsx'),
+  'CandidateHomePage',
+);
+const CandidateProfilePage = lazyPage(
+  () => import('../../pages/candidate/CandidateProfilePage.jsx'),
+  'CandidateProfilePage',
+);
+const CandidatePreferencesPage = lazyPage(
+  () => import('../../pages/candidate/CandidatePreferencesPage.jsx'),
+  'CandidatePreferencesPage',
+);
+const CandidateRolesPage = lazyPage(
+  () => import('../../pages/candidate/CandidateRolesPage.jsx'),
+  'CandidateRolesPage',
+);
+const LearningHubPage = lazyPage(
+  () => import('../../pages/candidate/LearningHubPage.jsx'),
+  'LearningHubPage',
+);
+const SkillDetailsPage = lazyPage(
+  () => import('../../pages/candidate/SkillDetailsPage.jsx'),
+  'SkillDetailsPage',
+);
+const ApplicationsTrackerPage = lazyPage(
+  () => import('../../pages/candidate/ApplicationsTrackerPage.jsx'),
+  'ApplicationsTrackerPage',
+);
+const ResumePage = lazyPage(() => import('../../pages/candidate/ResumePage.jsx'), 'ResumePage');
+const SavedJobsPage = lazyPage(
+  () => import('../../pages/candidate/SavedJobsPage.jsx'),
+  'SavedJobsPage',
+);
 
 export function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* PUBLIC ROUTE GROUP */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/how-it-works" element={<HowItWorksPage />} />
@@ -71,7 +121,6 @@ export function AppRouter() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
 
-          {/* GUEST ROUTES (Sign In & Register for unauthenticated visitors) */}
           <Route element={<GuestRoute />}>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<ChoosePath />} />
@@ -80,7 +129,6 @@ export function AppRouter() {
             <Route path="/onboarding/account" element={<AccountDetails />} />
           </Route>
 
-          {/* ONBOARDING ROUTES (Authenticated candidate profile setup flow) */}
           <Route element={<OnboardingRoute />}>
             <Route path="/onboarding/created" element={<AccountCreated />} />
             <Route path="/onboarding/method" element={<ProfileMethod />} />
@@ -92,37 +140,23 @@ export function AppRouter() {
           </Route>
         </Route>
 
-        {/* CANDIDATE PROTECTED ROUTE GROUP */}
-        <Route element={<ProtectedRoute allowedRole="candidate" />}>
+        <Route element={<ProtectedRoute />}>
           <Route path="/candidate" element={<CandidateLayout />}>
             <Route index element={<CandidateHomePage />} />
             <Route path="profile" element={<CandidateProfilePage />} />
             <Route path="preferences" element={<CandidatePreferencesPage />} />
+            <Route path="settings" element={<CandidatePreferencesPage />} />
             <Route path="roles" element={<CandidateRolesPage />} />
             <Route path="roles/:roleId" element={<RoleDetailsPage />} />
             <Route path="learning" element={<LearningHubPage />} />
             <Route path="learning/:skillId" element={<SkillDetailsPage />} />
+            <Route path="saved-jobs" element={<SavedJobsPage />} />
             <Route path="applications" element={<ApplicationsTrackerPage />} />
             <Route path="applications/:applicationId" element={<ApplicationsTrackerPage />} />
             <Route path="resume" element={<ResumePage />} />
           </Route>
         </Route>
 
-        {/* EMPLOYER PROTECTED ROUTE GROUP */}
-        <Route element={<ProtectedRoute allowedRole="employer" />}>
-          <Route path="/employer" element={<EmployerLayout />}>
-            <Route index element={<EmployerOverviewPage />} />
-            <Route path="company" element={<CompanySetupPage />} />
-            <Route path="jobs" element={<EmployerJobsPage />} />
-            <Route path="jobs/create" element={<CreateRoleWizardPage />} />
-            <Route path="jobs/:jobId" element={<JobDetailsPage />} />
-            <Route path="candidates" element={<EmployerCandidatesPage />} />
-            <Route path="candidates/:candidateId" element={<EmployerCandidatesPage />} />
-            <Route path="pipeline" element={<HiringPipelinePage />} />
-          </Route>
-        </Route>
-
-        {/* CATCH-ALL REDIRECT */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

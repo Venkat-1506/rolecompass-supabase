@@ -18,7 +18,13 @@ export function IconButton({
       aria-label={ariaLabel}
       disabled={isDisabled}
       onClick={onClick}
-      className={cn('rc-btn', `rc-btn-${variant}`, 'rc-btn-icon-only', size !== 'md' && `rc-btn-${size}`, className)}
+      className={cn(
+        'rc-btn',
+        `rc-btn-${variant}`,
+        'rc-btn-icon-only',
+        size !== 'md' && `rc-btn-${size}`,
+        className,
+      )}
       {...props}
     >
       {icon}

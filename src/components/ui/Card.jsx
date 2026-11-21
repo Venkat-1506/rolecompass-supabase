@@ -24,13 +24,13 @@ export function Card({
         padding: `var(--rc-space-${padding})`,
         cursor: onClick || isHoverable ? 'pointer' : 'default',
         boxSizing: 'border-box',
-        ...style
+        ...style,
       }}
       className={cn(
         'rc-glass-base',
         glassLevelClass,
         isHoverable && 'rc-glass-hoverable',
-        className
+        className,
       )}
       {...props}
     >

@@ -182,17 +182,39 @@
   animation: rcStaggerUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
-.rc-stagger-grid > *:nth-child(1) { animation-delay: 0.02s; }
-.rc-stagger-grid > *:nth-child(2) { animation-delay: 0.07s; }
-.rc-stagger-grid > *:nth-child(3) { animation-delay: 0.12s; }
-.rc-stagger-grid > *:nth-child(4) { animation-delay: 0.17s; }
-.rc-stagger-grid > *:nth-child(5) { animation-delay: 0.22s; }
-.rc-stagger-grid > *:nth-child(6) { animation-delay: 0.27s; }
-.rc-stagger-grid > *:nth-child(7) { animation-delay: 0.32s; }
-.rc-stagger-grid > *:nth-child(8) { animation-delay: 0.36s; }
-.rc-stagger-grid > *:nth-child(9) { animation-delay: 0.40s; }
-.rc-stagger-grid > *:nth-child(10) { animation-delay: 0.44s; }
-.rc-stagger-grid > *:nth-child(n + 11) { animation-delay: 0.48s; }
+.rc-stagger-grid > *:nth-child(1) {
+  animation-delay: 0.02s;
+}
+.rc-stagger-grid > *:nth-child(2) {
+  animation-delay: 0.07s;
+}
+.rc-stagger-grid > *:nth-child(3) {
+  animation-delay: 0.12s;
+}
+.rc-stagger-grid > *:nth-child(4) {
+  animation-delay: 0.17s;
+}
+.rc-stagger-grid > *:nth-child(5) {
+  animation-delay: 0.22s;
+}
+.rc-stagger-grid > *:nth-child(6) {
+  animation-delay: 0.27s;
+}
+.rc-stagger-grid > *:nth-child(7) {
+  animation-delay: 0.32s;
+}
+.rc-stagger-grid > *:nth-child(8) {
+  animation-delay: 0.36s;
+}
+.rc-stagger-grid > *:nth-child(9) {
+  animation-delay: 0.4s;
+}
+.rc-stagger-grid > *:nth-child(10) {
+  animation-delay: 0.44s;
+}
+.rc-stagger-grid > *:nth-child(n + 11) {
+  animation-delay: 0.48s;
+}
 
 /* 7. GENERIC ENTRANCE UTILITIES */
 .rc-anim-fade {
@@ -234,7 +256,9 @@ html.rc-overlay-open .rc-animate-pulse {
 
 /* 9. HOVER LIFT HELPER */
 .rc-hover-lift {
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
+  transition:
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.2s ease;
 }
 
 .rc-hover-lift:hover {

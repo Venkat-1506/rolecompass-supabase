@@ -14,7 +14,16 @@ export function Checkbox({
   const checkboxId = id || (label ? `chk-${label.toLowerCase().replace(/\s+/g, '-')}` : undefined);
 
   return (
-    <label htmlFor={checkboxId} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', cursor: isDisabled ? 'not-allowed' : 'pointer', opacity: isDisabled ? 0.6 : 1 }}>
+    <label
+      htmlFor={checkboxId}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '0.5rem',
+        cursor: isDisabled ? 'not-allowed' : 'pointer',
+        opacity: isDisabled ? 0.6 : 1,
+      }}
+    >
       <input
         type="checkbox"
         id={checkboxId}
@@ -25,7 +34,11 @@ export function Checkbox({
         className={cn(className)}
         {...props}
       />
-      {label && <span className="rc-small" style={{ color: 'var(--rc-color-deep-charcoal-900)' }}>{label}</span>}
+      {label && (
+        <span className="rc-small" style={{ color: 'var(--rc-color-deep-charcoal-900)' }}>
+          {label}
+        </span>
+      )}
     </label>
   );
 }

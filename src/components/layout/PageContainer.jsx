@@ -4,7 +4,7 @@ export function PageContainer({
   children,
   size = 'lg', // sm | md | lg | full
   className = '',
-  style = {}
+  style = {},
 }) {
   const sizeClass = `rc-container-${size}`;
 

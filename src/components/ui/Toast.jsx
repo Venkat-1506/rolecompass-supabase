@@ -6,7 +6,7 @@ export function Toast({
   message,
   type = 'info', // info | success | warning | error
   onClose,
-  className = ''
+  className = '',
 }) {
   let icon = <Info size={18} color="var(--rc-color-info)" />;
   let border = 'var(--rc-color-soft-slate-200)';
@@ -24,18 +24,28 @@ export function Toast({
 
   return (
     <div
-      className={cn('rc-glass-level-3', 'rc-toast-anim', 'rc-flex', 'rc-items-center', 'rc-justify-between', className)}
+      className={cn(
+        'rc-glass-level-3',
+        'rc-toast-anim',
+        'rc-flex',
+        'rc-items-center',
+        'rc-justify-between',
+        className,
+      )}
       style={{
         padding: '0.75rem 1rem',
         borderRadius: 'var(--rc-radius-md)',
         border: `1px solid ${border}`,
         maxWidth: '380px',
-        boxShadow: 'var(--rc-shadow-lg)'
+        boxShadow: 'var(--rc-shadow-lg)',
       }}
     >
       <div className="rc-flex rc-items-center rc-gap-3">
         {icon}
-        <span className="rc-small" style={{ fontWeight: 500, color: 'var(--rc-color-deep-charcoal-900)' }}>
+        <span
+          className="rc-small"
+          style={{ fontWeight: 500, color: 'var(--rc-color-deep-charcoal-900)' }}
+        >
           {message}
         </span>
       </div>
@@ -43,7 +53,13 @@ export function Toast({
         <button
           type="button"
           onClick={onClose}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.6, marginLeft: '12px' }}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            opacity: 0.6,
+            marginLeft: '12px',
+          }}
         >
           <X size={16} />
         </button>

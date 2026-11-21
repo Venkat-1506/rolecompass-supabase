@@ -6,7 +6,7 @@ export function Stack({
   gap = '4', // 1 | 2 | 3 | 4 | 6 | 8
   align = 'stretch', // start | center | end | stretch
   className = '',
-  style = {}
+  style = {},
 }) {
   return (
     <div
@@ -14,7 +14,7 @@ export function Stack({
       style={{
         gap: `var(--rc-space-${gap})`,
         alignItems: align,
-        ...style
+        ...style,
       }}
     >
       {children}

@@ -12,11 +12,7 @@ export function GlassSurface({
   const levelClass = `rc-glass-level-${level}`;
 
   return (
-    <div
-      className={cn('rc-glass-base', levelClass, className)}
-      style={style}
-      {...props}
-    >
+    <div className={cn('rc-glass-base', levelClass, className)} style={style} {...props}>
       {children}
     </div>
   );

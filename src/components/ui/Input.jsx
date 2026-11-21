@@ -32,7 +32,14 @@ export function Input({
       )}
       <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
         {leftIcon && (
-          <span style={{ position: 'absolute', left: '12px', color: 'var(--rc-color-muted-gray-500)', pointerEvents: 'none' }}>
+          <span
+            style={{
+              position: 'absolute',
+              left: '12px',
+              color: 'var(--rc-color-muted-gray-500)',
+              pointerEvents: 'none',
+            }}
+          >
             {leftIcon}
           </span>
         )}
@@ -45,18 +52,20 @@ export function Input({
           placeholder={placeholder}
           style={{
             paddingLeft: leftIcon ? '2.3rem' : undefined,
-            paddingRight: (rightIcon || isLoading) ? '2.3rem' : undefined
+            paddingRight: rightIcon || isLoading ? '2.3rem' : undefined,
           }}
           className={cn(
             'rc-input',
             errorText && 'rc-input-error',
             isSuccess && 'rc-input-success',
-            className
+            className,
           )}
           {...props}
         />
         {(isLoading || rightIcon) && (
-          <span style={{ position: 'absolute', right: '12px', color: 'var(--rc-color-muted-gray-500)' }}>
+          <span
+            style={{ position: 'absolute', right: '12px', color: 'var(--rc-color-muted-gray-500)' }}
+          >
             {isLoading ? <Loader2 className="rc-animate-spin" size={16} /> : rightIcon}
           </span>
         )}

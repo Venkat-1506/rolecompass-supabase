@@ -185,7 +185,7 @@ export const companyLogos = {
   whatsapp: whatsappLogo,
   x: xLogo,
   twitter: xLogo,
-  youtube: youtubeLogo
+  youtube: youtubeLogo,
 };
 
 /**
@@ -194,7 +194,10 @@ export const companyLogos = {
  */
 export function getCompanyLogo(companyId) {
   if (!companyId) return null;
-  const key = String(companyId).toLowerCase().trim().replace(/[^a-z0-9-]/g, '');
+  const key = String(companyId)
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9-]/g, '');
   return companyLogos[key] || null;
 }
 

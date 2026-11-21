@@ -29,7 +29,7 @@ export function GoToTop() {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     window.scrollTo({
       top: 0,
-      behavior: prefersReducedMotion ? 'auto' : 'smooth'
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
     });
   };
 
@@ -59,7 +59,7 @@ export function GoToTop() {
         transform: isVisible ? 'translateY(0) scale(1)' : 'translateY(12px) scale(0.9)',
         transition: 'all 240ms cubic-bezier(0.16, 1, 0.3, 1)',
         pointerEvents: isVisible ? 'auto' : 'none',
-        outline: 'none'
+        outline: 'none',
       }}
     >
       <ArrowUp size={20} strokeWidth={2.4} />

@@ -2,7 +2,8 @@
 
 /* Keyframes for Organic Atmospheric Background Orbs */
 @keyframes rcFloatOrb1 {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(0px, 0px) scale(1);
     opacity: 0.55;
   }
@@ -13,7 +14,8 @@
 }
 
 @keyframes rcFloatOrb2 {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(0px, 0px) scale(1);
     opacity: 0.45;
   }
@@ -24,7 +26,8 @@
 }
 
 @keyframes rcFloatCard1 {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -33,7 +36,8 @@
 }
 
 @keyframes rcFloatCard2 {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -42,7 +46,8 @@
 }
 
 @keyframes rcPulseGlow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.4;
     transform: scale(1);
   }
@@ -68,7 +73,6 @@
 .rc-animate-float-2 {
   animation: rcFloatCard2 7s ease-in-out infinite;
 }
-
 
 /* Atmospheric Animation Presets
    The orbs are huge (80–110px) blurred layers. Promoting them to their own
@@ -120,7 +124,9 @@
 
 /* ACCESSIBILITY: REDUCED MOTION OVERRIDE */
 @media (prefers-reduced-motion: reduce) {
-  *, ::before, ::after {
+  *,
+  ::before,
+  ::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

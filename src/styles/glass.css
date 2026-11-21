@@ -4,10 +4,11 @@
 .rc-glass-base {
   position: relative;
   box-sizing: border-box;
-  transition: background-color var(--rc-motion-medium),
-              backdrop-filter var(--rc-motion-medium),
-              border-color var(--rc-motion-medium),
-              box-shadow var(--rc-motion-medium);
+  transition:
+    background-color var(--rc-motion-medium),
+    backdrop-filter var(--rc-motion-medium),
+    border-color var(--rc-motion-medium),
+    box-shadow var(--rc-motion-medium);
 }
 
 /* LEVEL 1 — SUBTLE GLASS (Nav, Filters, Secondary Sections, Supporting Info) */
@@ -16,7 +17,9 @@
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border: 1px solid rgba(255, 255, 255, 0.65);
-  box-shadow: 0 6px 20px -2px rgba(15, 23, 42, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  box-shadow:
+    0 6px 20px -2px rgba(15, 23, 42, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
 }
 
 /* LEVEL 2 & SIGNATURE EXPLORE CARD GLASS (Job Cards, Role Cards, Company Cards, Dashboard Panels) */
@@ -26,10 +29,15 @@
   backdrop-filter: blur(22px);
   -webkit-backdrop-filter: blur(22px);
   border: 1px solid rgba(255, 255, 255, 0.75);
-  box-shadow: 0 10px 30px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  box-shadow:
+    0 10px 30px 0 rgba(15, 23, 42, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
   border-radius: 16px;
   box-sizing: border-box;
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 /* LEVEL 3 — STRONG GLASS (Major Modal Windows, Application Wizard, Focused Overlays) */
@@ -38,18 +46,25 @@
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
   border: 1px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 20px 50px 0 rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  box-shadow:
+    0 20px 50px 0 rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 
 /* Glass Interactive Hover Modifiers */
 .rc-glass-hoverable {
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .rc-glass-hoverable:hover,
 .rc-card-glass:hover {
   transform: translateY(-3px);
-  box-shadow: 0 16px 36px 0 rgba(15, 23, 42, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  box-shadow:
+    0 16px 36px 0 rgba(15, 23, 42, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
   border-color: rgba(5, 150, 105, 0.35);
 }
 
@@ -74,14 +89,21 @@
   backdrop-filter: blur(22px) !important;
   -webkit-backdrop-filter: blur(22px) !important;
   border: 1px solid rgba(255, 255, 255, 0.75) !important;
-  box-shadow: 0 10px 30px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.85) !important;
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, border-color 0.2s ease !important;
+  box-shadow:
+    0 10px 30px 0 rgba(15, 23, 42, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85) !important;
+  transition:
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.2s ease,
+    border-color 0.2s ease !important;
 }
 
 .rc-company-card:hover {
   transform: translateY(-3px) !important;
   border-color: rgba(5, 150, 105, 0.35) !important;
-  box-shadow: 0 16px 36px 0 rgba(15, 23, 42, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+  box-shadow:
+    0 16px 36px 0 rgba(15, 23, 42, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95) !important;
 }
 
 .rc-company-card:hover .rc-company-arrow {
@@ -138,8 +160,20 @@
   display: flex;
   max-width: 100%;
   box-sizing: border-box;
-  mask-image: linear-gradient(to right, transparent 0%, black 48px, black calc(100% - 48px), transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 48px, black calc(100% - 48px), transparent 100%);
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 48px,
+    black calc(100% - 48px),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 48px,
+    black calc(100% - 48px),
+    transparent 100%
+  );
 }
 
 .rc-logo-marquee-track {
@@ -172,7 +206,10 @@
   justify-content: center;
   opacity: 0.88;
   cursor: pointer;
-  transition: opacity 180ms ease, transform 180ms ease, filter 180ms ease;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease,
+    filter 180ms ease;
   flex-shrink: 0;
   user-select: none;
   padding: 2px 4px;
@@ -200,9 +237,19 @@
   }
   .rc-logo-marquee-container {
     width: 100%;
-    mask-image: linear-gradient(to right, transparent 0%, black 24px, black calc(100% - 24px), transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 24px, black calc(100% - 24px), transparent 100%);
+    mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 24px,
+      black calc(100% - 24px),
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 24px,
+      black calc(100% - 24px),
+      transparent 100%
+    );
   }
 }
-
-

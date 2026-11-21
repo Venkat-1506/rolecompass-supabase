@@ -19,7 +19,7 @@ export function GlassCard({
         padding: 'var(--rc-space-5)',
         borderRadius: 'var(--rc-radius-lg)',
         cursor: onClick || isHoverable ? 'pointer' : 'default',
-        ...style
+        ...style,
       }}
       onClick={onClick}
       {...props}

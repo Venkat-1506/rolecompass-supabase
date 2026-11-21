@@ -32,28 +32,32 @@ export function ProfileMethod() {
         <OnboardingProgress currentStep="method" />
 
         <div style={{ textAlign: 'center', maxWidth: '640px', margin: '0 auto 36px' }}>
-          <span style={{
-            fontSize: '0.75rem',
-            fontWeight: '700',
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-            color: '#059669',
-            background: 'rgba(236, 253, 245, 0.85)',
-            padding: '6px 16px',
-            borderRadius: '10px',
-            border: '1px solid rgba(167, 243, 208, 0.8)'
-          }}>
+          <span
+            style={{
+              fontSize: '0.75rem',
+              fontWeight: '700',
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              color: '#059669',
+              background: 'rgba(236, 253, 245, 0.85)',
+              padding: '6px 16px',
+              borderRadius: '10px',
+              border: '1px solid rgba(167, 243, 208, 0.8)',
+            }}
+          >
             PROFILE SETUP METHOD
           </span>
 
-          <h1 style={{
-            fontFamily: 'Outfit, sans-serif',
-            fontSize: 'clamp(2.2rem, 3.5vw, 3rem)',
-            fontWeight: '800',
-            color: '#0f172a',
-            marginTop: '16px',
-            letterSpacing: '-0.02em'
-          }}>
+          <h1
+            style={{
+              fontFamily: 'Outfit, sans-serif',
+              fontSize: 'clamp(2.2rem, 3.5vw, 3rem)',
+              fontWeight: '800',
+              color: '#0f172a',
+              marginTop: '16px',
+              letterSpacing: '-0.02em',
+            }}
+          >
             Build Your RoleCompass Profile
           </h1>
 
@@ -63,63 +67,116 @@ export function ProfileMethod() {
         </div>
 
         {/* 2 MAJOR METHOD CARDS */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '28px',
-          maxWidth: '960px',
-          margin: '0 auto 40px'
-        }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gap: '28px',
+            maxWidth: '960px',
+            margin: '0 auto 40px',
+          }}
+        >
           {/* METHOD 1: RESUME UPLOAD */}
           <div
             onClick={() => setSelectedMethod('resume')}
             style={{
-              background: selectedMethod === 'resume' ? 'rgba(236, 253, 245, 0.75)' : 'rgba(255, 255, 255, 0.48)',
+              background:
+                selectedMethod === 'resume'
+                  ? 'rgba(236, 253, 245, 0.75)'
+                  : 'rgba(255, 255, 255, 0.48)',
               backdropFilter: 'blur(22px)',
               WebkitBackdropFilter: 'blur(22px)',
               borderRadius: '20px',
               padding: '32px',
-              border: selectedMethod === 'resume' ? '2px solid #059669' : '1px solid rgba(255, 255, 255, 0.75)',
-              boxShadow: selectedMethod === 'resume' ? '0 16px 36px rgba(5, 150, 105, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.95)' : '0 10px 30px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.85)',
+              border:
+                selectedMethod === 'resume'
+                  ? '2px solid #059669'
+                  : '1px solid rgba(255, 255, 255, 0.75)',
+              boxShadow:
+                selectedMethod === 'resume'
+                  ? '0 16px 36px rgba(5, 150, 105, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.95)'
+                  : '0 10px 30px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.85)',
               cursor: 'pointer',
               transition: 'all 220ms ease',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
-              gap: '24px'
+              gap: '24px',
             }}
           >
             <div>
-              <div style={{
-                width: '52px',
-                height: '52px',
-                borderRadius: '14px',
-                background: selectedMethod === 'resume' ? '#059669' : 'rgba(241, 245, 249, 0.9)',
-                color: selectedMethod === 'resume' ? '#ffffff' : '#64748b',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '18px',
-                transition: 'all 200ms ease'
-              }}>
+              <div
+                style={{
+                  width: '52px',
+                  height: '52px',
+                  borderRadius: '14px',
+                  background: selectedMethod === 'resume' ? '#059669' : 'rgba(241, 245, 249, 0.9)',
+                  color: selectedMethod === 'resume' ? '#ffffff' : '#64748b',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: '18px',
+                  transition: 'all 200ms ease',
+                }}
+              >
                 <FileUp size={26} />
               </div>
 
-              <h2 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a' }}>USE MY RESUME</h2>
-              <p style={{ color: '#475569', fontSize: '0.92rem', marginTop: '8px', lineHeight: '1.6' }}>
-                Upload your resume and let RoleCompass build your profile automatically.
+              <h2 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a' }}>
+                USE MY RESUME
+              </h2>
+              <p
+                style={{
+                  color: '#475569',
+                  fontSize: '0.92rem',
+                  marginTop: '8px',
+                  lineHeight: '1.6',
+                }}
+              >
+                Upload a resume and review a locally generated profile preview built from existing
+                demo data.
               </p>
 
               {/* BENEFITS LIST */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '20px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.88rem', color: '#0f172a', fontWeight: '600' }}>
+              <div
+                style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '20px' }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    fontSize: '0.88rem',
+                    color: '#0f172a',
+                    fontWeight: '600',
+                  }}
+                >
                   <Check size={16} color="#059669" strokeWidth={3} /> Extract skills and experience
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.88rem', color: '#0f172a', fontWeight: '600' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    fontSize: '0.88rem',
+                    color: '#0f172a',
+                    fontWeight: '600',
+                  }}
+                >
                   <Check size={16} color="#059669" strokeWidth={3} /> Identify education background
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.88rem', color: '#0f172a', fontWeight: '600' }}>
-                  <Check size={16} color="#059669" strokeWidth={3} /> Review information before saving
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    fontSize: '0.88rem',
+                    color: '#0f172a',
+                    fontWeight: '600',
+                  }}
+                >
+                  <Check size={16} color="#059669" strokeWidth={3} /> Review information before
+                  saving
                 </div>
               </div>
             </div>
@@ -139,7 +196,7 @@ export function ProfileMethod() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '8px',
-                boxShadow: '0 4px 14px rgba(5, 150, 105, 0.3)'
+                boxShadow: '0 4px 14px rgba(5, 150, 105, 0.3)',
               }}
             >
               Upload Resume <ArrowRight size={18} />
@@ -150,52 +207,103 @@ export function ProfileMethod() {
           <div
             onClick={() => setSelectedMethod('manual')}
             style={{
-              background: selectedMethod === 'manual' ? 'rgba(236, 253, 245, 0.75)' : 'rgba(255, 255, 255, 0.48)',
+              background:
+                selectedMethod === 'manual'
+                  ? 'rgba(236, 253, 245, 0.75)'
+                  : 'rgba(255, 255, 255, 0.48)',
               backdropFilter: 'blur(22px)',
               WebkitBackdropFilter: 'blur(22px)',
               borderRadius: '20px',
               padding: '32px',
-              border: selectedMethod === 'manual' ? '2px solid #059669' : '1px solid rgba(255, 255, 255, 0.75)',
-              boxShadow: selectedMethod === 'manual' ? '0 16px 36px rgba(5, 150, 105, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.95)' : '0 10px 30px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.85)',
+              border:
+                selectedMethod === 'manual'
+                  ? '2px solid #059669'
+                  : '1px solid rgba(255, 255, 255, 0.75)',
+              boxShadow:
+                selectedMethod === 'manual'
+                  ? '0 16px 36px rgba(5, 150, 105, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.95)'
+                  : '0 10px 30px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.85)',
               cursor: 'pointer',
               transition: 'all 220ms ease',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
-              gap: '24px'
+              gap: '24px',
             }}
           >
             <div>
-              <div style={{
-                width: '52px',
-                height: '52px',
-                borderRadius: '14px',
-                background: selectedMethod === 'manual' ? '#059669' : 'rgba(241, 245, 249, 0.9)',
-                color: selectedMethod === 'manual' ? '#ffffff' : '#64748b',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '18px',
-                transition: 'all 200ms ease'
-              }}>
+              <div
+                style={{
+                  width: '52px',
+                  height: '52px',
+                  borderRadius: '14px',
+                  background: selectedMethod === 'manual' ? '#059669' : 'rgba(241, 245, 249, 0.9)',
+                  color: selectedMethod === 'manual' ? '#ffffff' : '#64748b',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: '18px',
+                  transition: 'all 200ms ease',
+                }}
+              >
                 <Edit3 size={26} />
               </div>
 
-              <h2 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a' }}>BUILD MY PROFILE MANUALLY</h2>
-              <p style={{ color: '#475569', fontSize: '0.92rem', marginTop: '8px', lineHeight: '1.6' }}>
+              <h2 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#0f172a' }}>
+                BUILD MY PROFILE MANUALLY
+              </h2>
+              <p
+                style={{
+                  color: '#475569',
+                  fontSize: '0.92rem',
+                  marginTop: '8px',
+                  lineHeight: '1.6',
+                }}
+              >
                 Enter your education, skills, experience, projects and preferences step by step.
               </p>
 
               {/* STEPS PREVIEW LIST */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '20px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.88rem', color: '#0f172a', fontWeight: '600' }}>
+              <div
+                style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '20px' }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    fontSize: '0.88rem',
+                    color: '#0f172a',
+                    fontWeight: '600',
+                  }}
+                >
                   <Check size={16} color="#059669" strokeWidth={3} /> Step-by-step guidance
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.88rem', color: '#0f172a', fontWeight: '600' }}>
-                  <Check size={16} color="#059669" strokeWidth={3} /> Complete control over every detail
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    fontSize: '0.88rem',
+                    color: '#0f172a',
+                    fontWeight: '600',
+                  }}
+                >
+                  <Check size={16} color="#059669" strokeWidth={3} /> Complete control over every
+                  detail
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.88rem', color: '#0f172a', fontWeight: '600' }}>
-                  <Check size={16} color="#059669" strokeWidth={3} /> Ideal if you don't have a PDF resume
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    fontSize: '0.88rem',
+                    color: '#0f172a',
+                    fontWeight: '600',
+                  }}
+                >
+                  <Check size={16} color="#059669" strokeWidth={3} /> Ideal if you don't have a PDF
+                  resume
                 </div>
               </div>
             </div>
@@ -215,7 +323,7 @@ export function ProfileMethod() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '8px',
-                boxShadow: '0 4px 14px rgba(15, 23, 42, 0.2)'
+                boxShadow: '0 4px 14px rgba(15, 23, 42, 0.2)',
               }}
             >
               Build Manually <ArrowRight size={18} />

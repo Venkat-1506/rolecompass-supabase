@@ -1,36 +1,21 @@
 import React, { useState, useMemo } from 'react';
-import { Card } from '../ui/Card.jsx';
 import { Badge } from '../ui/Badge.jsx';
 import { Button } from '../ui/Button.jsx';
-import {
-  Clock,
-  CheckCircle2,
-  PlayCircle,
-  Bookmark,
-  Calendar,
-  Filter,
-  ArrowRight,
-  ExternalLink,
-  Target,
-  Sparkles,
-  RotateCcw
-} from 'lucide-react';
+import { Clock, CheckCircle2, PlayCircle, Bookmark, Calendar, ArrowRight } from 'lucide-react';
 
-export function LearningTimeline({
-  events = [],
-  roles = [],
-  activeTargetRoleTitle = 'Frontend Engineer',
-  onReopenResource
-}) {
+export function LearningTimeline({ events = [], roles = [], onReopenResource }) {
   const [selectedRoleFilter, setSelectedRoleFilter] = useState('ALL');
   const [selectedTypeFilter, setSelectedTypeFilter] = useState('ALL');
 
   const filteredEvents = useMemo(() => {
-    return events.filter(e => {
+    return events.filter((e) => {
       // Role filter
       if (selectedRoleFilter !== 'ALL') {
         const targetId = selectedRoleFilter.toLowerCase().replace(/[^a-z0-9]/g, '-');
-        if (e.roleId !== targetId && (e.roleTitle || '').toLowerCase() !== selectedRoleFilter.toLowerCase()) {
+        if (
+          e.roleId !== targetId &&
+          (e.roleTitle || '').toLowerCase() !== selectedRoleFilter.toLowerCase()
+        ) {
           return false;
         }
       }
@@ -38,7 +23,13 @@ export function LearningTimeline({
       // Event type filter
       if (selectedTypeFilter !== 'ALL') {
         if (selectedTypeFilter === 'completed' && e.eventType !== 'completed') return false;
-        if (selectedTypeFilter === 'in_progress' && (e.eventType !== 'started' && e.eventType !== 'resumed' && e.eventType !== 'reopened')) return false;
+        if (
+          selectedTypeFilter === 'in_progress' &&
+          e.eventType !== 'started' &&
+          e.eventType !== 'resumed' &&
+          e.eventType !== 'reopened'
+        )
+          return false;
         if (selectedTypeFilter === 'saved' && e.eventType !== 'saved') return false;
       }
 
@@ -53,7 +44,7 @@ export function LearningTimeline({
         month: 'short',
         day: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
       });
     } catch {
       return 'Recent';
@@ -63,13 +54,29 @@ export function LearningTimeline({
   const getEventBadge = (eventType) => {
     switch (eventType) {
       case 'completed':
-        return <Badge variant="success" icon={<CheckCircle2 size={12} />}>Completed</Badge>;
+        return (
+          <Badge variant="success" icon={<CheckCircle2 size={12} />}>
+            Completed
+          </Badge>
+        );
       case 'started':
-        return <Badge variant="warning" icon={<PlayCircle size={12} />}>Started</Badge>;
+        return (
+          <Badge variant="warning" icon={<PlayCircle size={12} />}>
+            Started
+          </Badge>
+        );
       case 'resumed':
-        return <Badge variant="info" icon={<PlayCircle size={12} />}>Resumed</Badge>;
+        return (
+          <Badge variant="info" icon={<PlayCircle size={12} />}>
+            Resumed
+          </Badge>
+        );
       case 'saved':
-        return <Badge variant="default" icon={<Bookmark size={12} />}>Saved</Badge>;
+        return (
+          <Badge variant="default" icon={<Bookmark size={12} />}>
+            Saved
+          </Badge>
+        );
       default:
         return <Badge variant="default">{eventType}</Badge>;
     }
@@ -77,7 +84,16 @@ export function LearningTimeline({
 
   return (
     <div className="rc-candidate-card" style={{ padding: '26px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '14px', marginBottom: '20px' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '14px',
+          marginBottom: '20px',
+        }}
+      >
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Calendar size={20} color="#059669" />
@@ -86,7 +102,8 @@ export function LearningTimeline({
             </h3>
           </div>
           <p className="rc-small" style={{ color: '#64748b', margin: '4px 0 0 0' }}>
-            Chronological audit log tracking every course, document, and skill milestone completed for your target roles.
+            Chronological audit log tracking every course, document, and skill milestone completed
+            for your target roles.
           </p>
         </div>
 
@@ -102,12 +119,14 @@ export function LearningTimeline({
               fontSize: '0.82rem',
               fontWeight: 600,
               background: '#ffffff',
-              color: '#334155'
+              color: '#334155',
             }}
           >
             <option value="ALL">All Target Roles</option>
-            {roles.map(r => (
-              <option key={r.id} value={r.title}>{r.title}</option>
+            {roles.map((r) => (
+              <option key={r.id} value={r.title}>
+                {r.title}
+              </option>
             ))}
           </select>
 
@@ -121,7 +140,7 @@ export function LearningTimeline({
               fontSize: '0.82rem',
               fontWeight: 600,
               background: '#ffffff',
-              color: '#334155'
+              color: '#334155',
             }}
           >
             <option value="ALL">All Activity Types</option>
@@ -142,7 +161,8 @@ export function LearningTimeline({
               top: '16px',
               bottom: '16px',
               width: '2px',
-              background: 'linear-gradient(180deg, rgba(16, 185, 129, 0.6) 0%, rgba(203, 213, 225, 0.4) 100%)'
+              background:
+                'linear-gradient(180deg, rgba(16, 185, 129, 0.6) 0%, rgba(203, 213, 225, 0.4) 100%)',
             }}
           />
 
@@ -156,7 +176,7 @@ export function LearningTimeline({
                     display: 'flex',
                     alignItems: 'flex-start',
                     gap: '16px',
-                    position: 'relative'
+                    position: 'relative',
                   }}
                 >
                   {/* Timeline Node Icon */}
@@ -165,7 +185,11 @@ export function LearningTimeline({
                       width: '20px',
                       height: '20px',
                       borderRadius: '50%',
-                      background: isCompleted ? '#059669' : evt.eventType === 'saved' ? '#f59e0b' : '#0284c7',
+                      background: isCompleted
+                        ? '#059669'
+                        : evt.eventType === 'saved'
+                          ? '#f59e0b'
+                          : '#0284c7',
                       color: '#ffffff',
                       display: 'flex',
                       alignItems: 'center',
@@ -173,10 +197,16 @@ export function LearningTimeline({
                       marginTop: '6px',
                       boxShadow: '0 0 0 4px #ffffff, 0 0 0 5px rgba(226, 232, 240, 0.8)',
                       zIndex: 2,
-                      flexShrink: 0
+                      flexShrink: 0,
                     }}
                   >
-                    {isCompleted ? <CheckCircle2 size={12} /> : evt.eventType === 'saved' ? <Bookmark size={11} /> : <PlayCircle size={11} />}
+                    {isCompleted ? (
+                      <CheckCircle2 size={12} />
+                    ) : evt.eventType === 'saved' ? (
+                      <Bookmark size={11} />
+                    ) : (
+                      <PlayCircle size={11} />
+                    )}
                   </div>
 
                   {/* Content Card */}
@@ -186,7 +216,9 @@ export function LearningTimeline({
                       background: 'rgba(255, 255, 255, 0.75)',
                       backdropFilter: 'blur(10px)',
                       WebkitBackdropFilter: 'blur(10px)',
-                      border: isCompleted ? '1px solid rgba(167, 243, 208, 0.9)' : '1px solid #e2e8f0',
+                      border: isCompleted
+                        ? '1px solid rgba(167, 243, 208, 0.9)'
+                        : '1px solid #e2e8f0',
                       borderRadius: '12px',
                       padding: '14px 18px',
                       boxShadow: '0 2px 10px rgba(15, 23, 42, 0.03)',
@@ -194,27 +226,40 @@ export function LearningTimeline({
                       flexWrap: 'wrap',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      gap: '12px'
+                      gap: '12px',
                     }}
                   >
                     <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', flexWrap: 'wrap' }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          marginBottom: '4px',
+                          flexWrap: 'wrap',
+                        }}
+                      >
                         {getEventBadge(evt.eventType)}
-                        <span className="rc-label" style={{ fontSize: '0.74rem', color: '#64748b' }}>
+                        <span
+                          className="rc-label"
+                          style={{ fontSize: '0.74rem', color: '#64748b' }}
+                        >
                           Target: <strong>{evt.roleTitle}</strong>
                         </span>
-                        {evt.provider && (
-                          <span className="rc-provider-badge">
-                            {evt.provider}
-                          </span>
-                        )}
-                        <span className="rc-small" style={{ color: '#94a3b8', fontSize: '0.74rem' }}>
+                        {evt.provider && <span className="rc-provider-badge">{evt.provider}</span>}
+                        <span
+                          className="rc-small"
+                          style={{ color: '#94a3b8', fontSize: '0.74rem' }}
+                        >
                           <Clock size={11} style={{ display: 'inline', marginRight: '3px' }} />
                           {formatTimestamp(evt.timestamp)}
                         </span>
                       </div>
 
-                      <h4 className="rc-label" style={{ margin: '0 0 2px 0', fontSize: '0.94rem', color: '#0f172a' }}>
+                      <h4
+                        className="rc-label"
+                        style={{ margin: '0 0 2px 0', fontSize: '0.94rem', color: '#0f172a' }}
+                      >
                         {evt.resourceTitle || evt.description}
                       </h4>
                     </div>
@@ -236,11 +281,24 @@ export function LearningTimeline({
           </div>
         </div>
       ) : (
-        <div style={{ textAlign: 'center', padding: '36px 16px', background: 'rgba(248, 250, 252, 0.7)', borderRadius: '12px' }}>
+        <div
+          style={{
+            textAlign: 'center',
+            padding: '36px 16px',
+            background: 'rgba(248, 250, 252, 0.7)',
+            borderRadius: '12px',
+          }}
+        >
           <Clock size={32} color="#94a3b8" style={{ marginBottom: '8px' }} />
-          <h4 className="rc-h4" style={{ margin: 0, color: '#334155' }}>No Learning Timeline Events Yet</h4>
-          <p className="rc-small" style={{ color: '#64748b', maxWidth: '380px', margin: '4px auto 0 auto' }}>
-            Start a learning resource from the catalogue above to begin logging verified milestones for your target career roles.
+          <h4 className="rc-h4" style={{ margin: 0, color: '#334155' }}>
+            No Learning Timeline Events Yet
+          </h4>
+          <p
+            className="rc-small"
+            style={{ color: '#64748b', maxWidth: '380px', margin: '4px auto 0 auto' }}
+          >
+            Start a learning resource from the catalogue above to begin logging learning milestones
+            for your target career roles.
           </p>
         </div>
       )}

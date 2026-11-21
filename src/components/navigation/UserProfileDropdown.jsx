@@ -2,39 +2,42 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../../app/providers/AppProviders.jsx';
 import { Avatar } from '../ui/Avatar.jsx';
-import { Badge } from '../ui/Badge.jsx';
-import { 
-  User, FileText, Briefcase, Settings, LogOut, ChevronDown, 
-  Building2, ArrowRightLeft, ShieldCheck, Sparkles 
+import {
+  User,
+  FileText,
+  Briefcase,
+  Settings,
+  LogOut,
+  ChevronDown,
+  Bookmark,
+  Send,
 } from 'lucide-react';
 
-export function UserProfileDropdown({ mode = 'AUTO' }) {
-  const { 
-    currentUser, 
-    candidateUser, 
-    employerUser, 
-    logout, 
-    switchWorkspace, 
-    calculateProfileCompletion 
-  } = useApp();
+const itemStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '10px',
+  padding: '8px 10px',
+  borderRadius: '8px',
+  fontSize: '0.86rem',
+  fontWeight: 600,
+  color: '#334155',
+  textDecoration: 'none',
+  transition: 'background 0.15s ease',
+};
+
+export function UserProfileDropdown() {
+  const { currentUser, candidateUser, logout, calculateProfileCompletion } = useApp();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const isEmployer = mode === 'EMPLOYER' || (mode === 'AUTO' && currentUser?.accountType === 'employer');
+  const fullName = candidateUser?.personal?.fullName || currentUser?.fullName || 'Candidate';
+  const email = candidateUser?.personal?.email || currentUser?.email || '';
+  const profileCompletion = calculateProfileCompletion
+    ? calculateProfileCompletion(candidateUser)
+    : 0;
 
-  const fullName = isEmployer 
-    ? (employerUser?.personal?.fullName || currentUser?.fullName || "Priya Sundaram")
-    : (candidateUser?.personal?.fullName || currentUser?.fullName || "Arjun Verma");
-
-  const email = isEmployer
-    ? (employerUser?.personal?.email || currentUser?.email || "priya.s@zoho.com")
-    : (candidateUser?.personal?.email || currentUser?.email || "arjun.verma@example.com");
-
-  const companyName = employerUser?.company?.name || "Zoho Corporation";
-  const profileCompletion = calculateProfileCompletion ? calculateProfileCompletion(candidateUser) : 90;
-
-  // Close dropdown on click outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -45,7 +48,6 @@ export function UserProfileDropdown({ mode = 'AUTO' }) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Close dropdown on Escape key
   useEffect(() => {
     function handleKeyDown(event) {
       if (event.key === 'Escape') {
@@ -64,17 +66,8 @@ export function UserProfileDropdown({ mode = 'AUTO' }) {
     navigate('/');
   };
 
-  const handleSwitchWorkspace = (targetRole) => {
-    setIsOpen(false);
-    if (switchWorkspace) {
-      switchWorkspace(targetRole);
-    }
-    navigate(targetRole === 'employer' ? '/employer' : '/candidate');
-  };
-
   return (
     <div ref={dropdownRef} style={{ position: 'relative', display: 'inline-block' }}>
-      {/* Trigger Button */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -90,24 +83,37 @@ export function UserProfileDropdown({ mode = 'AUTO' }) {
           gap: '10px',
           cursor: 'pointer',
           boxShadow: '0 2px 8px rgba(15, 23, 42, 0.05)',
-          transition: 'all 0.2s ease'
+          transition: 'all 0.2s ease',
         }}
-        onMouseEnter={(e) => e.currentTarget.style.borderColor = 'rgba(5, 150, 105, 0.4)'}
-        onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(226, 232, 240, 0.9)'}
+        onMouseEnter={(event) => {
+          event.currentTarget.style.borderColor = 'rgba(5, 150, 105, 0.4)';
+        }}
+        onMouseLeave={(event) => {
+          event.currentTarget.style.borderColor = 'rgba(226, 232, 240, 0.9)';
+        }}
       >
         <Avatar name={fullName} size="sm" />
-        <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column' }} className="rc-hide-mobile">
-          <span style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0f172a', lineHeight: '1.2' }}>
+        <div
+          style={{ textAlign: 'left', display: 'flex', flexDirection: 'column' }}
+          className="rc-hide-mobile"
+        >
+          <span
+            style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0f172a', lineHeight: '1.2' }}
+          >
             {fullName.split(' ')[0]}
           </span>
-          <span style={{ fontSize: '0.72rem', color: isEmployer ? '#0284c7' : '#059669', fontWeight: 700 }}>
-            {isEmployer ? 'Employer Portal' : 'Candidate'}
-          </span>
+          <span style={{ fontSize: '0.72rem', color: '#059669', fontWeight: 700 }}>Candidate</span>
         </div>
-        <ChevronDown size={14} color="#64748b" style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
+        <ChevronDown
+          size={14}
+          color="#64748b"
+          style={{
+            transform: isOpen ? 'rotate(180deg)' : 'none',
+            transition: 'transform 0.2s ease',
+          }}
+        />
       </button>
 
-      {/* Glass Dropdown Menu */}
       {isOpen && (
         <div
           style={{
@@ -125,206 +131,100 @@ export function UserProfileDropdown({ mode = 'AUTO' }) {
             zIndex: 1050,
             display: 'flex',
             flexDirection: 'column',
-            gap: '12px'
+            gap: '12px',
           }}
         >
-          {/* User Profile Summary */}
           <div style={{ paddingBottom: '12px', borderBottom: '1px solid #f1f5f9' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+            <div
+              style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}
+            >
               <Avatar name={fullName} size="md" />
               <div style={{ overflow: 'hidden' }}>
-                <h4 style={{ fontSize: '0.92rem', fontWeight: 800, color: '#0f172a', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <h4
+                  style={{
+                    fontSize: '0.92rem',
+                    fontWeight: 800,
+                    color: '#0f172a',
+                    margin: 0,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
                   {fullName}
                 </h4>
-                <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span
+                  style={{
+                    fontSize: '0.75rem',
+                    color: '#64748b',
+                    display: 'block',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
                   {email}
                 </span>
               </div>
             </div>
 
-            {/* Candidate Completion Bar OR Employer Organization Card */}
-            {!isEmployer ? (
-              <div style={{ background: '#f8fafc', padding: '8px 10px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', fontWeight: 700, color: '#334155', marginBottom: '4px' }}>
-                  <span>Profile Completion</span>
-                  <span style={{ color: '#059669' }}>{profileCompletion}%</span>
-                </div>
-                <div style={{ height: '4px', background: '#e2e8f0', borderRadius: '2px', overflow: 'hidden' }}>
-                  <div style={{ width: `${profileCompletion}%`, height: '100%', background: '#059669' }} />
-                </div>
+            <div
+              style={{
+                background: '#f8fafc',
+                padding: '8px 10px',
+                borderRadius: '10px',
+                border: '1px solid #e2e8f0',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  color: '#334155',
+                  marginBottom: '4px',
+                }}
+              >
+                <span>Profile Completion</span>
+                <span style={{ color: '#059669' }}>{profileCompletion}%</span>
               </div>
-            ) : (
-              <div style={{ background: '#f0f9ff', padding: '8px 10px', borderRadius: '10px', border: '1px solid #bae6fd', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Building2 size={15} color="#0284c7" />
-                <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#0369a1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {companyName}
-                </span>
+              <div
+                style={{
+                  height: '4px',
+                  background: '#e2e8f0',
+                  borderRadius: '2px',
+                  overflow: 'hidden',
+                }}
+              >
+                <div
+                  style={{ width: `${profileCompletion}%`, height: '100%', background: '#059669' }}
+                />
               </div>
-            )}
+            </div>
           </div>
 
-          {/* Navigation Links */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            {!isEmployer ? (
-              <>
-                <Link
-                  to="/candidate/profile"
-                  onClick={() => setIsOpen(false)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '8px 10px',
-                    borderRadius: '8px',
-                    fontSize: '0.86rem',
-                    fontWeight: 600,
-                    color: '#334155',
-                    textDecoration: 'none',
-                    transition: 'background 0.15s ease'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f5f9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                >
-                  <User size={16} color="#059669" /> My Profile
-                </Link>
-
-                <Link
-                  to="/candidate/resume"
-                  onClick={() => setIsOpen(false)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '8px 10px',
-                    borderRadius: '8px',
-                    fontSize: '0.86rem',
-                    fontWeight: 600,
-                    color: '#334155',
-                    textDecoration: 'none',
-                    transition: 'background 0.15s ease'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f5f9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                >
-                  <FileText size={16} color="#0284c7" /> Resume & ATS Hub
-                </Link>
-
-                <Link
-                  to="/candidate/applications"
-                  onClick={() => setIsOpen(false)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '8px 10px',
-                    borderRadius: '8px',
-                    fontSize: '0.86rem',
-                    fontWeight: 600,
-                    color: '#334155',
-                    textDecoration: 'none',
-                    transition: 'background 0.15s ease'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f5f9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                >
-                  <Briefcase size={16} color="#059669" /> Saved & Applied Jobs
-                </Link>
-
-                <Link
-                  to="/candidate/preferences"
-                  onClick={() => setIsOpen(false)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '8px 10px',
-                    borderRadius: '8px',
-                    fontSize: '0.86rem',
-                    fontWeight: 600,
-                    color: '#334155',
-                    textDecoration: 'none',
-                    transition: 'background 0.15s ease'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f5f9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                >
-                  <Settings size={16} color="#64748b" /> Career Preferences
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link
-                  to="/employer/company"
-                  onClick={() => setIsOpen(false)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '8px 10px',
-                    borderRadius: '8px',
-                    fontSize: '0.86rem',
-                    fontWeight: 600,
-                    color: '#334155',
-                    textDecoration: 'none',
-                    transition: 'background 0.15s ease'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f5f9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                >
-                  <Building2 size={16} color="#0284c7" /> Company Profile
-                </Link>
-
-                <Link
-                  to="/employer/company"
-                  onClick={() => setIsOpen(false)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '8px 10px',
-                    borderRadius: '8px',
-                    fontSize: '0.86rem',
-                    fontWeight: 600,
-                    color: '#334155',
-                    textDecoration: 'none',
-                    transition: 'background 0.15s ease'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#f1f5f9'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                >
-                  <Settings size={16} color="#64748b" /> Settings
-                </Link>
-
-                <button
-                  type="button"
-                  onClick={() => handleSwitchWorkspace('candidate')}
-                  style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '8px 10px',
-                    borderRadius: '8px',
-                    fontSize: '0.84rem',
-                    fontWeight: 700,
-                    color: '#0284c7',
-                    background: '#f0f9ff',
-                    border: '1px solid #bae6fd',
-                    cursor: 'pointer',
-                    marginTop: '4px',
-                    transition: 'all 0.15s ease'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = '#e0f2fe'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = '#f0f9ff'}
-                >
-                  <ArrowRightLeft size={15} /> 
-                  Switch to Candidate Workspace
-                </button>
-              </>
-            )}
+            <Link to="/candidate/profile" onClick={() => setIsOpen(false)} style={itemStyle}>
+              <User size={16} color="#059669" /> Profile & Settings
+            </Link>
+            <Link to="/candidate/resume" onClick={() => setIsOpen(false)} style={itemStyle}>
+              <FileText size={16} color="#0284c7" /> My Resume
+            </Link>
+            <Link to="/candidate/saved-jobs" onClick={() => setIsOpen(false)} style={itemStyle}>
+              <Bookmark size={16} color="#d97706" /> Saved Jobs
+            </Link>
+            <Link to="/candidate/applications" onClick={() => setIsOpen(false)} style={itemStyle}>
+              <Send size={16} color="#059669" /> Applications
+            </Link>
+            <Link to="/candidate/preferences" onClick={() => setIsOpen(false)} style={itemStyle}>
+              <Settings size={16} color="#64748b" /> Career Preferences
+            </Link>
+            <Link to="/candidate/roles" onClick={() => setIsOpen(false)} style={itemStyle}>
+              <Briefcase size={16} color="#7b2cbf" /> Job Match & Skill Gaps
+            </Link>
           </div>
 
-          {/* Logout Action Button */}
           <div style={{ paddingTop: '8px', borderTop: '1px solid #f1f5f9' }}>
             <button
               type="button"
@@ -336,18 +236,15 @@ export function UserProfileDropdown({ mode = 'AUTO' }) {
                 gap: '10px',
                 padding: '8px 10px',
                 borderRadius: '8px',
-                fontSize: '0.85rem',
+                fontSize: '0.86rem',
                 fontWeight: 700,
                 color: '#dc2626',
-                background: '#fef2f2',
-                border: '1px solid #fecaca',
+                background: 'rgba(254, 242, 242, 0.8)',
+                border: '1px solid rgba(254, 202, 202, 0.8)',
                 cursor: 'pointer',
-                transition: 'all 0.15s ease'
               }}
-              onMouseEnter={(e) => e.currentTarget.style.background = '#fee2e2'}
-              onMouseLeave={(e) => e.currentTarget.style.background = '#fef2f2'}
             >
-              <LogOut size={16} /> Log out
+              <LogOut size={16} /> Log Out
             </button>
           </div>
         </div>

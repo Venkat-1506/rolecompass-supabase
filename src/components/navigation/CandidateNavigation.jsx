@@ -17,11 +17,11 @@ export function CandidateNavigation() {
   const inputRef = useRef(null);
 
   const links = [
-    { path: '/candidate', label: 'Overview', end: true },
-    { path: '/candidate/roles', label: 'Roles & Fit' },
-    { path: '/candidate/learning', label: 'Learning Hub' },
+    { path: '/candidate', label: 'Dashboard', end: true },
+    { path: '/jobs', label: 'Find Jobs' },
+    { path: '/candidate/roles', label: 'Job Match' },
+    { path: '/candidate/learning', label: 'Learning' },
     { path: '/candidate/applications', label: 'Applications' },
-    { path: '/jobs', label: 'Find Jobs' }
   ];
 
   // Sync searchQuery with URL query parameter when navigating to /jobs or /explore
@@ -65,36 +65,44 @@ export function CandidateNavigation() {
 
   const matchedJobs = useMemo(() => {
     if (!trimmed || trimmed.length < 2) return [];
-    return (jobs || []).filter((j) => {
-      if (!j) return false;
-      const company = (companies || []).find((c) => c?.id === j.companyId);
-      const companyName = company?.name || '';
-      const matchTitle = fuzzyMatch(j.title, trimmed);
-      const matchCompany = fuzzyMatch(companyName, trimmed);
-      const matchSkills = Array.isArray(j.skills) && j.skills.some((s) => s && fuzzyMatch(s, trimmed));
-      return matchTitle || matchCompany || matchSkills;
-    }).slice(0, 3);
+    return (jobs || [])
+      .filter((j) => {
+        if (!j) return false;
+        const company = (companies || []).find((c) => c?.id === j.companyId);
+        const companyName = company?.name || '';
+        const matchTitle = fuzzyMatch(j.title, trimmed);
+        const matchCompany = fuzzyMatch(companyName, trimmed);
+        const matchSkills =
+          Array.isArray(j.skills) && j.skills.some((s) => s && fuzzyMatch(s, trimmed));
+        return matchTitle || matchCompany || matchSkills;
+      })
+      .slice(0, 3);
   }, [jobs, companies, trimmed]);
 
   const matchedRoles = useMemo(() => {
     if (!trimmed || trimmed.length < 2) return [];
-    return (roles || []).filter((r) => {
-      if (!r) return false;
-      const matchTitle = fuzzyMatch(r.title, trimmed);
-      const matchCategory = fuzzyMatch(r.category, trimmed);
-      return matchTitle || matchCategory;
-    }).slice(0, 2);
+    return (roles || [])
+      .filter((r) => {
+        if (!r) return false;
+        const matchTitle = fuzzyMatch(r.title, trimmed);
+        const matchCategory = fuzzyMatch(r.category, trimmed);
+        return matchTitle || matchCategory;
+      })
+      .slice(0, 2);
   }, [roles, trimmed]);
 
   const matchedSkills = useMemo(() => {
     if (!trimmed || trimmed.length < 2) return [];
-    return (skills || []).filter((s) => {
-      if (!s) return false;
-      return fuzzyMatch(s.name, trimmed);
-    }).slice(0, 2);
+    return (skills || [])
+      .filter((s) => {
+        if (!s) return false;
+        return fuzzyMatch(s.name, trimmed);
+      })
+      .slice(0, 2);
   }, [skills, trimmed]);
 
-  const hasAnyMatches = matchedJobs.length > 0 || matchedRoles.length > 0 || matchedSkills.length > 0;
+  const hasAnyMatches =
+    matchedJobs.length > 0 || matchedRoles.length > 0 || matchedSkills.length > 0;
 
   const handleSearchSubmit = (e) => {
     if (e) e.preventDefault();
@@ -138,7 +146,15 @@ export function CandidateNavigation() {
   };
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: '16px' }}>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        gap: '16px',
+      }}
+    >
       {/* 1. Main Navigation Links (Cleanly positioned first in visual hierarchy) */}
       <nav className="rc-hide-mobile" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
         {links.map((l) => (
@@ -146,7 +162,9 @@ export function CandidateNavigation() {
             key={l.path}
             to={l.path}
             end={l.end}
-            className={({ isActive }) => `rc-candidate-nav-link ${isActive ? 'rc-candidate-nav-link-active' : ''}`}
+            className={({ isActive }) =>
+              `rc-candidate-nav-link ${isActive ? 'rc-candidate-nav-link-active' : ''}`
+            }
           >
             {l.label}
           </NavLink>
@@ -156,17 +174,13 @@ export function CandidateNavigation() {
       {/* 2. Action Controls: Interactive Matching Search Bar + User Profile Dropdown */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         {/* Quick Job/Skill Search Input in Navbar */}
-        <div
-          ref={searchContainerRef}
-          style={{ position: 'relative' }}
-          className="rc-hide-mobile"
-        >
+        <div ref={searchContainerRef} style={{ position: 'relative' }} className="rc-hide-mobile">
           <form
             onSubmit={handleSearchSubmit}
             style={{
               position: 'relative',
               display: 'flex',
-              alignItems: 'center'
+              alignItems: 'center',
             }}
           >
             <Search
@@ -177,7 +191,7 @@ export function CandidateNavigation() {
                 left: '12px',
                 pointerEvents: 'none',
                 transition: 'color 0.2s ease',
-                zIndex: 2
+                zIndex: 2,
               }}
             />
             <input
@@ -215,7 +229,7 @@ export function CandidateNavigation() {
                   ? '0 0 0 3px rgba(5, 150, 105, 0.15), 0 4px 12px rgba(15, 23, 42, 0.05)'
                   : '0 2px 8px rgba(15, 23, 42, 0.04)',
                 transition: 'all 0.18s ease',
-                fontFamily: 'Plus Jakarta Sans, sans-serif'
+                fontFamily: 'Plus Jakarta Sans, sans-serif',
               }}
             />
 
@@ -237,7 +251,7 @@ export function CandidateNavigation() {
                   cursor: 'pointer',
                   color: '#94a3b8',
                   borderRadius: '50%',
-                  transition: 'color 0.15s ease'
+                  transition: 'color 0.15s ease',
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = '#0f172a')}
                 onMouseLeave={(e) => (e.currentTarget.style.color = '#94a3b8')}
@@ -262,13 +276,14 @@ export function CandidateNavigation() {
                 WebkitBackdropFilter: 'blur(28px)',
                 borderRadius: '16px',
                 border: '1px solid rgba(226, 232, 240, 0.95)',
-                boxShadow: '0 20px 40px -8px rgba(15, 23, 42, 0.14), 0 0 0 1px rgba(15, 23, 42, 0.04)',
+                boxShadow:
+                  '0 20px 40px -8px rgba(15, 23, 42, 0.14), 0 0 0 1px rgba(15, 23, 42, 0.04)',
                 padding: '12px',
                 zIndex: 1000,
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '12px',
-                animation: 'rcMobileMenuSlideDown 150ms ease forwards'
+                animation: 'rcMobileMenuSlideDown 150ms ease forwards',
               }}
             >
               {/* When user has NOT typed anything yet: Show Suggested Topics */}
@@ -284,13 +299,19 @@ export function CandidateNavigation() {
                       padding: '4px 6px 8px',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '5px'
+                      gap: '5px',
                     }}
                   >
                     <Sparkles size={12} color="#059669" /> Popular Searches
                   </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                    {['React Developer', 'Frontend Engineer', 'Python', 'Remote Jobs', 'Full Stack'].map((tag) => (
+                    {[
+                      'React Developer',
+                      'Frontend Engineer',
+                      'Python',
+                      'Remote Jobs',
+                      'Full Stack',
+                    ].map((tag) => (
                       <button
                         key={tag}
                         type="button"
@@ -307,7 +328,7 @@ export function CandidateNavigation() {
                           transition: 'all 0.15s ease',
                           display: 'inline-flex',
                           alignItems: 'center',
-                          gap: '4px'
+                          gap: '4px',
                         }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.borderColor = 'rgba(5, 150, 105, 0.4)';
@@ -343,7 +364,7 @@ export function CandidateNavigation() {
                           padding: '4px 6px 6px',
                           display: 'flex',
                           alignItems: 'center',
-                          gap: '6px'
+                          gap: '6px',
                         }}
                       >
                         <Briefcase size={12} color="#059669" /> Matching Jobs ({matchedJobs.length})
@@ -363,22 +384,53 @@ export function CandidateNavigation() {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'space-between',
-                                gap: '8px'
+                                gap: '8px',
                               }}
-                              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(241, 245, 249, 0.9)')}
-                              onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                              onMouseEnter={(e) =>
+                                (e.currentTarget.style.background = 'rgba(241, 245, 249, 0.9)')
+                              }
+                              onMouseLeave={(e) =>
+                                (e.currentTarget.style.background = 'transparent')
+                              }
                             >
                               <div style={{ minWidth: 0 }}>
-                                <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                <div
+                                  style={{
+                                    fontSize: '0.85rem',
+                                    fontWeight: '700',
+                                    color: '#0f172a',
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                  }}
+                                >
                                   {j.title}
                                 </div>
-                                <div style={{ fontSize: '0.75rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <div
+                                  style={{
+                                    fontSize: '0.75rem',
+                                    color: '#64748b',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                  }}
+                                >
                                   <span>{comp?.name || 'Top Company'}</span>
                                   <span>•</span>
                                   <span>{j.location || 'Remote'}</span>
                                 </div>
                               </div>
-                              <span style={{ fontSize: '0.72rem', fontWeight: '700', color: '#059669', background: 'rgba(236, 253, 245, 0.9)', padding: '2px 7px', borderRadius: '6px', whiteSpace: 'nowrap' }}>
+                              <span
+                                style={{
+                                  fontSize: '0.72rem',
+                                  fontWeight: '700',
+                                  color: '#059669',
+                                  background: 'rgba(236, 253, 245, 0.9)',
+                                  padding: '2px 7px',
+                                  borderRadius: '6px',
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
                                 {j.salaryRange || j.salary || 'Active'}
                               </span>
                             </div>
@@ -402,7 +454,7 @@ export function CandidateNavigation() {
                           display: 'flex',
                           alignItems: 'center',
                           gap: '6px',
-                          borderTop: '1px solid rgba(226, 232, 240, 0.7)'
+                          borderTop: '1px solid rgba(226, 232, 240, 0.7)',
                         }}
                       >
                         <Sparkles size={12} color="#0284c7" /> Career Roles
@@ -419,15 +471,28 @@ export function CandidateNavigation() {
                               transition: 'background 0.15s ease',
                               display: 'flex',
                               alignItems: 'center',
-                              justifyContent: 'space-between'
+                              justifyContent: 'space-between',
                             }}
-                            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(240, 249, 255, 0.9)')}
+                            onMouseEnter={(e) =>
+                              (e.currentTarget.style.background = 'rgba(240, 249, 255, 0.9)')
+                            }
                             onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                           >
-                            <span style={{ fontSize: '0.84rem', fontWeight: '700', color: '#0f172a' }}>
+                            <span
+                              style={{ fontSize: '0.84rem', fontWeight: '700', color: '#0f172a' }}
+                            >
                               {r.title}
                             </span>
-                            <span style={{ fontSize: '0.72rem', color: '#0284c7', background: 'rgba(240, 249, 255, 0.95)', padding: '2px 6px', borderRadius: '5px', fontWeight: '600' }}>
+                            <span
+                              style={{
+                                fontSize: '0.72rem',
+                                color: '#0284c7',
+                                background: 'rgba(240, 249, 255, 0.95)',
+                                padding: '2px 6px',
+                                borderRadius: '5px',
+                                fontWeight: '600',
+                              }}
+                            >
                               Role Fit
                             </span>
                           </div>
@@ -450,7 +515,7 @@ export function CandidateNavigation() {
                           display: 'flex',
                           alignItems: 'center',
                           gap: '6px',
-                          borderTop: '1px solid rgba(226, 232, 240, 0.7)'
+                          borderTop: '1px solid rgba(226, 232, 240, 0.7)',
                         }}
                       >
                         <BookOpen size={12} color="#8b5cf6" /> Skills & Learning
@@ -467,15 +532,28 @@ export function CandidateNavigation() {
                               transition: 'background 0.15s ease',
                               display: 'flex',
                               alignItems: 'center',
-                              justifyContent: 'space-between'
+                              justifyContent: 'space-between',
                             }}
-                            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(245, 243, 255, 0.9)')}
+                            onMouseEnter={(e) =>
+                              (e.currentTarget.style.background = 'rgba(245, 243, 255, 0.9)')
+                            }
                             onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                           >
-                            <span style={{ fontSize: '0.84rem', fontWeight: '700', color: '#0f172a' }}>
+                            <span
+                              style={{ fontSize: '0.84rem', fontWeight: '700', color: '#0f172a' }}
+                            >
                               {s.name}
                             </span>
-                            <span style={{ fontSize: '0.72rem', color: '#8b5cf6', background: 'rgba(245, 243, 255, 0.95)', padding: '2px 6px', borderRadius: '5px', fontWeight: '600' }}>
+                            <span
+                              style={{
+                                fontSize: '0.72rem',
+                                color: '#8b5cf6',
+                                background: 'rgba(245, 243, 255, 0.95)',
+                                padding: '2px 6px',
+                                borderRadius: '5px',
+                                fontWeight: '600',
+                              }}
+                            >
                               Skill Hub
                             </span>
                           </div>
@@ -486,8 +564,16 @@ export function CandidateNavigation() {
 
                   {/* If no items matched */}
                   {!hasAnyMatches && (
-                    <div style={{ padding: '14px 10px', textAlign: 'center', color: '#64748b', fontSize: '0.84rem' }}>
-                      No direct items found for "<strong style={{ color: '#0f172a' }}>{searchQuery}</strong>".
+                    <div
+                      style={{
+                        padding: '14px 10px',
+                        textAlign: 'center',
+                        color: '#64748b',
+                        fontSize: '0.84rem',
+                      }}
+                    >
+                      No direct items found for "
+                      <strong style={{ color: '#0f172a' }}>{searchQuery}</strong>".
                     </div>
                   )}
 
@@ -505,15 +591,40 @@ export function CandidateNavigation() {
                       padding: '8px 10px',
                       borderRadius: '8px',
                       background: 'rgba(236, 253, 245, 0.5)',
-                      transition: 'background 0.15s ease'
+                      transition: 'background 0.15s ease',
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(236, 253, 245, 0.9)')}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(236, 253, 245, 0.5)')}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.background = 'rgba(236, 253, 245, 0.9)')
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.background = 'rgba(236, 253, 245, 0.5)')
+                    }
                   >
-                    <span style={{ fontSize: '0.82rem', fontWeight: '700', color: '#059669', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span
+                      style={{
+                        fontSize: '0.82rem',
+                        fontWeight: '700',
+                        color: '#059669',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                      }}
+                    >
                       Search all jobs for "{searchQuery}" <ArrowRight size={13} />
                     </span>
-                    <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '2px', background: 'rgba(255, 255, 255, 0.9)', padding: '2px 6px', borderRadius: '4px', border: '1px solid rgba(203, 213, 225, 0.6)' }}>
+                    <span
+                      style={{
+                        fontSize: '0.72rem',
+                        color: '#64748b',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '2px',
+                        background: 'rgba(255, 255, 255, 0.9)',
+                        padding: '2px 6px',
+                        borderRadius: '4px',
+                        border: '1px solid rgba(203, 213, 225, 0.6)',
+                      }}
+                    >
                       ↵ Enter
                     </span>
                   </div>
@@ -524,7 +635,7 @@ export function CandidateNavigation() {
         </div>
 
         {/* User Dropdown */}
-        <UserProfileDropdown mode="CANDIDATE" />
+        <UserProfileDropdown />
       </div>
     </div>
   );

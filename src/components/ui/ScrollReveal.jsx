@@ -4,7 +4,7 @@ import '../../styles/animations.css';
 /**
  * ScrollReveal component that triggers smooth entrance animations
  * when the element scrolls into view.
- * 
+ *
  * Props:
  * - variant: 'slide-left' | 'slide-right' | 'slide-up' | 'scale-up' | 'fade-in'
  * - delay: number (milliseconds e.g. 100, 200, 300)
@@ -19,7 +19,7 @@ export function ScrollReveal({
   threshold = 0.12,
   style = {},
   className = '',
-  once = true
+  once = true,
 }) {
   const [isVisible, setIsVisible] = useState(false);
   const domRef = useRef(null);
@@ -36,7 +36,7 @@ export function ScrollReveal({
           setIsVisible(false);
         }
       },
-      { threshold }
+      { threshold },
     );
 
     const currentRef = domRef.current;
@@ -58,7 +58,7 @@ export function ScrollReveal({
       className={`rc-reveal ${variantClass} ${visibleClass} ${className}`}
       style={{
         transitionDelay: `${delay}ms`,
-        ...style
+        ...style,
       }}
     >
       {children}

@@ -6,7 +6,7 @@ export function Progress({
   max = 100,
   showLabel = false,
   variant = 'accent', // accent | success | warning
-  className = ''
+  className = '',
 }) {
   const percentage = Math.min(100, Math.max(0, Math.round((value / max) * 100)));
 
@@ -27,7 +27,7 @@ export function Progress({
           height: '8px',
           backgroundColor: 'var(--rc-color-soft-slate-200)',
           borderRadius: 'var(--rc-radius-pill)',
-          overflow: 'hidden'
+          overflow: 'hidden',
         }}
       >
         <div
@@ -36,7 +36,7 @@ export function Progress({
             height: '100%',
             backgroundColor: barColor,
             borderRadius: 'var(--rc-radius-pill)',
-            transition: 'width var(--rc-motion-medium)'
+            transition: 'width var(--rc-motion-medium)',
           }}
         />
       </div>

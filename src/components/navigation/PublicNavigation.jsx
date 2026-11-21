@@ -11,11 +11,19 @@ export function PublicNavigation() {
     { path: '/companies', label: 'Companies' },
     { path: '/how-it-works', label: 'How It Works' },
     { path: '/about', label: 'About' },
-    { path: '/contact', label: 'Contact' }
+    { path: '/contact', label: 'Contact' },
   ];
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: '28px' }}>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        gap: '28px',
+      }}
+    >
       <nav style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         {publicLinks.map((item) => (
           <NavLink
@@ -33,7 +41,7 @@ export function PublicNavigation() {
               borderRadius: '8px',
               transition: 'all 0.15s ease',
               background: isActive ? 'rgba(5, 150, 105, 0.09)' : 'transparent',
-              border: isActive ? '1px solid rgba(167, 243, 208, 0.6)' : '1px solid transparent'
+              border: isActive ? '1px solid rgba(167, 243, 208, 0.6)' : '1px solid transparent',
             })}
           >
             {item.label}
@@ -55,12 +63,12 @@ export function PublicNavigation() {
               padding: '8px 16px',
               fontFamily: 'Plus Jakarta Sans, sans-serif',
               borderRadius: '10px',
-              transition: 'all 0.15s ease'
+              transition: 'all 0.15s ease',
             })}
           >
             Log in
           </NavLink>
-          
+
           <NavLink to="/signup" style={{ textDecoration: 'none' }}>
             <button
               style={{
@@ -78,10 +86,10 @@ export function PublicNavigation() {
                 transition: 'all 0.2s ease',
                 display: 'inline-flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
               }}
-              onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-1px)'}
-              onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+              onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-1px)')}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
             >
               Create Account
             </button>

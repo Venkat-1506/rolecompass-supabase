@@ -150,7 +150,8 @@
 
 /* Floating ambient movement for hero elements */
 @keyframes rcFloatSlow {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px) rotate(0deg);
   }
   50% {
@@ -159,7 +160,8 @@
 }
 
 @keyframes rcFloatReverse {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px) rotate(0deg);
   }
   50% {
@@ -168,7 +170,8 @@
 }
 
 @keyframes rcGlowPulse {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 10px 30px rgba(5, 150, 105, 0.15);
   }
   50% {
@@ -189,8 +192,18 @@
 }
 
 /* Stagger delay utilities */
-.rc-delay-100 { transition-delay: 100ms; }
-.rc-delay-200 { transition-delay: 200ms; }
-.rc-delay-300 { transition-delay: 300ms; }
-.rc-delay-400 { transition-delay: 400ms; }
-.rc-delay-500 { transition-delay: 500ms; }
+.rc-delay-100 {
+  transition-delay: 100ms;
+}
+.rc-delay-200 {
+  transition-delay: 200ms;
+}
+.rc-delay-300 {
+  transition-delay: 300ms;
+}
+.rc-delay-400 {
+  transition-delay: 400ms;
+}
+.rc-delay-500 {
+  transition-delay: 500ms;
+}
