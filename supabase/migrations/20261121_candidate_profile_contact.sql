@@ -30,9 +30,7 @@ update public.profiles
 set github_url = coalesce(
   nullif(github_url, ''),
   nullif(profile_data #>> '{personal,githubUrl}', ''),
-  nullif(profile_data #>> '{personal,portfolioUrl}', ''),
-  nullif(profile_data #>> '{links,github}', ''),
-  nullif(profile_data #>> '{links,portfolio}', '')
+  nullif(profile_data #>> '{links,github}', '')
 )
 where github_url is null or github_url = '';
 
