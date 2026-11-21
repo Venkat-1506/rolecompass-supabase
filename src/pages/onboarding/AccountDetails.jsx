@@ -6,7 +6,6 @@ import { Stack } from '../../components/layout/Stack.jsx';
 import { Input } from '../../components/ui/Input.jsx';
 import { OnboardingProgress } from '../../components/onboarding/OnboardingProgress.jsx';
 import { useApp } from '../../app/providers/AppProviders.jsx';
-import linkedinLogo from '../../assets/company-logos/linkedin.svg';
 import { ShieldCheck, Sparkles, UserCheck, ArrowRight, Eye, EyeOff } from 'lucide-react';
 
 const MIN_PASSWORD_LENGTH = 6;
@@ -14,7 +13,7 @@ const MIN_PASSWORD_LENGTH = 6;
 export function AccountDetails() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { registerAccount, signInWithOAuth } = useApp();
+  const { registerAccount } = useApp();
   const path = searchParams.get('path') || 'fresher';
 
   const [fullName, setFullName] = useState('');
@@ -27,7 +26,6 @@ export function AccountDetails() {
   const [error, setError] = useState('');
   const [infoMsg, setInfoMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [oauthLoading, setOauthLoading] = useState(false);
 
   const getPathLabel = () => {
     switch (path) {
@@ -86,22 +84,6 @@ export function AccountDetails() {
       setError(err.message || 'An error occurred while creating your account.');
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const handleLinkedInSignIn = async () => {
-    if (oauthLoading || isSubmitting) return;
-
-    setError('');
-    setInfoMsg('');
-    setOauthLoading(true);
-
-    try {
-      await signInWithOAuth('linkedin_oidc');
-    } catch (err) {
-      setError(err.message || 'Unable to start LinkedIn sign-in.');
-    } finally {
-      setOauthLoading(false);
     }
   };
 
@@ -450,18 +432,6 @@ export function AccountDetails() {
                 >
                   {isSubmitting ? 'Creating Account...' : `Create ${getPathLabel()} Account`}{' '}
                   <ArrowRight size={18} />
-                </button>
-
-                <div className="rc-auth-divider">or sign up with</div>
-
-                <button
-                  type="button"
-                  className="rc-auth-provider"
-                  onClick={handleLinkedInSignIn}
-                  disabled={isSubmitting || oauthLoading}
-                >
-                  <img src={linkedinLogo} alt="" />
-                  {oauthLoading ? 'Connecting to LinkedIn...' : 'Continue with LinkedIn'}
                 </button>
 
                 <div style={{ textAlign: 'center', color: '#64748b' }} className="rc-small">

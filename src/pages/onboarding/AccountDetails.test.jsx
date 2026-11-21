@@ -7,14 +7,10 @@ import { AccountDetails } from './AccountDetails.jsx';
 
 const mocks = vi.hoisted(() => ({
   registerAccount: vi.fn(),
-  signInWithOAuth: vi.fn(),
 }));
 
 vi.mock('../../app/providers/AppProviders.jsx', () => ({
-  useApp: () => ({
-    registerAccount: mocks.registerAccount,
-    signInWithOAuth: mocks.signInWithOAuth,
-  }),
+  useApp: () => ({ registerAccount: mocks.registerAccount }),
 }));
 
 function renderPage() {
@@ -41,7 +37,6 @@ describe('AccountDetails signup form', () => {
       requiresConfirmation: true,
       email: 'test@example.com',
     });
-    mocks.signInWithOAuth.mockResolvedValue({ ok: true });
   });
 
   afterEach(() => {
@@ -123,15 +118,5 @@ describe('AccountDetails signup form', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('Email already registered');
     expect(screen.queryByText(/Check your email to confirm/)).not.toBeInTheDocument();
     await waitFor(() => expect(mocks.registerAccount).toHaveBeenCalledTimes(1));
-  });
-
-  it('starts LinkedIn OAuth without submitting the password signup form', async () => {
-    const user = userEvent.setup();
-    renderPage();
-
-    await user.click(screen.getByRole('button', { name: /Continue with LinkedIn/ }));
-
-    expect(mocks.signInWithOAuth).toHaveBeenCalledWith('linkedin_oidc');
-    expect(mocks.registerAccount).not.toHaveBeenCalled();
   });
 });

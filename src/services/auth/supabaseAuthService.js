@@ -321,7 +321,7 @@ export async function signInWithSupabaseOAuth(provider) {
   const redirectTo =
     typeof window === 'undefined'
       ? undefined
-      : `${window.location.origin}${window.location.pathname}${window.location.search}${window.location.hash}`;
+      : `${window.location.origin}${window.location.pathname}`;
   const { error } = await supabase.auth.signInWithOAuth({
     provider,
     options: { redirectTo },

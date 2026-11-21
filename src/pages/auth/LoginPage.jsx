@@ -11,13 +11,6 @@ import { ArrowRight, Compass, ShieldCheck, Sparkles, FileText, Eye, EyeOff } fro
 import heroFemaleCutout from '../../assets/images/public/hero-female-professional-cutout.png';
 import googleLogo from '../../assets/company-logos/google.svg';
 import githubLogo from '../../assets/company-logos/github.svg';
-import linkedinLogo from '../../assets/company-logos/linkedin.svg';
-
-const OAUTH_PROVIDER_IDS = {
-  Google: 'google',
-  GitHub: 'github',
-  LinkedIn: 'linkedin_oidc',
-};
 
 const DEMO_ACCOUNTS = [
   { email: 'arjun.verma@rolecompass.demo', label: 'Arjun Verma', detail: 'Fresher demo profile' },
@@ -85,7 +78,7 @@ export function LoginPage() {
     setIsLoading(true);
 
     try {
-      await signInWithOAuth(OAUTH_PROVIDER_IDS[provider] || provider.toLowerCase());
+      await signInWithOAuth(provider.toLowerCase());
     } catch (err) {
       setIsLoading(false);
       setError(err.message || `Unable to start ${provider} sign-in.`);
@@ -423,15 +416,6 @@ export function LoginPage() {
                     >
                       <img src={githubLogo} alt="" />
                       GitHub
-                    </button>
-                    <button
-                      type="button"
-                      className="rc-auth-provider"
-                      disabled={isLoading}
-                      onClick={() => handleProviderSignIn('LinkedIn')}
-                    >
-                      <img src={linkedinLogo} alt="" />
-                      LinkedIn
                     </button>
                   </div>
 
