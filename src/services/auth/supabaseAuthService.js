@@ -40,10 +40,16 @@ function defaultProfile(fullName, email, candidateTrack) {
 
 function accountFromAuthUser(authUser, overrides = {}) {
   if (!authUser) return null;
-  const email = normalizedEmail(authUser.email);
   const metadata = authUser.user_metadata || {};
+  const email = normalizedEmail(authUser.email || metadata.email || '');
   const fullName =
-    overrides.fullName || metadata.full_name || metadata.fullName || email.split('@')[0];
+    overrides.fullName ||
+    metadata.full_name ||
+    metadata.fullName ||
+    metadata.name ||
+    metadata.user_name ||
+    email.split('@')[0] ||
+    'Candidate';
   const candidateTrack = overrides.candidateTrack || metadata.candidateTrack || 'fresher';
 
   return sanitizeAccount({

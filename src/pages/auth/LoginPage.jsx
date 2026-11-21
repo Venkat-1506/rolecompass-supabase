@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { PageContainer } from '../../components/layout/PageContainer.jsx';
 import { Section } from '../../components/layout/Section.jsx';
@@ -20,7 +20,14 @@ const DEMO_ACCOUNTS = [
 export function LoginPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { login, signInWithOAuth, isSupabaseConfigured } = useApp();
+  const {
+    login,
+    signInWithOAuth,
+    isSupabaseConfigured,
+    currentUser,
+    isAuthenticated,
+    isHydrating,
+  } = useApp();
   const redirectUrl = searchParams.get('redirect');
 
   const [email, setEmail] = useState('');
@@ -35,17 +42,25 @@ export function LoginPage() {
     setInfoMsg('Password reset is not available in this frontend demo.');
   };
 
-  const completeSignIn = (user) => {
-    if (redirectUrl && redirectUrl.startsWith('/') && !redirectUrl.startsWith('//')) {
-      navigate(redirectUrl, { replace: true });
-      return;
-    }
-    if (user.profileCompleted) {
-      navigate('/candidate', { replace: true });
-      return;
-    }
-    navigate(getStepRoute(user.onboardingStep), { replace: true });
-  };
+  const completeSignIn = useCallback(
+    (user) => {
+      if (redirectUrl && redirectUrl.startsWith('/') && !redirectUrl.startsWith('//')) {
+        navigate(redirectUrl, { replace: true });
+        return;
+      }
+      if (user.profileCompleted) {
+        navigate('/candidate', { replace: true });
+        return;
+      }
+      navigate(getStepRoute(user.onboardingStep), { replace: true });
+    },
+    [navigate, redirectUrl],
+  );
+
+  useEffect(() => {
+    if (isHydrating || !isAuthenticated || !currentUser) return;
+    completeSignIn(currentUser);
+  }, [completeSignIn, currentUser, isAuthenticated, isHydrating]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -63,9 +78,8 @@ export function LoginPage() {
 
     setIsLoading(true);
     try {
-      const user = await login({ email, password });
+      await login({ email, password });
       setIsLoading(false);
-      completeSignIn(user);
     } catch (err) {
       setIsLoading(false);
       setError(err.message || 'Unable to sign in.');

@@ -13,7 +13,11 @@ vi.mock('../../lib/supabase.js', () => ({
   },
 }));
 
-import { getCandidateProfileDetails, saveCandidateProfileDetails } from './supabaseAuthService.js';
+import {
+  getCandidateProfileDetails,
+  loadSupabaseAccount,
+  saveCandidateProfileDetails,
+} from './supabaseAuthService.js';
 
 function queryFor(result) {
   const query = {
@@ -152,5 +156,25 @@ describe('supabaseAuthService candidate profile details', () => {
     expect(payload).not.toHaveProperty('phone');
     expect(payload).not.toHaveProperty('github_url');
     expect(payload.profile_data.personal.phone).toBe('+44 20 7946 0958');
+  });
+
+  it('uses available GitHub metadata when Supabase has no profile row', async () => {
+    const githubUser = {
+      id: 'github-user-1',
+      email: null,
+      user_metadata: {
+        email: 'github@example.com',
+        name: 'GitHub Candidate',
+        user_name: 'githubcandidate',
+      },
+    };
+    mocks.from
+      .mockReturnValueOnce(queryFor({ data: null, error: null }))
+      .mockReturnValueOnce(queryFor({ data: null, error: null }));
+
+    const loaded = await loadSupabaseAccount(githubUser);
+
+    expect(loaded.account.fullName).toBe('GitHub Candidate');
+    expect(loaded.account.email).toBe('github@example.com');
   });
 });
