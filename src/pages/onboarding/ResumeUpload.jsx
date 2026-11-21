@@ -5,6 +5,10 @@ import { Section } from '../../components/layout/Section.jsx';
 import { OnboardingProgress } from '../../components/onboarding/OnboardingProgress.jsx';
 import { useApp } from '../../app/providers/AppProviders.jsx';
 import {
+  uploadResumeToSupabase,
+  validateResumeFile,
+} from '../../services/resume/resumeStorageService.js';
+import {
   UploadCloud,
   FileText,
   CheckCircle2,
@@ -15,7 +19,7 @@ import {
 
 export function ResumeUpload() {
   const navigate = useNavigate();
-  const { setResumeData, updateOnboardingStep, currentUser } = useApp();
+  const { setResumeData, updateOnboardingStep, currentUser, isSupabaseConfigured } = useApp();
   const fileInputRef = useRef(null);
 
   const [selectedFile, setSelectedFile] = useState(() => {
@@ -31,6 +35,7 @@ export function ResumeUpload() {
   });
 
   const [isDragging, setIsDragging] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
   const formatFileSize = (bytes) => {
@@ -45,28 +50,18 @@ export function ResumeUpload() {
     setErrorMsg('');
     if (!file) return;
 
-    // Extension Validation
-    const allowedExtensions = ['pdf', 'doc', 'docx'];
-    const fileNameParts = file.name.split('.');
-    const ext = fileNameParts[fileNameParts.length - 1].toLowerCase();
-
-    if (!allowedExtensions.includes(ext)) {
-      setErrorMsg('Only PDF, DOC, and DOCX files are supported.');
+    const validation = validateResumeFile(file);
+    if (!validation.ok) {
+      setErrorMsg(validation.error);
       return;
     }
 
-    // Size Validation (Max 10MB)
-    const maxSizeInBytes = 10 * 1024 * 1024;
-    if (file.size > maxSizeInBytes) {
-      setErrorMsg('File size must be less than 10MB.');
-      return;
-    }
-
-    // Valid File
     setSelectedFile({
       rawFile: file,
       name: file.name,
       size: formatFileSize(file.size),
+      sizeBytes: file.size,
+      mimeType: validation.mimeType,
       ready: true,
     });
   };
@@ -91,22 +86,60 @@ export function ResumeUpload() {
     }
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (!selectedFile) {
       setErrorMsg('Please upload your resume to continue.');
       return;
     }
 
-    setResumeData({
-      fileName: selectedFile.name,
-      fileSize: selectedFile.size,
-      uploadedAt: new Date().toISOString(),
-      status: 'uploaded',
-      rawFile: selectedFile.rawFile,
-    });
+    if (!currentUser) {
+      setErrorMsg('Your session is not ready. Please try again.');
+      return;
+    }
 
-    updateOnboardingStep('processing');
-    navigate('/onboarding/resume-processing');
+    const isSupabaseUser = currentUser.id && !String(currentUser.id).startsWith('user-');
+    setIsUploading(true);
+    setErrorMsg('');
+
+    try {
+      if (isSupabaseConfigured && isSupabaseUser && selectedFile.rawFile) {
+        const uploaded = await uploadResumeToSupabase({
+          file: selectedFile.rawFile,
+          userId: currentUser.id,
+        });
+        setResumeData({
+          id: uploaded.id,
+          bucket: uploaded.bucket,
+          storagePath: uploaded.storagePath,
+          fileName: uploaded.fileName,
+          originalFileName: uploaded.originalFileName,
+          fileSize: formatFileSize(uploaded.fileSizeBytes),
+          fileSizeBytes: uploaded.fileSizeBytes,
+          mimeType: uploaded.mimeType,
+          status: uploaded.status,
+          uploadedAt: uploaded.uploadedAt,
+          analysisType: uploaded.analysisType,
+          isDemoExtraction: false,
+        });
+      } else {
+        setResumeData({
+          ...(currentUser.resume || {}),
+          fileName: selectedFile.name,
+          fileSize: selectedFile.size,
+          fileSizeBytes: selectedFile.sizeBytes,
+          mimeType: selectedFile.mimeType,
+          uploadedAt: new Date().toISOString(),
+          status: 'uploaded',
+        });
+      }
+
+      updateOnboardingStep('processing');
+      navigate('/onboarding/resume-processing');
+    } catch (error) {
+      setErrorMsg(error?.message || 'Unable to upload your resume. Please try again.');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -120,6 +153,7 @@ export function ResumeUpload() {
           ref={fileInputRef}
           accept=".pdf,.doc,.docx"
           onChange={handleFileChange}
+          disabled={isUploading}
           style={{ display: 'none' }}
         />
 
@@ -304,7 +338,8 @@ export function ResumeUpload() {
                       marginTop: '2px',
                     }}
                   >
-                    <CheckCircle2 size={14} /> {selectedFile.size} • Ready to continue
+                    <CheckCircle2 size={14} /> {selectedFile.size} •{' '}
+                    {isUploading ? 'Uploading…' : 'Ready to continue'}
                   </div>
                 </div>
               </div>
@@ -338,16 +373,16 @@ export function ResumeUpload() {
           <div style={{ textAlign: 'center', marginTop: '32px' }}>
             <button
               onClick={handleContinue}
-              disabled={!selectedFile}
+              disabled={!selectedFile || isUploading}
               style={{
-                background: selectedFile ? '#059669' : '#94a3b8',
+                background: selectedFile && !isUploading ? '#059669' : '#94a3b8',
                 color: '#ffffff',
                 fontWeight: '800',
                 fontSize: '1rem',
                 padding: '14px 36px',
                 borderRadius: '12px',
                 border: 'none',
-                cursor: selectedFile ? 'pointer' : 'not-allowed',
+                cursor: selectedFile && !isUploading ? 'pointer' : 'not-allowed',
                 boxShadow: selectedFile ? '0 4px 18px rgba(5, 150, 105, 0.35)' : 'none',
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -355,7 +390,8 @@ export function ResumeUpload() {
                 transition: 'all 200ms ease',
               }}
             >
-              Continue <ArrowRight size={18} />
+              {isUploading ? 'Uploading…' : 'Continue'}
+              {!isUploading && <ArrowRight size={18} />}
             </button>
           </div>
         </div>
